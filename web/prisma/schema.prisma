@@ -1,0 +1,149 @@
+// Prisma schema — kiểu dữ liệu chỉ dùng nhóm portable (String/Int/Float/Boolean/DateTime)
+// để chuyển đổi giữa SQLite (dev) và MySQL (prod) chỉ bằng đổi `provider`.
+// Prod: provider = "mysql" + DATABASE_URL="mysql://user:pass@host:3306/game_phoco"
+// URL kết nối nằm trong prisma.config.ts (Prisma 7), không khai báo ở đây.
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+// Trạm = 1 phố phường. Thứ tự orderIndex quyết định tuyến mở dần.
+model Station {
+  id            Int      @id @default(autoincrement())
+  slug          String   @unique
+  orderIndex    Int      @unique
+  nameVi        String
+  nameEn        String
+  storyVi       String
+  storyEn       String
+  questionVi    String
+  questionEn    String
+  optionsJson   String // JSON: [{vi, en}, ...]
+  correctIndex  Int
+  hintVi        String
+  hintEn        String
+  lat           Float
+  lng           Float
+  radiusM       Int      @default(120)
+  chestTierId   Int?
+  qrToken       String   @unique
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  checkIns  CheckIn[]
+  answers   Answer[]
+}
+
+// Người chơi ẩn danh, định danh bằng playerId lưu localStorage.
+model Player {
+  id             String   @id
+  score          Int      @default(0)
+  chestPityCount Int      @default(0)
+  createdAt      DateTime @default(now())
+  lastSeenAt     DateTime @default(now())
+
+  checkIns CheckIn[]
+  answers  Answer[]
+}
+
+// Lần check-in: GPS (tọa độ), QR (token), PHOTO (ảnh chờ duyệt).
+model CheckIn {
+  id         Int      @id @default(autoincrement())
+  playerId   String
+  stationId  Int
+  method     String // GPS | QR | PHOTO
+  status     String // APPROVED | PENDING | REJECTED
+  lat        Float?
+  lng        Float?
+  distanceM  Float?
+  photoPath  String?
+  reviewNote String?
+  createdAt  DateTime @default(now())
+  reviewedAt DateTime?
+
+  player  Player  @relation(fields: [playerId], references: [id])
+  station Station @relation(fields: [stationId], references: [id])
+
+  @@index([stationId, status])
+  @@index([playerId, stationId])
+}
+
+// Kết quả giải đố mỗi (player, trạm).
+model Answer {
+  id         Int      @id @default(autoincrement())
+  playerId   String
+  stationId  Int
+  solved     Boolean  @default(false)
+  attempts   Int      @default(0)
+  hintsUsed  Int      @default(0)
+  updatedAt  DateTime @updatedAt
+
+  player  Player  @relation(fields: [playerId], references: [id])
+  station Station @relation(fields: [stationId], references: [id])
+
+  @@unique([playerId, stationId])
+}
+
+// ===== Hòm thưởng (spec 2026-08-25-ar-treasure-chest-design.md) =====
+
+// Cấp rương: common | gold | epic | grand.
+model ChestTier {
+  id            Int    @id @default(autoincrement())
+  key           String @unique // common | gold | epic | grand
+  nameVi        String
+  nameEn        String
+  colorHex      String
+  modelGlbPath  String @default("")
+  modelUsdzPath String @default("")
+  sortOrder     Int    @default(0)
+}
+
+// Nội dung bên trong rương, nhóm theo scope (đích cuối, đối tác, thành tích, trạm, drop).
+model ChestLoot {
+  id           Int    @id @default(autoincrement())
+  scopeKey     String // vd: station:hang-bac | achievement:stations_6 | final | partner | drop
+  type         String // POINTS | STORY | IMAGE | VIDEO
+  pointsAmount Int?
+  storyVi      String?
+  storyEn      String?
+  imagePath    String?
+  youtubeUrl   String?
+  sortOrder    Int    @default(0)
+
+  @@index([scopeKey])
+}
+
+// Lần rương phát cho người chơi; loot chốt lại dạng snapshot JSON lúc phát.
+model ChestGrant {
+  id               Int       @id @default(autoincrement())
+  playerId         String
+  source           String // STATION | DROP | ACHIEVEMENT | FINAL | PARTNER
+  sourceRef        String
+  tierId           Int
+  lootSnapshotJson String
+  createdAt        DateTime  @default(now())
+  openedAt         DateTime?
+
+  @@unique([playerId, source, sourceRef])
+  @@index([playerId, openedAt])
+}
+
+// Điểm nhận thưởng của địa điểm đối tác (workshop), định danh bằng token in trên tài liệu.
+model PartnerSpot {
+  id    Int    @id @default(autoincrement())
+  key   String @unique
+  token String @unique
+}
+
+// Cấu hình cơ chế DROP: xác suất rơi rương + trọng số chọn cấp.
+model DropRule {
+  id        Int    @id @default(autoincrement())
+  chancePct Int
+  tierKey   String
+  weight    Int
+}

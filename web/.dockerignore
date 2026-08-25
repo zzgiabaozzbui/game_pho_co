@@ -1,0 +1,13 @@
+node_modules
+.next
+.env
+.env.*
+!.env.example
+dev.db
+dev.db-journal
+dev.log
+uploads
+*.log
+Dockerfile
+.dockerignore
+src/generated

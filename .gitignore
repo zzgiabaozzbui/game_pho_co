@@ -1,0 +1,13 @@
+node_modules/
+web/node_modules/
+web/dev.db
+web/.env
+web/.next/
+web/src/generated/
+web/public/uploads/
+docker-build.log
+web/dev.log
+*.log
+.superpowers/
+# vendor là clone riêng có .git nội bộ — bootstrap lại theo AGENTS.md khi clone mới
+vendor/

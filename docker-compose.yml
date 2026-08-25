@@ -1,0 +1,32 @@
+services:
+  app:
+    build: ./web
+    image: phoco-web:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+      SESSION_SECRET: ${SESSION_SECRET:-demo-secret-doi-lai-it-nhat-32-ky-tu-ngau-nhien}
+      NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:3000}
+    volumes:
+      - phoco_data:/data
+
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    profiles: ["mysql"]
+    environment:
+      MYSQL_ROOT_PASSWORD: root_change_me
+      MYSQL_DATABASE: game_phoco
+      MYSQL_USER: phoco
+      MYSQL_PASSWORD: change_me
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+volumes:
+  phoco_data:
+  mysql_data:
