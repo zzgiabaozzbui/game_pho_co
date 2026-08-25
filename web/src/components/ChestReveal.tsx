@@ -4,6 +4,7 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import RewardCard, { type RevealLoot } from "@/components/RewardCard";
+import ChestVisual from "@/components/ChestVisual";
 
 export interface RevealTier {
   key: string;
@@ -38,21 +39,7 @@ export default function ChestReveal({
       <p className="font-display text-lg font-black text-gold">{t("chest.title")}</p>
 
       {!opened && <div className="chest-glow" />}
-      <div
-        className={`chest-box ${opened ? "chest-opened pointer-events-none opacity-80" : ""}`}
-        style={
-          opened
-            ? { marginTop: "-2.5rem" }
-            : { marginTop: "-8rem", filter: `drop-shadow(0 8px 20px ${tier.colorHex}66)` }
-        }
-        onClick={() => setOpened(true)}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => e.key === "Enter" && setOpened(true)}
-      >
-        <div className="chest-lid" style={{ backgroundColor: tier.colorHex }} />
-        <div className="chest-base" style={{ backgroundColor: tier.colorHex }} />
-      </div>
+      <ChestVisual tier={tier} opened={opened} onTapChest={() => setOpened(true)} />
       {!opened ? (
         <p className="text-sm font-semibold text-paper/90">
           {t("chest.tap_to_open")}
