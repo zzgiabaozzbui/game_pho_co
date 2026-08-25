@@ -10,6 +10,8 @@ export interface RevealTier {
   nameVi: string;
   nameEn: string;
   colorHex: string;
+  modelGlbPath: string;
+  modelUsdzPath: string;
 }
 
 export default function ChestReveal({
