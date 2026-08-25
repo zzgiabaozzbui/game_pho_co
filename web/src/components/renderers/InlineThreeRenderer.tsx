@@ -45,6 +45,10 @@ export default function InlineThreeRenderer({
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(mount.clientWidth, mount.clientHeight);
         mount.appendChild(renderer.domElement);
+        teardown = () => {
+          renderer.dispose();
+          renderer.domElement.remove();
+        };
 
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(
@@ -64,6 +68,7 @@ export default function InlineThreeRenderer({
         const gltf = await new GLTFLoader().loadAsync(modelGlbPath);
         if (disposed) {
           renderer.dispose();
+          renderer.domElement.remove();
           return;
         }
         const chest = gltf.scene;
