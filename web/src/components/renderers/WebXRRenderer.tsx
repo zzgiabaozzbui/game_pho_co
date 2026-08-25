@@ -35,6 +35,8 @@ export default function WebXRRenderer({
     let disposed = false;
     let ended = false;
     let stopEarly: (() => void) | null = null;
+    let liveSession: XRSession | null = null;
+    let teardownStartup: (() => void) | null = null;
 
     (async () => {
       try {
@@ -48,19 +50,28 @@ export default function WebXRRenderer({
           optionalFeatures: ["dom-overlay"],
           domOverlay: { root: overlayRoot },
         });
+        liveSession = session;
         if (disposed) {
           void session.end().catch(() => {});
           return;
         }
 
         const gltf = await new GLTFLoader().loadAsync(modelGlbPath);
+        if (disposed) {
+          void session.end().catch(() => {});
+          return;
+        }
         const chest = gltf.scene;
         chest.visible = false;
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.xr.enabled = true;
         await renderer.xr.setSession(session);
-        document.body.appendChild(renderer.domElement);
+        if (disposed) {
+          void session.end().catch(() => {});
+          renderer.dispose();
+          return;
+        }
 
         const scene = new THREE.Scene();
         scene.add(new THREE.HemisphereLight(0xfff6e0, 0x33301f, 1.2));
@@ -102,10 +113,34 @@ export default function WebXRRenderer({
         scene.add(particles);
         let particleLife = -1;
 
+        teardownStartup = () => {
+          renderer.setAnimationLoop(null);
+          renderer.domElement.remove();
+          disposeThreeObject(scene);
+          renderer.dispose();
+        };
+
         const viewerSpace = await session.requestReferenceSpace("viewer");
+        if (disposed) {
+          void session.end().catch(() => {});
+          teardownStartup();
+          return;
+        }
         const hitTestSource =
           await session.requestHitTestSource?.({ space: viewerSpace });
+        if (disposed) {
+          void session.end().catch(() => {});
+          teardownStartup();
+          return;
+        }
         const refSpace = await session.requestReferenceSpace("local");
+        if (disposed) {
+          void session.end().catch(() => {});
+          teardownStartup();
+          return;
+        }
+
+        document.body.appendChild(renderer.domElement);
 
         const lid = chest.getObjectByName("lid");
         let placed = false;
@@ -166,6 +201,8 @@ export default function WebXRRenderer({
             if (pose) {
               reticle.visible = true;
               reticle.matrix.fromArray(pose.transform.matrix);
+            } else {
+              reticle.visible = false;
             }
           }
           if (placed) {
@@ -191,11 +228,13 @@ export default function WebXRRenderer({
             }
           }
           if (openAtMs !== null && performance.now() - openAtMs > 1800) {
-            void session.end();
+            void session.end().catch(() => {});
           }
           renderer.render(scene, camera);
         });
       } catch {
+        if (liveSession) void liveSession.end().catch(() => {});
+        teardownStartup?.();
         if (!disposed) onUnavailable(); // fallback inline theo spec §6
       }
     })();
