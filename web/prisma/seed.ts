@@ -984,10 +984,12 @@ async function main() {
   ];
   const tierIds: Record<string, number> = {};
   for (const t of tiers) {
+    const modelGlbPath = `/models/chest-${t.key}.glb`;
+    const modelUsdzPath = `/models/chest-${t.key}.usdz`;
     const row = await db.chestTier.upsert({
       where: { key: t.key },
-      update: { nameVi: t.nameVi, nameEn: t.nameEn, colorHex: t.colorHex, sortOrder: t.sortOrder },
-      create: t,
+      update: { nameVi: t.nameVi, nameEn: t.nameEn, colorHex: t.colorHex, sortOrder: t.sortOrder, modelGlbPath, modelUsdzPath },
+      create: { ...t, modelGlbPath, modelUsdzPath },
     });
     tierIds[t.key] = row.id;
   }
