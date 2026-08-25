@@ -13,11 +13,13 @@ export default function InlineThreeRenderer({
   opened,
   onTapChest,
   onError,
+  onLoaded,
 }: {
   modelGlbPath: string;
   opened: boolean;
   onTapChest: () => void;
   onError: () => void;
+  onLoaded?: () => void;
 }) {
   const mountRef = useRef<HTMLDivElement>(null);
   const openedRef = useRef(opened);
@@ -32,6 +34,12 @@ export default function InlineThreeRenderer({
 
     let disposed = false;
     let frame = 0;
+    let loadedNotified = false;
+    const notifyLoaded = () => {
+      if (loadedNotified || disposed) return;
+      loadedNotified = true;
+      onLoaded?.();
+    };
     const cleanupFns: Array<() => void> = [];
     let teardown: (() => void) | null = null;
 
@@ -138,6 +146,7 @@ export default function InlineThreeRenderer({
           renderer.render(scene, camera);
         };
         tick();
+        notifyLoaded();
 
         teardown = () => {
           cancelAnimationFrame(frame);

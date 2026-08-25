@@ -3,7 +3,10 @@ export type ThreeModule = typeof import("three");
 let threePromise: Promise<ThreeModule> | null = null;
 
 export function loadThree(): Promise<ThreeModule> {
-  threePromise ??= import("three");
+  threePromise ??= import("three").catch((e: unknown) => {
+    threePromise = null;
+    throw e;
+  });
   return threePromise;
 }
 

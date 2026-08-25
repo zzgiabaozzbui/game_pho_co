@@ -50,6 +50,7 @@ export default function ChestVisual({
   const [mode, setMode] = useState<ArMode | null>(null);
   const [failed, setFailed] = useState(false);
   const [inAr, setInAr] = useState(false);
+  const [modelLoaded, setModelLoaded] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -61,12 +62,17 @@ export default function ChestVisual({
     };
   }, []);
 
+  useEffect(() => {
+    setModelLoaded(false);
+  }, [tier.modelGlbPath]);
+
   const handleArOpened = useCallback(() => {
     setInAr(false);
     onTapChest();
   }, [onTapChest]);
   const handleArUnavailable = useCallback(() => setInAr(false), []);
   const handleError = useCallback(() => setFailed(true), []);
+  const handleLoaded = useCallback(() => setModelLoaded(true), []);
 
   if (failed || mode === null || !tier.modelGlbPath) {
     return <LegacyChest colorHex={tier.colorHex} opened={opened} onTapChest={onTapChest} />;
@@ -84,7 +90,7 @@ export default function ChestVisual({
 
   return (
     <div className="flex flex-col items-center gap-3">
-      {!opened && (
+      {!opened && !modelLoaded && (
         <p className="text-xs font-semibold uppercase tracking-wide text-paper/70">
           {t("ar.loading_model")}
         </p>
@@ -103,6 +109,7 @@ export default function ChestVisual({
           opened={opened}
           onTapChest={onTapChest}
           onError={handleError}
+          onLoaded={handleLoaded}
         />
       </div>
       {mode === "webxr" && !opened && (

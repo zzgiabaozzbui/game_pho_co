@@ -9,7 +9,7 @@ export default function QuickLookLauncher({
   modelUsdzPath: string;
 }) {
   const { t } = useLang();
-  if (!modelUsdzPath) return null;
+  if (!/^\/[A-Za-z0-9._/-]+$/.test(modelUsdzPath)) return null;
   return (
     <a
       href={modelUsdzPath}

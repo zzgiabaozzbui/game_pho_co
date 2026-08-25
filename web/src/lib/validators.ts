@@ -65,8 +65,8 @@ export const chestPatchSchema = z.discriminatedUnion("kind", [
     nameVi: z.string().min(1),
     nameEn: z.string().min(1),
     colorHex: z.string().regex(/^#[0-9a-fA-F]{6}$/),
-    modelGlbPath: z.string(),
-    modelUsdzPath: z.string(),
+    modelGlbPath: z.string().regex(/^\/[A-Za-z0-9._/-]+$/, "site-relative path only"),
+    modelUsdzPath: z.string().regex(/^\/[A-Za-z0-9._/-]+$/, "site-relative path only"),
   }),
   z.object({
     kind: z.literal("loot-create"),
