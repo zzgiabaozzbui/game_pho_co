@@ -1,23 +1,23 @@
-# Thiết kế: Hệ thống Hòm thưởng & AR (Rương kho báu)
+# Thiáº¿t káº¿: Há»‡ thá»‘ng HÃ²m thÆ°á»Ÿng & AR (RÆ°Æ¡ng kho bÃ¡u)
 
-- Ngày: 2026-08-25 · Cập nhật tiến độ: 2026-08-26
-- Trạng thái: Đã duyệt thiết kế qua hội thoại (Phần 1–4 + các điểm khóa của người duyệt)
-- Tiến độ: **M1 ĐÃ SHIP 2026-08-26** — 14/14 task plan M1 `[x]`, checkpoint cuối xanh (lint/typecheck/vitest 38/38 tests + E2E API Task 14). M2 kế tiếp — plan: `docs/superpowers/plans/2026-08-26-chest-system-m2.md`.
-- Remote chính thức: https://github.com/zzgiangbui/game_pho_co — working-dir local chưa `git init` tại thời điểm này nên các plan dùng CHECKPOINT (lint/typecheck/test) thay bước commit. File spec là nguồn sự thật cho writing-plans.
+- NgÃ y: 2026-08-25 Â· Cáº­p nháº­t tiáº¿n Ä‘á»™: 2026-08-26
+- Tráº¡ng thÃ¡i: ÄÃ£ duyá»‡t thiáº¿t káº¿ qua há»™i thoáº¡i (Pháº§n 1â€“4 + cÃ¡c Ä‘iá»ƒm khÃ³a cá»§a ngÆ°á»i duyá»‡t)
+- Tiáº¿n Ä‘á»™: **M1 ÄÃƒ SHIP 2026-08-26** â€” 14/14 task plan M1 `[x]`, checkpoint cuá»‘i xanh (lint/typecheck/vitest 38/38 tests + E2E API Task 14). M2 káº¿ tiáº¿p â€” plan: `docs/superpowers/plans/2026-08-26-chest-system-m2.md`.
+- Remote chÃ­nh thá»©c: https://github.com/zzgiabaozzbui/game_pho_co â€” working-dir local chÆ°a `git init` táº¡i thá»i Ä‘iá»ƒm nÃ y nÃªn cÃ¡c plan dÃ¹ng CHECKPOINT (lint/typecheck/test) thay bÆ°á»›c commit. File spec lÃ  nguá»“n sá»± tháº­t cho writing-plans.
 
-## 1. Mục tiêu & phạm vi
+## 1. Má»¥c tiÃªu & pháº¡m vi
 
-Game truy tìm kho báu Phố cổ thêm hệ thống **hòm thưởng nhiều cấp** với phần thưởng đa loại (điểm / câu chuyện vi-en / ảnh upload / video YouTube), trải trên 3 mặt nền trong CÙNG một dự án:
+Game truy tÃ¬m kho bÃ¡u Phá»‘ cá»• thÃªm há»‡ thá»‘ng **hÃ²m thÆ°á»Ÿng nhiá»u cáº¥p** vá»›i pháº§n thÆ°á»Ÿng Ä‘a loáº¡i (Ä‘iá»ƒm / cÃ¢u chuyá»‡n vi-en / áº£nh upload / video YouTube), tráº£i trÃªn 3 máº·t ná»n trong CÃ™NG má»™t dá»± Ã¡n:
 
-| Mốc | Nội dung | Ràng buộc nghiệm thu |
+| Má»‘c | Ná»™i dung | RÃ ng buá»™c nghiá»‡m thu |
 |-----|----------|----------------------|
-| **M1** ✅ ship 2026-08-26 | Engine rơi rương + API + admin + UI mở 2D | Hoàn chỉnh **không phụ thuộc three.js** |
-| **M2** ← đang lên plan | 3D inline + WebXR Android + Quick Look iOS | ChestReveal thay renderer, không đổi game logic |
-| **M3** | Quét marker MindAR tại điểm đối tác | MindAR tách hoàn toàn khỏi engine chest |
+| **M1** âœ… ship 2026-08-26 | Engine rÆ¡i rÆ°Æ¡ng + API + admin + UI má»Ÿ 2D | HoÃ n chá»‰nh **khÃ´ng phá»¥ thuá»™c three.js** |
+| **M2** â† Ä‘ang lÃªn plan | 3D inline + WebXR Android + Quick Look iOS | ChestReveal thay renderer, khÃ´ng Ä‘á»•i game logic |
+| **M3** | QuÃ©t marker MindAR táº¡i Ä‘iá»ƒm Ä‘á»‘i tÃ¡c | MindAR tÃ¡ch hoÃ n toÃ n khá»i engine chest |
 
-Quyết định đã chốt với chủ sản phẩm: làm trọn 3 mốc; ảnh tự quản (upload), video dùng link YouTube; cả 3 cơ chế rơi (cố định theo trạm, ngẫu nhiên có pity, thành tích); mở ngay tại chỗ (không túi đồ); phương án kỹ thuật B (WebXR hybrid).
+Quyáº¿t Ä‘á»‹nh Ä‘Ã£ chá»‘t vá»›i chá»§ sáº£n pháº©m: lÃ m trá»n 3 má»‘c; áº£nh tá»± quáº£n (upload), video dÃ¹ng link YouTube; cáº£ 3 cÆ¡ cháº¿ rÆ¡i (cá»‘ Ä‘á»‹nh theo tráº¡m, ngáº«u nhiÃªn cÃ³ pity, thÃ nh tÃ­ch); má»Ÿ ngay táº¡i chá»— (khÃ´ng tÃºi Ä‘á»“); phÆ°Æ¡ng Ã¡n ká»¹ thuáº­t B (WebXR hybrid).
 
-## 2. Dữ liệu (Prisma, chỉ kiểu portable: String/Int/Float/Boolean/DateTime)
+## 2. Dá»¯ liá»‡u (Prisma, chá»‰ kiá»ƒu portable: String/Int/Float/Boolean/DateTime)
 
 ```
 ChestTier   id, key(unique: common|gold|epic|grand), nameVi, nameEn,
@@ -28,88 +28,88 @@ ChestGrant  id, playerId, source(STATION|DROP|ACHIEVEMENT|FINAL|PARTNER),
             sourceRef, tierId, lootSnapshotJson(String), createdAt, openedAt?
             @@unique([playerId, source, sourceRef])
 Player      +(chestPityCount Int @default 0)
-Station     +(chestTierId Int?)           // gán cấp rương cố định, admin sửa
-PartnerSpot id, key(unique), token(unique, random 32+ bytes)   // seed 1 dòng
-DropRule    id, chancePct Int, tierKey String, weight Int      // cấu hình admin
+Station     +(chestTierId Int?)           // gÃ¡n cáº¥p rÆ°Æ¡ng cá»‘ Ä‘á»‹nh, admin sá»­a
+PartnerSpot id, key(unique), token(unique, random 32+ bytes)   // seed 1 dÃ²ng
+DropRule    id, chancePct Int, tierKey String, weight Int      // cáº¥u hÃ¬nh admin
 ```
 
-### Quy ước idempotency
-- `sourceRef` phân biệt theo nguồn: `STATION` = slug trạm · `ACHIEVEMENT` = key luật · `FINAL` = `"final"` · `PARTNER` = token · `DROP` = `drop:<uuid>` (mỗi lần roll một ref).
-- Unique `(playerId, source, sourceRef)` bảo đảm **retry / race không nhân đôi** bất kỳ nguồn nào; tạo grant bằng exists-check + bắt P2002 (pattern CAS đã kiểm chứng trong dự án).
-- **Loot khóa lúc grant**: khi tạo `ChestGrant`, resolve danh sách `ChestLoot` theo scope và chụp thành `lootSnapshotJson`. Admin sửa loot sau đó không đổi phần thưởng đã rơi (audit được).
-- **Pity chỉ áp dụng DROP**: `chestPityCount` tăng khi một lượt DROP không ra Epic+; ra Epic+ hoặc đạt ngưỡng 10 thì lần roll tiếp theo ép Epic+ rồi reset. Cố định/thành tích/FINAL/PARTNER không đụng pity.
-- Trạm có `chestTierId` null = **không có rương cố định** (vẫn tham gia DROP/achievement bình thường). Seed mặc định gán common cho cả 36 trạm + loot mẫu để chạy được nội dung ngay từ đầu.
+### Quy Æ°á»›c idempotency
+- `sourceRef` phÃ¢n biá»‡t theo nguá»“n: `STATION` = slug tráº¡m Â· `ACHIEVEMENT` = key luáº­t Â· `FINAL` = `"final"` Â· `PARTNER` = token Â· `DROP` = `drop:<uuid>` (má»—i láº§n roll má»™t ref).
+- Unique `(playerId, source, sourceRef)` báº£o Ä‘áº£m **retry / race khÃ´ng nhÃ¢n Ä‘Ã´i** báº¥t ká»³ nguá»“n nÃ o; táº¡o grant báº±ng exists-check + báº¯t P2002 (pattern CAS Ä‘Ã£ kiá»ƒm chá»©ng trong dá»± Ã¡n).
+- **Loot khÃ³a lÃºc grant**: khi táº¡o `ChestGrant`, resolve danh sÃ¡ch `ChestLoot` theo scope vÃ  chá»¥p thÃ nh `lootSnapshotJson`. Admin sá»­a loot sau Ä‘Ã³ khÃ´ng Ä‘á»•i pháº§n thÆ°á»Ÿng Ä‘Ã£ rÆ¡i (audit Ä‘Æ°á»£c).
+- **Pity chá»‰ Ã¡p dá»¥ng DROP**: `chestPityCount` tÄƒng khi má»™t lÆ°á»£t DROP khÃ´ng ra Epic+; ra Epic+ hoáº·c Ä‘áº¡t ngÆ°á»¡ng 10 thÃ¬ láº§n roll tiáº¿p theo Ã©p Epic+ rá»“i reset. Cá»‘ Ä‘á»‹nh/thÃ nh tÃ­ch/FINAL/PARTNER khÃ´ng Ä‘á»¥ng pity.
+- Tráº¡m cÃ³ `chestTierId` null = **khÃ´ng cÃ³ rÆ°Æ¡ng cá»‘ Ä‘á»‹nh** (váº«n tham gia DROP/achievement bÃ¬nh thÆ°á»ng). Seed máº·c Ä‘á»‹nh gÃ¡n common cho cáº£ 36 tráº¡m + loot máº«u Ä‘á»ƒ cháº¡y Ä‘Æ°á»£c ná»™i dung ngay tá»« Ä‘áº§u.
 
-### Luật thành tích v1 (key cố định trong code, nội dung loot vẫn do admin soạn)
-`stations_6`→common · `stations_18`→gold · `perfect_5` (5 trạm liên tiếp giải đúng ngay lần đầu)→gold · `score_2000`→epic. Hoàn thành 36/36 đi qua grant `FINAL` (grand) chứ không qua achievement.
+### Luáº­t thÃ nh tÃ­ch v1 (key cá»‘ Ä‘á»‹nh trong code, ná»™i dung loot váº«n do admin soáº¡n)
+`stations_6`â†’common Â· `stations_18`â†’gold Â· `perfect_5` (5 tráº¡m liÃªn tiáº¿p giáº£i Ä‘Ãºng ngay láº§n Ä‘áº§u)â†’gold Â· `score_2000`â†’epic. HoÃ n thÃ nh 36/36 Ä‘i qua grant `FINAL` (grand) chá»© khÃ´ng qua achievement.
 
-## 3. Engine & luồng
+## 3. Engine & luá»“ng
 
 ```
-ANSWER đúng
- ├─ cộng điểm (atomic, như hiện tại)
- ├─ STATION grant (theo Station.chestTierId, nếu có)
- ├─ DROP engine: roll chancePct → chọn tier theo weight → áp pity
- ├─ ACHIEVEMENT engine: đánh giá các key v1
- └─ tạo ChestGrant(s) — loot snapshot tại đây
-        ▼
-GET /api/chests          (rương chưa mở + bộ sưu tập)
-        ▼
-POST /api/chests/open    (CAS openedAt null→now; POINTS cộng đúng 1 lần)
+ANSWER Ä‘Ãºng
+ â”œâ”€ cá»™ng Ä‘iá»ƒm (atomic, nhÆ° hiá»‡n táº¡i)
+ â”œâ”€ STATION grant (theo Station.chestTierId, náº¿u cÃ³)
+ â”œâ”€ DROP engine: roll chancePct â†’ chá»n tier theo weight â†’ Ã¡p pity
+ â”œâ”€ ACHIEVEMENT engine: Ä‘Ã¡nh giÃ¡ cÃ¡c key v1
+ â””â”€ táº¡o ChestGrant(s) â€” loot snapshot táº¡i Ä‘Ã¢y
+        â–¼
+GET /api/chests          (rÆ°Æ¡ng chÆ°a má»Ÿ + bá»™ sÆ°u táº­p)
+        â–¼
+POST /api/chests/open    (CAS openedAt nullâ†’now; POINTS cá»™ng Ä‘Ãºng 1 láº§n)
 ```
 
-Hoàn thành 36/36 → grant `FINAL`. Claim đối tác → grant `PARTNER` (Epic).
+HoÃ n thÃ nh 36/36 â†’ grant `FINAL`. Claim Ä‘á»‘i tÃ¡c â†’ grant `PARTNER` (Epic).
 
 ## 4. API
 
-| Endpoint | Ghi chú |
+| Endpoint | Ghi chÃº |
 |----------|---------|
-| `GET /api/chests?playerId=` | pending (chưa mở) + tổng đã mở + unopenedCount |
-| `POST /api/chests/open` `{playerId, grantId}` | CAS; trả loot + tier meta |
-| `POST /api/chests/claim-partner` `{playerId, token, lat?, lng?}` | validate token → check đã claim → tạo Epic grant; idempotent |
-| `/api/admin/chests/*` | CRUD tier (tên/màu/model path), loot theo scope, DropRule, gán tier trạm, xem/regenerate token PartnerSpot |
+| `GET /api/chests?playerId=` | pending (chÆ°a má»Ÿ) + tá»•ng Ä‘Ã£ má»Ÿ + unopenedCount |
+| `POST /api/chests/open` `{playerId, grantId}` | CAS; tráº£ loot + tier meta |
+| `POST /api/chests/claim-partner` `{playerId, token, lat?, lng?}` | validate token â†’ check Ä‘Ã£ claim â†’ táº¡o Epic grant; idempotent |
+| `/api/admin/chests/*` | CRUD tier (tÃªn/mÃ u/model path), loot theo scope, DropRule, gÃ¡n tier tráº¡m, xem/regenerate token PartnerSpot |
 
-Bảo mật: giữ mô hình anonymous-playerId như toàn bộ API hiện có (playerId là bearer secret ở MVP — ghi nhận upgrade path: session thật nếu cần). Token PARTNER là **random high-entropy ≥32 byte**, không phải ID đoán được. Rate-limit các POST mới bằng `lib/rate-limit` (open ~30/phút/IP, claim ~10/phút/IP).
+Báº£o máº­t: giá»¯ mÃ´ hÃ¬nh anonymous-playerId nhÆ° toÃ n bá»™ API hiá»‡n cÃ³ (playerId lÃ  bearer secret á»Ÿ MVP â€” ghi nháº­n upgrade path: session tháº­t náº¿u cáº§n). Token PARTNER lÃ  **random high-entropy â‰¥32 byte**, khÃ´ng pháº£i ID Ä‘oÃ¡n Ä‘Æ°á»£c. Rate-limit cÃ¡c POST má»›i báº±ng `lib/rate-limit` (open ~30/phÃºt/IP, claim ~10/phÃºt/IP).
 
-## 5. Kiến trúc UI — ChestReveal tách renderer (khóa kiến trúc)
+## 5. Kiáº¿n trÃºc UI â€” ChestReveal tÃ¡ch renderer (khÃ³a kiáº¿n trÃºc)
 
 ```
-ChestReveal (component độc lập renderer; nhận grant/tier/loot)
- ├── InlineThreeRenderer  // mọi nền tảng: canvas xoay-tay, nắp rương animate mở
- ├── WebXRRenderer        // Android Chrome: immersive-ar + hit-test
- └── QuickLookLauncher    // iOS Safari: <a rel="ar"> tới .usdz
+ChestReveal (component Ä‘á»™c láº­p renderer; nháº­n grant/tier/loot)
+ â”œâ”€â”€ InlineThreeRenderer  // má»i ná»n táº£ng: canvas xoay-tay, náº¯p rÆ°Æ¡ng animate má»Ÿ
+ â”œâ”€â”€ WebXRRenderer        // Android Chrome: immersive-ar + hit-test
+ â””â”€â”€ QuickLookLauncher    // iOS Safari: <a rel="ar"> tá»›i .usdz
 ```
 
-- Game logic chỉ biết `ChestGrant → ChestReveal`; renderer được chọn theo platform detect.
-- **Không tự khởi động camera/AR** khi mở modal — WebXR session chỉ start sau cú bấm người dùng qua `navigator.xr.isSessionSupported('immersive-ar')`.
-- Phân định rõ: **AR placement là cross-platform**; **reveal animation do app điều khiển** — Quick Look có pipeline riêng nên trên iOS reveal (danh sách thưởng) diễn ra trước/sau Quick Look, không giả định đồng bộ animation.
-- Hiệu năng: lazy-load chunk three.js chỉ khi cần; cap pixelRatio ≤2; dispose renderer khi đóng overlay; dừng render loop khi tab ẩn.
-- Vị trí gắn: panel thành công trạm (station/drop/achievement) · `/treasure` (FINAL + lưới bộ sưu tập) · badge chưa mở ở header `/play` (modal hàng đợi nếu lỡ thoát app) · `/partner`.
+- Game logic chá»‰ biáº¿t `ChestGrant â†’ ChestReveal`; renderer Ä‘Æ°á»£c chá»n theo platform detect.
+- **KhÃ´ng tá»± khá»Ÿi Ä‘á»™ng camera/AR** khi má»Ÿ modal â€” WebXR session chá»‰ start sau cÃº báº¥m ngÆ°á»i dÃ¹ng qua `navigator.xr.isSessionSupported('immersive-ar')`.
+- PhÃ¢n Ä‘á»‹nh rÃµ: **AR placement lÃ  cross-platform**; **reveal animation do app Ä‘iá»u khiá»ƒn** â€” Quick Look cÃ³ pipeline riÃªng nÃªn trÃªn iOS reveal (danh sÃ¡ch thÆ°á»Ÿng) diá»…n ra trÆ°á»›c/sau Quick Look, khÃ´ng giáº£ Ä‘á»‹nh Ä‘á»“ng bá»™ animation.
+- Hiá»‡u nÄƒng: lazy-load chunk three.js chá»‰ khi cáº§n; cap pixelRatio â‰¤2; dispose renderer khi Ä‘Ã³ng overlay; dá»«ng render loop khi tab áº©n.
+- Vá»‹ trÃ­ gáº¯n: panel thÃ nh cÃ´ng tráº¡m (station/drop/achievement) Â· `/treasure` (FINAL + lÆ°á»›i bá»™ sÆ°u táº­p) Â· badge chÆ°a má»Ÿ á»Ÿ header `/play` (modal hÃ ng Ä‘á»£i náº¿u lá»¡ thoÃ¡t app) Â· `/partner`.
 
-## 6. Lớp AR & marker
+## 6. Lá»›p AR & marker
 
-- **WebXR Android**: session `immersive-ar` + hit-test → đặt rương lên mặt phẳng → tap rương → nắp bật + particle vàng. Fallback tự động về InlineThreeRenderer khi thiết bị/không HTTPS không hỗ trợ.
-- **iOS Quick Look**: `<a rel="ar">` trỏ tới **asset .usdz build trước** (không generate runtime).
-- **MindAR (M3)**: trang `/partner` riêng biệt; quét target `.mind` (sinh từ hình in bằng MindAR compiler — việc in ấn thuộc vận hành đối tác) → gọi `claim-partner` → tái dùng đúng ChestReveal. MindAR không biết gì về tier/drop/pity. Lib + target được service worker cache để chịu wifi yếu.
+- **WebXR Android**: session `immersive-ar` + hit-test â†’ Ä‘áº·t rÆ°Æ¡ng lÃªn máº·t pháº³ng â†’ tap rÆ°Æ¡ng â†’ náº¯p báº­t + particle vÃ ng. Fallback tá»± Ä‘á»™ng vá» InlineThreeRenderer khi thiáº¿t bá»‹/khÃ´ng HTTPS khÃ´ng há»— trá»£.
+- **iOS Quick Look**: `<a rel="ar">` trá» tá»›i **asset .usdz build trÆ°á»›c** (khÃ´ng generate runtime).
+- **MindAR (M3)**: trang `/partner` riÃªng biá»‡t; quÃ©t target `.mind` (sinh tá»« hÃ¬nh in báº±ng MindAR compiler â€” viá»‡c in áº¥n thuá»™c váº­n hÃ nh Ä‘á»‘i tÃ¡c) â†’ gá»i `claim-partner` â†’ tÃ¡i dÃ¹ng Ä‘Ãºng ChestReveal. MindAR khÃ´ng biáº¿t gÃ¬ vá» tier/drop/pity. Lib + target Ä‘Æ°á»£c service worker cache Ä‘á»ƒ chá»‹u wifi yáº¿u.
 
 ## 7. Assets
 
-- Build script Node (three.js) dựng model procedural low-poly 4 cấp, xuất song song: `GLTFExporter → public/models/chest-{tier}.glb` và `USDZExporter → public/models/chest-{tier}.usdz`.
-- **Budget mục tiêu (có check lúc build, cảnh báo/fail khi vượt): GLB mỗi tier ≤150KB · USDZ mỗi tier ≤200KB · tổng mục tiêu <1MB.** Vượt ngưỡng phải báo rõ, không âm thầm giảm chất lượng.
-- Thay model designer sau này = thay file + cập nhật đường dẫn trong admin tier.
+- Build script Node (three.js) dá»±ng model procedural low-poly 4 cáº¥p, xuáº¥t song song: `GLTFExporter â†’ public/models/chest-{tier}.glb` vÃ  `USDZExporter â†’ public/models/chest-{tier}.usdz`.
+- **Budget má»¥c tiÃªu (cÃ³ check lÃºc build, cáº£nh bÃ¡o/fail khi vÆ°á»£t): GLB má»—i tier â‰¤150KB Â· USDZ má»—i tier â‰¤200KB Â· tá»•ng má»¥c tiÃªu <1MB.** VÆ°á»£t ngÆ°á»¡ng pháº£i bÃ¡o rÃµ, khÃ´ng Ã¢m tháº§m giáº£m cháº¥t lÆ°á»£ng.
+- Thay model designer sau nÃ y = thay file + cáº­p nháº­t Ä‘Æ°á»ng dáº«n trong admin tier.
 
-## 8. i18n & nội dung
+## 8. i18n & ná»™i dung
 
-- Toàn bộ chuỗi UI mới qua `dictionaries.ts` vi/en — cấm chuỗi cứng tiếng Việt trong JSX người chơi.
-- Seed mặc định: 4 tier, DropRule mẫu (30%, trọng số lệch common), loot placeholder vi/en cho `final`/`partner`/mẫu 1 trạm + 1 achievement, 1 YouTube mẫu, 1 PartnerSpot.
-- Admin tab mới "Rương": tier · loot theo scope · DropRule · gán tier từng trạm · quản lý PartnerSpot. Ảnh thưởng upload tái dùng pipeline magic-bytes + `UPLOADS_DIR` (giới hạn 5MB).
+- ToÃ n bá»™ chuá»—i UI má»›i qua `dictionaries.ts` vi/en â€” cáº¥m chuá»—i cá»©ng tiáº¿ng Viá»‡t trong JSX ngÆ°á»i chÆ¡i.
+- Seed máº·c Ä‘á»‹nh: 4 tier, DropRule máº«u (30%, trá»ng sá»‘ lá»‡ch common), loot placeholder vi/en cho `final`/`partner`/máº«u 1 tráº¡m + 1 achievement, 1 YouTube máº«u, 1 PartnerSpot.
+- Admin tab má»›i "RÆ°Æ¡ng": tier Â· loot theo scope Â· DropRule Â· gÃ¡n tier tá»«ng tráº¡m Â· quáº£n lÃ½ PartnerSpot. áº¢nh thÆ°á»Ÿng upload tÃ¡i dÃ¹ng pipeline magic-bytes + `UPLOADS_DIR` (giá»›i háº¡n 5MB).
 
-## 9. Kiểm thử
+## 9. Kiá»ƒm thá»­
 
-- **Unit**: engine rơi (weight/pity reset-ép/khóa-loot-snapshot), phát hiện achievement, CAS open idempotent, unique grant chống retry.
-- **E2E API**: solve → đúng số/lọai grant; double-open race chỉ cộng điểm 1 lần; retry answer không nhân đôi achievement; claim-partner chỉ 1 lần/người chơi.
-- **Thủ công theo mốc**: M1 chạy trọn không three.js · M2 checklist iPhone Safari (Quick Look) + Android Chrome (WebXR) + PWA standalone · M3 quét marker thật tại chỗ thiếu sáng.
+- **Unit**: engine rÆ¡i (weight/pity reset-Ã©p/khÃ³a-loot-snapshot), phÃ¡t hiá»‡n achievement, CAS open idempotent, unique grant chá»‘ng retry.
+- **E2E API**: solve â†’ Ä‘Ãºng sá»‘/lá»ai grant; double-open race chá»‰ cá»™ng Ä‘iá»ƒm 1 láº§n; retry answer khÃ´ng nhÃ¢n Ä‘Ã´i achievement; claim-partner chá»‰ 1 láº§n/ngÆ°á»i chÆ¡i.
+- **Thá»§ cÃ´ng theo má»‘c**: M1 cháº¡y trá»n khÃ´ng three.js Â· M2 checklist iPhone Safari (Quick Look) + Android Chrome (WebXR) + PWA standalone Â· M3 quÃ©t marker tháº­t táº¡i chá»— thiáº¿u sÃ¡ng.
 
-## 10. Rủi ro ghi nhận
+## 10. Rá»§i ro ghi nháº­n
 
-HTTPS bắt buộc cho camera/WebXR (trùng điều kiện PWA sẵn có) · WebXR phụ thuộc phiên bản Android → luôn có fallback inline · YouTube cần mạng · USDZ thường phình hơn GLB → budget check · mô hình playerId bearer chấp nhận rủi ro theo spec MVP (Edge Cases đã ghi).
+HTTPS báº¯t buá»™c cho camera/WebXR (trÃ¹ng Ä‘iá»u kiá»‡n PWA sáºµn cÃ³) Â· WebXR phá»¥ thuá»™c phiÃªn báº£n Android â†’ luÃ´n cÃ³ fallback inline Â· YouTube cáº§n máº¡ng Â· USDZ thÆ°á»ng phÃ¬nh hÆ¡n GLB â†’ budget check Â· mÃ´ hÃ¬nh playerId bearer cháº¥p nháº­n rá»§i ro theo spec MVP (Edge Cases Ä‘Ã£ ghi).

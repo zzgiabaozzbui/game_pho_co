@@ -1,85 +1,85 @@
 # AGENTS.md
 
-> Hướng dẫn cho các phiên OpenCode làm việc trong repo này.
-> Chỉ ghi những điều mà agent khó tự nhận ra; bỏ qua lời khuyên chung chung.
+> HÆ°á»›ng dáº«n cho cÃ¡c phiÃªn OpenCode lÃ m viá»‡c trong repo nÃ y.
+> Chá»‰ ghi nhá»¯ng Ä‘iá»u mÃ  agent khÃ³ tá»± nháº­n ra; bá» qua lá»i khuyÃªn chung chung.
 
-## Sản phẩm: game truy tìm kho báu văn hóa Phố cổ Hà Nội
+## Sáº£n pháº©m: game truy tÃ¬m kho bÃ¡u vÄƒn hÃ³a Phá»‘ cá»• HÃ  Ná»™i
 
-Web app cho du khách khám phá lịch sử và giá trị văn hóa phố cổ qua hành trình "truy tìm kho báu". Luồng chơi cốt lõi:
+Web app cho du khÃ¡ch khÃ¡m phÃ¡ lá»‹ch sá»­ vÃ  giÃ¡ trá»‹ vÄƒn hÃ³a phá»‘ cá»• qua hÃ nh trÃ¬nh "truy tÃ¬m kho bÃ¡u". Luá»“ng chÆ¡i cá»‘t lÃµi:
 
-1. **36 phố phường**: mỗi phố là một trạm, có câu hỏi/câu đố về văn hóa - lịch sử kèm gợi ý chỉ đến địa điểm tiếp theo. Không giới hạn thứ tự — mọi trạm mở ngay từ đầu, du khách đến đâu trước cũng được.
-2. **Check-in bằng ảnh**: khi đến địa điểm, người chơi chụp ảnh để xác nhận đúng vị trí (nhận diện qua tòa nhà đặc trưng hoặc biển tên đường) — đây là cơ chế mở câu đố của trạm, không dùng GPS thuần.
-3. **Giải đố nhận gợi ý**: check-in đúng → câu hỏi/nhiệm vụ hiện ra; giải xong có thể bấm xem gợi ý sang địa điểm kế theo số thứ tự (lần đầu −20 điểm, sàn 50đ/trạm) — chỉ mang tính tham khảo, không khóa trạm nào. Server chỉ trả question/options cho trạm đã APPROVED.
-4. **Đích cuối**: "kho báu văn hóa" — một địa điểm đối tác (workshop trải nghiệm văn hóa, sẽ ký hợp tác sau).
+1. **36 phá»‘ phÆ°á»ng**: má»—i phá»‘ lÃ  má»™t tráº¡m, cÃ³ cÃ¢u há»i/cÃ¢u Ä‘á»‘ vá» vÄƒn hÃ³a - lá»‹ch sá»­ kÃ¨m gá»£i Ã½ chá»‰ Ä‘áº¿n Ä‘á»‹a Ä‘iá»ƒm tiáº¿p theo. KhÃ´ng giá»›i háº¡n thá»© tá»± â€” má»i tráº¡m má»Ÿ ngay tá»« Ä‘áº§u, du khÃ¡ch Ä‘áº¿n Ä‘Ã¢u trÆ°á»›c cÅ©ng Ä‘Æ°á»£c.
+2. **Check-in báº±ng áº£nh**: khi Ä‘áº¿n Ä‘á»‹a Ä‘iá»ƒm, ngÆ°á»i chÆ¡i chá»¥p áº£nh Ä‘á»ƒ xÃ¡c nháº­n Ä‘Ãºng vá»‹ trÃ­ (nháº­n diá»‡n qua tÃ²a nhÃ  Ä‘áº·c trÆ°ng hoáº·c biá»ƒn tÃªn Ä‘Æ°á»ng) â€” Ä‘Ã¢y lÃ  cÆ¡ cháº¿ má»Ÿ cÃ¢u Ä‘á»‘ cá»§a tráº¡m, khÃ´ng dÃ¹ng GPS thuáº§n.
+3. **Giáº£i Ä‘á»‘ nháº­n gá»£i Ã½**: check-in Ä‘Ãºng â†’ cÃ¢u há»i/nhiá»‡m vá»¥ hiá»‡n ra; giáº£i xong cÃ³ thá»ƒ báº¥m xem gá»£i Ã½ sang Ä‘á»‹a Ä‘iá»ƒm káº¿ theo sá»‘ thá»© tá»± (láº§n Ä‘áº§u âˆ’20 Ä‘iá»ƒm, sÃ n 50Ä‘/tráº¡m) â€” chá»‰ mang tÃ­nh tham kháº£o, khÃ´ng khÃ³a tráº¡m nÃ o. Server chá»‰ tráº£ question/options cho tráº¡m Ä‘Ã£ APPROVED.
+4. **ÄÃ­ch cuá»‘i**: "kho bÃ¡u vÄƒn hÃ³a" â€” má»™t Ä‘á»‹a Ä‘iá»ƒm Ä‘á»‘i tÃ¡c (workshop tráº£i nghiá»‡m vÄƒn hÃ³a, sáº½ kÃ½ há»£p tÃ¡c sau).
 
-Từ ngữ chuẩn trong code/docs: *trạm* (station = 1 phố), *gợi ý* (hint sang trạm kế), *check-in*, *tuyến*, *kho báu* (đích cuối). Đặt tên entity/theo các từ này để thống nhất.
+Tá»« ngá»¯ chuáº©n trong code/docs: *tráº¡m* (station = 1 phá»‘), *gá»£i Ã½* (hint sang tráº¡m káº¿), *check-in*, *tuyáº¿n*, *kho bÃ¡u* (Ä‘Ã­ch cuá»‘i). Äáº·t tÃªn entity/theo cÃ¡c tá»« nÃ y Ä‘á»ƒ thá»‘ng nháº¥t.
 
-## Trạng thái hiện tại
+## Tráº¡ng thÃ¡i hiá»‡n táº¡i
 
-- **App chạy được end-to-end**: Next.js 16 (App Router, TS, Tailwind v4, Turbopack) + Prisma 7 tại `web/`. Chi tiết lệnh + kiến trúc xem `README.md` ở root.
-- Dev DB là SQLite (`web/dev.db`, git-ignored); schema chỉ dùng kiểu portable — chuyển MySQL = đổi `provider` trong `prisma/schema.prisma` + `DATABASE_URL` (compose profile `mysql` ở root — máy CÓ Docker, xem mục Quirks).
-- Nội dung 36 trạm sống trong `web/prisma/seed.ts` (nguồn gốc) và DB; sửa nội dung vận hành qua `/admin`, không sửa seed cho dữ liệu đã deploy.
-- Giao diện người chơi song ngữ vi/en qua `src/lib/dictionaries.ts` + `i18n.tsx`; cấm chuỗi cứng tiếng Việt trong JSX người chơi.
-- **Hệ thống hòm thưởng M1 đã ship (2026-08-26)**: engine thuần `src/lib/chests.ts` + service grant idempotent `src/lib/chest-grants.ts`; API `/api/chests` (GET + POST open CAS), `/api/chests/claim-partner`, `/api/admin/chests`; UI `ChestReveal` 2D gắn ở StationFlow/play/treasure; admin tab "Rương". Spec: `docs/superpowers/specs/2026-08-25-ar-treasure-chest-design.md`.
-- **M2 (three.js inline + WebXR Android + Quick Look iOS)**: plan tại `docs/superpowers/plans/2026-08-26-chest-system-m2.md` — chưa thực thi.
-- **Git remote**: https://github.com/zzgiangbui/game_pho_co — working-dir local chưa `git init` tại 2026-08-26; các plan dùng CHECKPOINT (lint/typecheck/test) thay bước commit.
+- **App cháº¡y Ä‘Æ°á»£c end-to-end**: Next.js 16 (App Router, TS, Tailwind v4, Turbopack) + Prisma 7 táº¡i `web/`. Chi tiáº¿t lá»‡nh + kiáº¿n trÃºc xem `README.md` á»Ÿ root.
+- Dev DB lÃ  SQLite (`web/dev.db`, git-ignored); schema chá»‰ dÃ¹ng kiá»ƒu portable â€” chuyá»ƒn MySQL = Ä‘á»•i `provider` trong `prisma/schema.prisma` + `DATABASE_URL` (compose profile `mysql` á»Ÿ root â€” mÃ¡y CÃ“ Docker, xem má»¥c Quirks).
+- Ná»™i dung 36 tráº¡m sá»‘ng trong `web/prisma/seed.ts` (nguá»“n gá»‘c) vÃ  DB; sá»­a ná»™i dung váº­n hÃ nh qua `/admin`, khÃ´ng sá»­a seed cho dá»¯ liá»‡u Ä‘Ã£ deploy.
+- Giao diá»‡n ngÆ°á»i chÆ¡i song ngá»¯ vi/en qua `src/lib/dictionaries.ts` + `i18n.tsx`; cáº¥m chuá»—i cá»©ng tiáº¿ng Viá»‡t trong JSX ngÆ°á»i chÆ¡i.
+- **Há»‡ thá»‘ng hÃ²m thÆ°á»Ÿng M1 Ä‘Ã£ ship (2026-08-26)**: engine thuáº§n `src/lib/chests.ts` + service grant idempotent `src/lib/chest-grants.ts`; API `/api/chests` (GET + POST open CAS), `/api/chests/claim-partner`, `/api/admin/chests`; UI `ChestReveal` 2D gáº¯n á»Ÿ StationFlow/play/treasure; admin tab "RÆ°Æ¡ng". Spec: `docs/superpowers/specs/2026-08-25-ar-treasure-chest-design.md`.
+- **M2 (three.js inline + WebXR Android + Quick Look iOS)**: plan táº¡i `docs/superpowers/plans/2026-08-26-chest-system-m2.md` â€” chÆ°a thá»±c thi.
+- **Git remote**: https://github.com/zzgiabaozzbui/game_pho_co â€” working-dir local chÆ°a `git init` táº¡i 2026-08-26; cÃ¡c plan dÃ¹ng CHECKPOINT (lint/typecheck/test) thay bÆ°á»›c commit.
 
-## Lệnh chính (chạy trong `web/`)
+## Lá»‡nh chÃ­nh (cháº¡y trong `web/`)
 
 - `npm run dev` / `build` / `start`; `npm run lint` (eslint src); `npm run typecheck` (tsc --noEmit); `npm run test` (vitest).
-- 1 test riêng: `npx vitest run src/lib/game.test.ts`.
-- DB: `npm run db:seed` (push + seed), `npx prisma generate` tự chạy postinstall. Client Prisma sinh vào `src/generated/` (git-ignored).
-- Admin local: `/admin`, mật khẩu = `ADMIN_PASSWORD` trong `web/.env` (mẫu `.env.example`).
+- 1 test riÃªng: `npx vitest run src/lib/game.test.ts`.
+- DB: `npm run db:seed` (push + seed), `npx prisma generate` tá»± cháº¡y postinstall. Client Prisma sinh vÃ o `src/generated/` (git-ignored).
+- Admin local: `/admin`, máº­t kháº©u = `ADMIN_PASSWORD` trong `web/.env` (máº«u `.env.example`).
 
-## Bộ công cụ AI đã cài: Spec Kit + Superpowers + ECC
+## Bá»™ cÃ´ng cá»¥ AI Ä‘Ã£ cÃ i: Spec Kit + Superpowers + ECC
 
-Cấu hình trong `opencode.json` + `.opencode/` + `.specify/`. Phân vai:
+Cáº¥u hÃ¬nh trong `opencode.json` + `.opencode/` + `.specify/`. PhÃ¢n vai:
 
-- **Spec Kit** (lệnh `/speckit.*`) — lập kế hoạch "CÁI GÌ": constitution → specify → clarify → plan → tasks. Artifact nằm trong `.specify/`.
-- **Superpowers** (plugin, skill tự kích hoạt) — thực thi "CÁCH THỨC": worktree → TDD → subagent → code review → finish branch.
-- **ECC** — cổng chất lượng & tối ưu: agents (`planner`, `code-reviewer`, `security-reviewer`, `tdd-guide`, `build-error-resolver`, `refactor-cleaner`), commands (`/plan` `/tdd` `/code-review` `/security` `/build-fix` `/refactor-clean` `/verify` `/checkpoint`), skills về pattern/tối ưu.
+- **Spec Kit** (lá»‡nh `/speckit.*`) â€” láº­p káº¿ hoáº¡ch "CÃI GÃŒ": constitution â†’ specify â†’ clarify â†’ plan â†’ tasks. Artifact náº±m trong `.specify/`.
+- **Superpowers** (plugin, skill tá»± kÃ­ch hoáº¡t) â€” thá»±c thi "CÃCH THá»¨C": worktree â†’ TDD â†’ subagent â†’ code review â†’ finish branch.
+- **ECC** â€” cá»•ng cháº¥t lÆ°á»£ng & tá»‘i Æ°u: agents (`planner`, `code-reviewer`, `security-reviewer`, `tdd-guide`, `build-error-resolver`, `refactor-cleaner`), commands (`/plan` `/tdd` `/code-review` `/security` `/build-fix` `/refactor-clean` `/verify` `/checkpoint`), skills vá» pattern/tá»‘i Æ°u.
 
-Quy trình feature chuẩn (chuyển giao tại `specs/<id>/tasks.md`):
+Quy trÃ¬nh feature chuáº©n (chuyá»ƒn giao táº¡i `specs/<id>/tasks.md`):
 
-1. Động não/thiết kế (Superpowers `brainstorming`) → `/speckit.specify` → `/speckit.clarify` → `/speckit.plan` → `/speckit.tasks`.
-2. Thực thi bằng Superpowers TDD + subagent, **đã có tasks.md thì đỘ认 lập kế hoạch lại**.
-3. Trước khi merge: `/code-review` + `/security`; tính năng lớn thì `/verify`.
+1. Äá»™ng nÃ£o/thiáº¿t káº¿ (Superpowers `brainstorming`) â†’ `/speckit.specify` â†’ `/speckit.clarify` â†’ `/speckit.plan` â†’ `/speckit.tasks`.
+2. Thá»±c thi báº±ng Superpowers TDD + subagent, **Ä‘Ã£ cÃ³ tasks.md thÃ¬ Ä‘á»˜è®¤ láº­p káº¿ hoáº¡ch láº¡i**.
+3. TrÆ°á»›c khi merge: `/code-review` + `/security`; tÃ­nh nÄƒng lá»›n thÃ¬ `/verify`.
 
-Lưu ý bắt buộc:
+LÆ°u Ã½ báº¯t buá»™c:
 
-- **Đừng chạy `/speckit.implement` khi dùng Superpowers** — chọn MỘT executor; combo này dùng Superpowers, `/speckit.implement` chỉ dành cho chạy độc lập.
-- Sửa mã mà thay đổi hành vi → cập nhật lại spec tương ứng, nếu không spec mất giá trị.
-- Việc < 30 phút, < 3 file: bỏ qua cả hai, làm trực tiếp; không áp quy trình cho typo/sửa nhỏ.
+- **Äá»«ng cháº¡y `/speckit.implement` khi dÃ¹ng Superpowers** â€” chá»n Má»˜T executor; combo nÃ y dÃ¹ng Superpowers, `/speckit.implement` chá»‰ dÃ nh cho cháº¡y Ä‘á»™c láº­p.
+- Sá»­a mÃ£ mÃ  thay Ä‘á»•i hÃ nh vi â†’ cáº­p nháº­t láº¡i spec tÆ°Æ¡ng á»©ng, náº¿u khÃ´ng spec máº¥t giÃ¡ trá»‹.
+- Viá»‡c < 30 phÃºt, < 3 file: bá» qua cáº£ hai, lÃ m trá»±c tiáº¿p; khÃ´ng Ã¡p quy trÃ¬nh cho typo/sá»­a nhá».
 
-Quirks cài máy này (Windows):
+Quirks cÃ i mÃ¡y nÃ y (Windows):
 
-- ECC + Superpowers được **vendor trong project** tại `vendor/ECC` và `vendor/superpowers` (clone gốc); `opencode.json` trỏ plugin vào file trong `vendor/`, không phụ thuộc máy. **`vendor/` bị git-ignored** (clone con có `.git` riêng) — máy mới cần bootstrap: `git clone https://github.com/obra/superpowers vendor/superpowers` + clone ECC vào `vendor/ECC`, rồi `npm install` + `npm run build:opencode` trong `vendor/ECC`. Cập nhật: `git pull` trong thư mục vendor tương ứng; ECC phải chạy lại `npm install` + `npm run build:opencode` sau pull.
-- ECC plugin **chỉ được trỏ vào `.opencode/dist/plugins/index.js`**, không phải `.opencode/dist/index.js` (file này export thêm `VERSION`/`metadata` khiến loader OpenCode từ chối với lỗi "Plugin export is not a function").
-- Superpowers plugin resolve skills theo `__dirname` (`../../skills`) nên phải giữ nguyên cấu trúc repo khi vendor; không copy lẻ file plugin.
+- ECC + Superpowers Ä‘Æ°á»£c **vendor trong project** táº¡i `vendor/ECC` vÃ  `vendor/superpowers` (clone gá»‘c); `opencode.json` trá» plugin vÃ o file trong `vendor/`, khÃ´ng phá»¥ thuá»™c mÃ¡y. **`vendor/` bá»‹ git-ignored** (clone con cÃ³ `.git` riÃªng) â€” mÃ¡y má»›i cáº§n bootstrap: `git clone https://github.com/obra/superpowers vendor/superpowers` + clone ECC vÃ o `vendor/ECC`, rá»“i `npm install` + `npm run build:opencode` trong `vendor/ECC`. Cáº­p nháº­t: `git pull` trong thÆ° má»¥c vendor tÆ°Æ¡ng á»©ng; ECC pháº£i cháº¡y láº¡i `npm install` + `npm run build:opencode` sau pull.
+- ECC plugin **chá»‰ Ä‘Æ°á»£c trá» vÃ o `.opencode/dist/plugins/index.js`**, khÃ´ng pháº£i `.opencode/dist/index.js` (file nÃ y export thÃªm `VERSION`/`metadata` khiáº¿n loader OpenCode tá»« chá»‘i vá»›i lá»—i "Plugin export is not a function").
+- Superpowers plugin resolve skills theo `__dirname` (`../../skills`) nÃªn pháº£i giá»¯ nguyÃªn cáº¥u trÃºc repo khi vendor; khÃ´ng copy láº» file plugin.
 
-## Quirks công cụ đã kiểm chứng (đừng học lại bằng cách đốt thời gian)
+## Quirks cÃ´ng cá»¥ Ä‘Ã£ kiá»ƒm chá»©ng (Ä‘á»«ng há»c láº¡i báº±ng cÃ¡ch Ä‘á»‘t thá»i gian)
 
-- **Next.js 16**: `params`/`searchParams`/`cookies()` đều là Promise (phải `await`); Turbopack là default cho dev lẫn build; `next build` KHÔNG chạy lint (chạy `npm run lint` riêng); `middleware.ts` đổi thành `proxy.ts`. Docs bundled tại `web/node_modules/next/dist/docs/`.
-- **Prisma 7**: không có `url` trong `schema.prisma` — kết nối nằm ở `prisma.config.ts` (`datasource.url` + `env()` từ `dotenv/config`, CLI không tự nạp `.env`). PrismaClient **bắt buộc truyền driver adapter**: SQLite = `PrismaBetterSqlite3`, MySQL = `PrismaMariaDb` (xem `src/lib/db.ts`). Generator `prisma-client` xuất TS vào `src/generated/prisma`.
-- **ESLint flat config** tắt rule `react-hooks/set-state-in-effect` (cấm cả fetch-on-mount lẫn sync localStorage sau hydration — hai pattern có chủ ý của app này).
-- **PS 5.1 decode JSON UTF-8 sai khi test API** (thiếu charset) — lỗi hiển thị, không phải lỗi dữ liệu; xác nhận qua `better-sqlite3` trực tiếp nếu nghi.
-- **better-sqlite3 phải ở 12.x** (hiện `^12.11.1`): bản 13.x không phát hành prebuild nào → `npm install` rơi vào node-gyp và fail vì máy không có VS C++ Build Tools. 12.11.1 có prebuild `node-v137-win32-x64` cho Node 24 và khớp peer dep `^12.6.0` của `@prisma/adapter-better-sqlite3` — đừng nâng lên 13.
-- **Máy CÓ Docker** (27.x, daemon chạy sẵn — ghi cũ "không có Docker" đã sai). Image production: `phoco-web:latest` từ `web/Dockerfile` (multi-stage, Next standalone + SQLite đã seed 36 trạm baked vào `/app/seed/phoco.db`, entrypoint copy sang volume `/data` nếu chưa có). Chạy: `docker compose up -d app` ở root (port 3000) hoặc `docker run -p 3000:3000 -v phoco_data:/data phoco-web:latest`. Admin mặc định `admin123` (override qua `ADMIN_PASSWORD`). MySQL service nằm ở compose profile `mysql`. Lưu ý: lockfile phải sinh trong Linux (`docker run --rm -v ${PWD}:/w -w /w node:24 npm install --package-lock-only`) nếu npm ci báo missing optional deps kiểu `@emnapi/*`.
-- `DATABASE_URL="file:./dev.db"` resolve theo cwd → DB thật nằm `web/dev.db` (không phải `prisma/dev.db`).
-- `npm audit`: 3 high thuộc Prisma CLI (deepmerge-ts, dev-only, chưa có bản vá) — đừng `audit fix --force` (sẽ downgrade Prisma 6 breaking).
+- **Next.js 16**: `params`/`searchParams`/`cookies()` Ä‘á»u lÃ  Promise (pháº£i `await`); Turbopack lÃ  default cho dev láº«n build; `next build` KHÃ”NG cháº¡y lint (cháº¡y `npm run lint` riÃªng); `middleware.ts` Ä‘á»•i thÃ nh `proxy.ts`. Docs bundled táº¡i `web/node_modules/next/dist/docs/`.
+- **Prisma 7**: khÃ´ng cÃ³ `url` trong `schema.prisma` â€” káº¿t ná»‘i náº±m á»Ÿ `prisma.config.ts` (`datasource.url` + `env()` tá»« `dotenv/config`, CLI khÃ´ng tá»± náº¡p `.env`). PrismaClient **báº¯t buá»™c truyá»n driver adapter**: SQLite = `PrismaBetterSqlite3`, MySQL = `PrismaMariaDb` (xem `src/lib/db.ts`). Generator `prisma-client` xuáº¥t TS vÃ o `src/generated/prisma`.
+- **ESLint flat config** táº¯t rule `react-hooks/set-state-in-effect` (cáº¥m cáº£ fetch-on-mount láº«n sync localStorage sau hydration â€” hai pattern cÃ³ chá»§ Ã½ cá»§a app nÃ y).
+- **PS 5.1 decode JSON UTF-8 sai khi test API** (thiáº¿u charset) â€” lá»—i hiá»ƒn thá»‹, khÃ´ng pháº£i lá»—i dá»¯ liá»‡u; xÃ¡c nháº­n qua `better-sqlite3` trá»±c tiáº¿p náº¿u nghi.
+- **better-sqlite3 pháº£i á»Ÿ 12.x** (hiá»‡n `^12.11.1`): báº£n 13.x khÃ´ng phÃ¡t hÃ nh prebuild nÃ o â†’ `npm install` rÆ¡i vÃ o node-gyp vÃ  fail vÃ¬ mÃ¡y khÃ´ng cÃ³ VS C++ Build Tools. 12.11.1 cÃ³ prebuild `node-v137-win32-x64` cho Node 24 vÃ  khá»›p peer dep `^12.6.0` cá»§a `@prisma/adapter-better-sqlite3` â€” Ä‘á»«ng nÃ¢ng lÃªn 13.
+- **MÃ¡y CÃ“ Docker** (27.x, daemon cháº¡y sáºµn â€” ghi cÅ© "khÃ´ng cÃ³ Docker" Ä‘Ã£ sai). Image production: `phoco-web:latest` tá»« `web/Dockerfile` (multi-stage, Next standalone + SQLite Ä‘Ã£ seed 36 tráº¡m baked vÃ o `/app/seed/phoco.db`, entrypoint copy sang volume `/data` náº¿u chÆ°a cÃ³). Cháº¡y: `docker compose up -d app` á»Ÿ root (port 3000) hoáº·c `docker run -p 3000:3000 -v phoco_data:/data phoco-web:latest`. Admin máº·c Ä‘á»‹nh `admin123` (override qua `ADMIN_PASSWORD`). MySQL service náº±m á»Ÿ compose profile `mysql`. LÆ°u Ã½: lockfile pháº£i sinh trong Linux (`docker run --rm -v ${PWD}:/w -w /w node:24 npm install --package-lock-only`) náº¿u npm ci bÃ¡o missing optional deps kiá»ƒu `@emnapi/*`.
+- `DATABASE_URL="file:./dev.db"` resolve theo cwd â†’ DB tháº­t náº±m `web/dev.db` (khÃ´ng pháº£i `prisma/dev.db`).
+- `npm audit`: 3 high thuá»™c Prisma CLI (deepmerge-ts, dev-only, chÆ°a cÃ³ báº£n vÃ¡) â€” Ä‘á»«ng `audit fix --force` (sáº½ downgrade Prisma 6 breaking).
 
-## Việc cần cập nhật khi repo có code
+## Viá»‡c cáº§n cáº­p nháº­t khi repo cÃ³ code
 
-Khi thêm mã nguồn, hãy bổ sung vào file này (ngắn gọn, đã kiểm chứng):
+Khi thÃªm mÃ£ nguá»“n, hÃ£y bá»• sung vÃ o file nÃ y (ngáº¯n gá»n, Ä‘Ã£ kiá»ƒm chá»©ng):
 
-- **Lệnh chính**: build, test, lint, typecheck — kèm cách chạy 1 test / 1 gói riêng lẻ nếu khác mặc định.
-- **Kiến trúc**: entrypoint thật, ranh giới package/thư mục lớn, luồng thực thi không rõ từ tên file.
-- **Quirks công cụ**: codegen, migration, artifact sinh sẵn, biến môi trường, dev server.
-- **Kiểm thử**: fixture, dịch vụ bắt buộc, suite tốn thời gian hoặc hay fail.
-- **Quy ước riêng**: chỉ những điểm khác với mặc định của ngôn ngữ/framework.
+- **Lá»‡nh chÃ­nh**: build, test, lint, typecheck â€” kÃ¨m cÃ¡ch cháº¡y 1 test / 1 gÃ³i riÃªng láº» náº¿u khÃ¡c máº·c Ä‘á»‹nh.
+- **Kiáº¿n trÃºc**: entrypoint tháº­t, ranh giá»›i package/thÆ° má»¥c lá»›n, luá»“ng thá»±c thi khÃ´ng rÃµ tá»« tÃªn file.
+- **Quirks cÃ´ng cá»¥**: codegen, migration, artifact sinh sáºµn, biáº¿n mÃ´i trÆ°á»ng, dev server.
+- **Kiá»ƒm thá»­**: fixture, dá»‹ch vá»¥ báº¯t buá»™c, suite tá»‘n thá»i gian hoáº·c hay fail.
+- **Quy Æ°á»›c riÃªng**: chá»‰ nhá»¯ng Ä‘iá»ƒm khÃ¡c vá»›i máº·c Ä‘á»‹nh cá»§a ngÃ´n ngá»¯/framework.
 
-## Quy tắc bảo trì file này
+## Quy táº¯c báº£o trÃ¬ file nÃ y
 
-- Mỗi dòng phải trả lời được: "Agent có thể bỏ sót điều này nếu không có giúp đỡ?" — nếu không, xóa đi.
-- Tin vào nguồn thực thi (script, config, CI) hơn là văn xuôi; chỉ ghi điều đã kiểm chứng được.
-- Khi docs và config mâu thuẫn, ưu tiên config/script và sửa lại nội dung lỗi thời ở đây.
+- Má»—i dÃ²ng pháº£i tráº£ lá»i Ä‘Æ°á»£c: "Agent cÃ³ thá»ƒ bá» sÃ³t Ä‘iá»u nÃ y náº¿u khÃ´ng cÃ³ giÃºp Ä‘á»¡?" â€” náº¿u khÃ´ng, xÃ³a Ä‘i.
+- Tin vÃ o nguá»“n thá»±c thi (script, config, CI) hÆ¡n lÃ  vÄƒn xuÃ´i; chá»‰ ghi Ä‘iá»u Ä‘Ã£ kiá»ƒm chá»©ng Ä‘Æ°á»£c.
+- Khi docs vÃ  config mÃ¢u thuáº«n, Æ°u tiÃªn config/script vÃ  sá»­a láº¡i ná»™i dung lá»—i thá»i á»Ÿ Ä‘Ã¢y.
