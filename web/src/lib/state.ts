@@ -17,6 +17,7 @@ export interface StationDTO {
   questionVi?: string;
   questionEn?: string;
   options?: { vi: string; en: string }[];
+  challengeType: string;
 }
 
 export interface StateDTO {
@@ -96,6 +97,7 @@ export async function buildState(playerId: string): Promise<StateDTO | null> {
             options: JSON.parse(s.optionsJson) as { vi: string; en: string }[],
           }
         : {}),
+      challengeType: s.challengeType,
     };
   });
 
