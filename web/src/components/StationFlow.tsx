@@ -19,7 +19,7 @@ import type { StateDTO } from "@/lib/state";
 import ChestReveal, { type RevealTier } from "@/components/ChestReveal";
 import type { RevealLoot } from "@/components/RewardCard";
 
-type Mode = "choose" | "gps" | "qr" | "photo";
+type Mode = "gps" | "qr" | "photo";
 
 const PHOTO_MAX_EDGE = 1600;
 
@@ -75,8 +75,11 @@ export default function StationFlow({
   const [errorState, setErrorState] = useState<
     "none" | "not_found" | "network"
   >("none");
-  const [mode, setMode] = useState<Mode>("choose");
+  const [mode, setMode] = useState<Mode>("photo");
   const [busy, setBusy] = useState(false);
+  const [openPhase, setOpenPhase] = useState<"idle" | "pending" | "failed">(
+    "idle"
+  );
   const [checkinMsg, setCheckinMsg] = useState<string | null>(null);
   const [result, setResult] = useState<SolveResult | null>(null);
   const [choice, setChoice] = useState<number>(-1);
@@ -94,6 +97,7 @@ export default function StationFlow({
     setRevealedHint(null);
     setCheckinMsg(null);
     setQueue([]);
+    setOpenPhase("idle");
   }, [slug]);
 
   const load = useCallback(async () => {
@@ -268,6 +272,7 @@ export default function StationFlow({
   }
 
   async function revealHint() {
+    if (busy) return;
     setBusy(true);
     try {
       const res = await fetch("/api/answer", {
@@ -286,6 +291,23 @@ export default function StationFlow({
       await load();
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function confirmChestOpen(grantId: number) {
+    setOpenPhase("pending");
+    try {
+      const res = await fetch("/api/chests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ playerId: state!.playerId, grantId }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      setOpenPhase("idle");
+      setQueue((q) => q.slice(1));
+      await load();
+    } catch {
+      setOpenPhase("failed");
     }
   }
 
@@ -413,16 +435,25 @@ export default function StationFlow({
         <ChestReveal
           tier={queue[0].tier}
           loot={queue[0].loot}
-          onClose={async () => {
-            const current = queue[0];
-            setQueue((q) => q.slice(1));
-            await fetch("/api/chests", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ playerId: state!.playerId, grantId: current.grantId }),
-            }).catch(() => {});
-            await load();
+          onClose={() => {
+            if (openPhase === "pending") return;
+            void confirmChestOpen(queue[0].grantId);
           }}
+          notice={
+            openPhase === "failed" ? (
+              <div className="flex w-full max-w-sm flex-col items-center gap-2">
+                <p className="rounded-xl bg-wine-soft px-4 py-2.5 text-sm font-medium text-wine">
+                  {t("play.chest_open_failed")}
+                </p>
+                <button
+                  onClick={() => void confirmChestOpen(queue[0].grantId)}
+                  className="rounded-full border border-paper/40 px-5 py-2 text-sm font-semibold text-paper transition-colors hover:bg-paper/10"
+                >
+                  {t("common.retry")}
+                </button>
+              </div>
+            ) : null
+          }
         />
       )}
     </Shell>
@@ -454,7 +485,7 @@ function CheckinSection({
 }) {
   const { t } = useLang();
 
-  const tabs: { id: Exclude<Mode, "choose">; label: string }[] = [
+  const tabs: { id: Mode; label: string }[] = [
     { id: "gps", label: t("checkin.gps") },
     { id: "qr", label: t("checkin.qr") },
     { id: "photo", label: t("checkin.photo") },
@@ -572,7 +603,12 @@ function SuccessPanel({
   treasure: boolean;
 }) {
   const { t, lang } = useLang();
+  const [confirmingHint, setConfirmingHint] = useState(false);
   const hint = hintText ? (lang === "vi" ? hintText.vi : hintText.en) : null;
+
+  useEffect(() => {
+    setConfirmingHint(false);
+  }, [nextSlug, treasure]);
 
   return (
     <section className="mt-4 rounded-2xl border border-jade bg-jade-soft p-5">
@@ -594,9 +630,33 @@ function SuccessPanel({
             {hint}
           </p>
         </>
+      ) : confirmingHint ? (
+        <div className="mt-4 rounded-xl bg-cream px-4 py-3 ring-1 ring-line">
+          <p className="text-sm font-medium leading-snug text-ink">
+            {t("hint.confirm_title")}
+          </p>
+          <div className="mt-2.5 flex gap-2">
+            <button
+              onClick={() => {
+                setConfirmingHint(false);
+                onReveal();
+              }}
+              disabled={busy}
+              className="flex-1 rounded-lg bg-ink-strong py-2 text-sm font-semibold text-paper transition-colors hover:bg-ink disabled:opacity-50"
+            >
+              {t("hint.confirm_yes")}
+            </button>
+            <button
+              onClick={() => setConfirmingHint(false)}
+              className="flex-1 rounded-lg border border-line bg-cream py-2 text-sm font-semibold text-ink-soft transition-colors hover:text-ink"
+            >
+              {t("hint.confirm_no")}
+            </button>
+          </div>
+        </div>
       ) : (
         <button
-          onClick={onReveal}
+          onClick={() => setConfirmingHint(true)}
           disabled={busy}
           className="mt-4 w-full rounded-xl border border-jade bg-cream py-3 text-sm font-semibold text-jade-deep hover:bg-jade-soft/60 disabled:opacity-50"
         >
