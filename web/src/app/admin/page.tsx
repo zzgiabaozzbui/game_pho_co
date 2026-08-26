@@ -40,8 +40,12 @@ interface PendingReview {
   id: number;
   photoPath: string;
   createdAt: string;
+  type: "checkin" | "workshop";
   player: { id: string };
   station: { slug: string; nameVi: string; nameEn: string; orderIndex: number };
+  assignmentId?: number;
+  partner?: { name: string };
+  workshopTask?: { instructionVi: string };
 }
 
 type Tab = "stations" | "reviews" | "qr" | "chests" | "partners" | "challenges";
@@ -461,11 +465,21 @@ function ReviewsTab() {
     load();
   }, [load]);
 
-  async function decide(id: number, approve: boolean) {
+  async function decide(item: PendingReview, approve: boolean) {
+    const body: Record<string, unknown> = {
+      approve,
+      note: notes[item.id] || undefined,
+    };
+    if (item.type === "workshop") {
+      body.type = "workshop";
+      body.assignmentId = item.assignmentId;
+    } else {
+      body.checkInId = item.id;
+    }
     await fetch("/api/admin/reviews", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ checkInId: id, approve, note: notes[id] || undefined }),
+      body: JSON.stringify(body),
     });
     await load();
   }
@@ -485,14 +499,35 @@ function ReviewsTab() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={`/api/uploads/${row.photoPath}`}
-            alt={`check-in ${row.station.nameVi}`}
+            alt={`${row.type} ${row.station.nameVi}`}
             className="max-h-80 w-full object-contain bg-paper"
           />
           <div className="p-4">
-            <div className="font-bold">
-              #{row.station.orderIndex} {row.station.nameVi}{" "}
-              <span className="text-xs font-normal text-ink-soft/60">{row.station.slug}</span>
+            <div className="flex items-center gap-2">
+              <div className="font-bold">
+                #{row.station.orderIndex} {row.station.nameVi}{" "}
+                <span className="text-xs font-normal text-ink-soft/60">{row.station.slug}</span>
+              </div>
+              <span
+                className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                  row.type === "workshop"
+                    ? "bg-jade/20 text-jade"
+                    : "bg-son/20 text-son"
+                }`}
+              >
+                {row.type === "workshop" ? "Workshop" : "Check-in"}
+              </span>
             </div>
+            {row.type === "workshop" && row.partner && (
+              <div className="mt-1 text-sm text-ink-soft">
+                Đối tác: <span className="font-medium text-ink">{row.partner.name}</span>
+              </div>
+            )}
+            {row.type === "workshop" && row.workshopTask?.instructionVi && (
+              <div className="mt-1 text-sm text-ink-soft">
+                Nhiệm vụ: <span className="text-ink">{row.workshopTask.instructionVi}</span>
+              </div>
+            )}
             <div className="text-xs text-ink-soft/60">
               Player {row.player.id.slice(0, 8)}… · {new Date(row.createdAt).toLocaleString("vi-VN")}
             </div>
@@ -504,13 +539,13 @@ function ReviewsTab() {
             />
             <div className="mt-3 flex gap-2">
               <button
-                onClick={() => decide(row.id, true)}
+                onClick={() => decide(row, true)}
                 className="flex-1 rounded-xl bg-jade py-2.5 hover:bg-jade-deep font-semibold text-white"
               >
                 ✓ Chấp nhận — mở trạm
               </button>
               <button
-                onClick={() => decide(row.id, false)}
+                onClick={() => decide(row, false)}
                 className="flex-1 rounded-xl bg-wine py-2.5 hover:bg-wine/85 font-semibold text-white"
               >
                 ✕ Từ chối
