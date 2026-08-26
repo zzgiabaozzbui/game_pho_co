@@ -52,6 +52,9 @@ export default function InlineThreeRenderer({
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(mount.clientWidth, mount.clientHeight);
+        // ACES + exposure để vàng sáng rực mà không cháy trắng trên nền overlay tối
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.15;
         mount.appendChild(renderer.domElement);
         teardown = () => {
           renderer.dispose();
@@ -69,10 +72,18 @@ export default function InlineThreeRenderer({
         camera.position.set(0, 1.35, 2.4);
         camera.lookAt(0, 0.45, 0);
 
-        scene.add(new THREE.HemisphereLight(0xfff6e0, 0x33301f, 1.1));
-        const dir = new THREE.DirectionalLight(0xffffff, 1.6);
-        dir.position.set(2, 4, 2.5);
-        scene.add(dir);
+        // Bộ 3 đèn storybook: key ấm trước-trên-trái, rim vàng từ sau-phải,
+        // fill lạnh nhẹ — đủ sáng để thân đỏ/gold đọc rõ trên overlay tối.
+        scene.add(new THREE.AmbientLight(0xfff6e0, 0.55));
+        const key = new THREE.DirectionalLight(0xffffff, 2.2);
+        key.position.set(-2.5, 4, 3);
+        scene.add(key);
+        const rim = new THREE.DirectionalLight(0xffc98a, 1.0);
+        rim.position.set(2.5, 3, -2.5);
+        scene.add(rim);
+        const fill = new THREE.DirectionalLight(0xbdd2ff, 0.5);
+        fill.position.set(2, 1.2, 2.5);
+        scene.add(fill);
 
         const gltf = await new GLTFLoader().loadAsync(modelGlbPath);
         if (disposed) {

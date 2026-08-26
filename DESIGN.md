@@ -142,7 +142,7 @@ Bo tròn vừa phải, ngôn ngữ "đá mài mềm": nút 1rem, card 0.75rem, �
 
 ### Signature: Rương kho báu (chest-box)
 
-Nắp vòm nửa trụ (barrel lid), thân gỗ màu tier (colorHex từ DB). **Anatomy chung mọi tier:** trim vàng đồng (#d4af37) gồm nan góc dọc, nan ngang, đinh tán, ổ khóa then, chân đế; thân giữ màu tier (clay/gold/wine/jade) — vàng đồng là trim phổ quát, không đổi theo tier. Khi mở: vài xu vàng và đá quý tràn quanh miệng rương (bake sẵn trong model GLB và SVG fallback); 2D mở bằng rotate(-100deg) quanh mép sau nắp. Glow tròn vàng radial phía sau lúc chưa mở — nghi thức trước phần thưởng.
+Nắp vòm nửa trụ (barrel lid), thân gỗ màu tier (colorHex từ DB): common #9a3b2b (gỗ hồng mạc đỏ), gold #c9962b, epic #b3122e (son đậm), grand #1f5c46 (ngọc bích đậm). **Anatomy chung mọi tier:** trim vàng đồng sáng (#f0c33c) gồm nan góc dọc, nan ngang, đinh tán, 3 vòng sườn nắp kèm đinh tán chấm, ổ khóa then có lỗ khóa, chân đế; thân giữ màu tier — vàng đồng là trim phổ quát, không đổi theo tier. Lòng nắp lót **nhung đỏ #7e1220** và miệng rương đắp **kho báu bên trong** (đống xu vàng, thỏi vàng, cụm đá ruby/emerald/sapphire, chuỗi ngọc trai vắt mép) — hiện ra khi mở nắp; thêm vài xu vàng và đá quý tràn quanh miệng rương (tất cả bake sẵn trong model GLB và SVG fallback); 2D mở bằng rotate(-100deg) quanh mép sau nắp. Glow tròn vàng radial phía sau lúc chưa mở — nghi thức trước phần thưởng.
 
 ### Navigation
 Header timber chữ paper; tab/pill active nền gold hoặc son tùy ngữ cảnh; safe-area-aware.
