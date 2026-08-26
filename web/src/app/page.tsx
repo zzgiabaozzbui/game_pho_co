@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -124,7 +124,6 @@ export default function Home() {
     null
   );
   const hasSession = pid !== null;
-  const hasChests = (chests?.total ?? 0) > 0;
 
   useEffect(() => {
     if (!pid) return;
@@ -291,13 +290,13 @@ export default function Home() {
             {t("home.start_error")}
           </p>
         )}
-        {hasChests ? (
+        {chests && chests.total > 0 ? (
           <Link
             href="/treasure"
             className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-line bg-cream px-6 py-3 font-medium text-ink hover:bg-gold-soft"
           >
             {t("cta.treasure_short")}
-            {chests && chests.unopened > 0 && (
+            {chests.unopened > 0 && (
               <span className="grid min-w-5 place-items-center rounded-full bg-gold px-1.5 py-0.5 text-xs font-bold leading-none text-timber">
                 {chests.unopened}
               </span>
