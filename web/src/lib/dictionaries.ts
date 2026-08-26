@@ -197,6 +197,23 @@ const vi = {
   "admin.note_placeholder": "Ghi chú cho người chơi (lý do từ chối…)",
   "admin.no_pending": "Không có ảnh nào chờ duyệt.",
   "admin.view_photo": "Xem ảnh",
+
+  "workshop.title": "Trải nghiệm workshop",
+  "workshop.partner": "Đối tác",
+  "workshop.address": "Địa chỉ",
+  "workshop.task_title": "Nhiệm vụ",
+  "workshop.photo_reqs": "Yêu cầu ảnh",
+  "workshop.upload_photo": "Chụp ảnh hoạt động workshop",
+  "workshop.upload_hint": "Chụp ảnh bạn đang thực hiện nhiệm vụ tại workshop",
+  "workshop.quiz_question": "Câu hỏi",
+  "workshop.submit": "Gửi bài",
+  "workshop.submitting": "Đang gửi…",
+  "workshop.pending": "Bài của bạn đang chờ đối tác duyệt.",
+  "workshop.no_task": "Chưa có nhiệm vụ workshop cho trạm này.",
+  "workshop.fetch_error": "Không tải được thông tin workshop.",
+  "workshop.submit_success": "Đã gửi thành công! Đang chờ duyệt.",
+  "workshop.submit_error": "Gửi thất bại, thử lại nhé.",
+  "workshop.photo_required": "Vui lòng chụp ảnh trước khi gửi.",
 } as const;
 
 export type DictKey = keyof typeof vi;
@@ -399,6 +416,23 @@ const en: Record<DictKey, string> = {
   "admin.note_placeholder": "Note for the player (rejection reason…)",
   "admin.no_pending": "No photos pending review.",
   "admin.view_photo": "View photo",
+
+  "workshop.title": "Workshop experience",
+  "workshop.partner": "Partner",
+  "workshop.address": "Address",
+  "workshop.task_title": "Your task",
+  "workshop.photo_reqs": "Photo requirements",
+  "workshop.upload_photo": "Take a workshop activity photo",
+  "workshop.upload_hint": "Snap a photo of yourself doing the workshop task",
+  "workshop.quiz_question": "Quiz question",
+  "workshop.submit": "Submit",
+  "workshop.submitting": "Submitting…",
+  "workshop.pending": "Your submission is pending partner review.",
+  "workshop.no_task": "No workshop task available for this station yet.",
+  "workshop.fetch_error": "Couldn't load workshop info.",
+  "workshop.submit_success": "Submitted successfully! Awaiting review.",
+  "workshop.submit_error": "Submission failed, please retry.",
+  "workshop.photo_required": "Please take a photo before submitting.",
 };
 
 export const dictionary: Record<Lang, Record<DictKey, string>> = {

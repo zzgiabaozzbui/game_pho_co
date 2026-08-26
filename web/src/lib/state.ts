@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { computeStatuses, type StationStatus } from "@/lib/game";
 
 export interface StationDTO {
+  id: number;
   slug: string;
   orderIndex: number;
   nameVi: string;
@@ -74,6 +75,7 @@ export async function buildState(playerId: string): Promise<StateDTO | null> {
   const dtoStations: StationDTO[] = stations.map((s) => {
     const status = statuses.get(s.slug) ?? "current";
     return {
+      id: s.id,
       slug: s.slug,
       orderIndex: s.orderIndex,
       nameVi: s.nameVi,

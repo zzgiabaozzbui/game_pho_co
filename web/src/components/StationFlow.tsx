@@ -90,6 +90,31 @@ export default function StationFlow({
   const [queue, setQueue] = useState<
     { grantId: number; tier: RevealTier | null; loot: RevealLoot[] }[]
   >([]);
+  const [workshopAssignment, setWorkshopAssignment] = useState<{
+    assignmentId: number;
+    partnerName: string;
+    partnerAddress: string | null;
+    partnerDescription: string | null;
+    partnerGoogleMapsUrl: string | null;
+    task: {
+      id: number;
+      instructionVi: string;
+      instructionEn: string;
+      photoReqsVi: string;
+      photoReqsEn: string;
+      quizQuestionVi: string | null;
+      quizQuestionEn: string | null;
+      quizOptions: { vi: string; en: string }[] | null;
+      quizCorrectIndex: number | null;
+      rewardPoints: number;
+    } | null;
+  } | null>(null);
+  const [workshopPhoto, setWorkshopPhoto] = useState<File | null>(null);
+  const [workshopQuizChoice, setWorkshopQuizChoice] = useState<number>(-1);
+  const [workshopStatus, setWorkshopStatus] = useState<
+    "idle" | "fetching" | "ready" | "submitting" | "submitted" | "error"
+  >("idle");
+  const [workshopErrorMsg, setWorkshopErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     setChoice(-1);
@@ -98,6 +123,11 @@ export default function StationFlow({
     setCheckinMsg(null);
     setQueue([]);
     setOpenPhase("idle");
+    setWorkshopAssignment(null);
+    setWorkshopPhoto(null);
+    setWorkshopQuizChoice(-1);
+    setWorkshopStatus("idle");
+    setWorkshopErrorMsg(null);
   }, [slug]);
 
   const load = useCallback(async () => {
@@ -115,6 +145,39 @@ export default function StationFlow({
   useEffect(() => {
     load();
   }, [load]);
+
+  const station = state?.stations.find((x) => x.slug === slug) ?? null;
+  const solved = station?.status === "completed";
+  const checkedIn = solved || station?.status === "checked_in";
+  const workshopType = station?.challengeType === "WORKSHOP";
+
+  useEffect(() => {
+    if (
+      workshopType &&
+      checkedIn &&
+      !solved &&
+      workshopStatus === "idle" &&
+      !workshopAssignment &&
+      state
+    ) {
+      setWorkshopStatus("fetching");
+      fetch("/api/assign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ guestId: state.playerId, stationId: station!.id }),
+      })
+        .then(async (res) => {
+          if (!res.ok) throw new Error(String(res.status));
+          const data = await res.json();
+          setWorkshopAssignment(data);
+          setWorkshopStatus("ready");
+        })
+        .catch(() => {
+          setWorkshopStatus("error");
+          setWorkshopErrorMsg(t("workshop.fetch_error"));
+        });
+    }
+  }, [workshopType, checkedIn, solved, workshopStatus, workshopAssignment, state, t, station]);
 
   if (errorState !== "none")
     return (
@@ -145,11 +208,10 @@ export default function StationFlow({
       </Shell>
     );
 
-  const station = state.stations.find((x) => x.slug === slug)!;
-  const name = lang === "vi" ? station.nameVi : station.nameEn;
-  const story = lang === "vi" ? station.storyVi : station.storyEn;
-  const question = lang === "vi" ? station.questionVi : station.questionEn;
-  const options = station.options ?? [];
+  const name = lang === "vi" ? station!.nameVi : station!.nameEn;
+  const story = lang === "vi" ? station!.storyVi : station!.storyEn;
+  const question = lang === "vi" ? station!.questionVi : station!.questionEn;
+  const options = station!.options ?? [];
 
   async function checkinGps() {
     setBusy(true);
@@ -313,28 +375,54 @@ export default function StationFlow({
     }
   }
 
-  const solved = station.status === "completed";
-  const checkedIn = solved || station.status === "checked_in";
+  async function submitWorkshop() {
+    if (!workshopPhoto || !workshopAssignment || workshopStatus === "submitting") return;
+    setWorkshopStatus("submitting");
+    setWorkshopErrorMsg(null);
+    try {
+      const form = new FormData();
+      form.set("guestId", state!.playerId);
+      form.set("assignmentId", String(workshopAssignment.assignmentId));
+      form.set("photo", workshopPhoto);
+      if (workshopQuizChoice >= 0) {
+        form.set("quizAnswer", String(workshopQuizChoice));
+      }
+      const res = await fetch("/api/workshop/submit", {
+        method: "POST",
+        body: form,
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? String(res.status));
+      }
+      setWorkshopStatus("submitted");
+      await load();
+    } catch {
+      setWorkshopStatus("error");
+      setWorkshopErrorMsg(t("workshop.submit_error"));
+    }
+  }
+
   const nextSlug =
-    state.stations.find((s) => s.orderIndex === station.orderIndex + 1)?.slug ??
+    state.stations.find((s) => s.orderIndex === station!.orderIndex + 1)?.slug ??
     null;
 
   return (
     <Shell title={name}>
       <div className="px-5 py-4">
         <div className="text-xs font-semibold uppercase tracking-wide text-clay-deep">
-          #{station.orderIndex} ·{" "}
+          #{station!.orderIndex} ·{" "}
           {solved
             ? t("status.completed")
             : checkedIn
               ? t("status.checked_in")
-              : station.hasPendingPhoto
+              : station!.hasPendingPhoto
                 ? t("status.pending")
                 : t("status.current")}
         </div>
 
         {!checkedIn ? (
-          station.hasPendingPhoto ? (
+          station!.hasPendingPhoto ? (
             <section className="mt-4 rounded-2xl border border-clay bg-clay-soft p-5 text-sm leading-relaxed text-clay-deep">
               <Lock className="mr-1.5 inline h-4 w-4 align-[-2px]" />
               {t("photo.pending")}
@@ -349,13 +437,25 @@ export default function StationFlow({
               msg={checkinMsg}
               busy={busy}
               token={token}
-              rejectedNote={station.rejectedNote}
+              rejectedNote={station!.rejectedNote}
               onGps={checkinGps}
               onQr={checkinQr}
               onPhoto={checkinPhoto}
               onTabChange={() => setCheckinMsg(null)}
             />
           )
+        ) : workshopType && !solved ? (
+          <WorkshopPanel
+            assignment={workshopAssignment}
+            status={workshopStatus}
+            errorMsg={workshopErrorMsg}
+            photo={workshopPhoto}
+            quizChoice={workshopQuizChoice}
+            lang={lang}
+            onPhotoChange={setWorkshopPhoto}
+            onQuizChoice={setWorkshopQuizChoice}
+            onSubmit={submitWorkshop}
+          />
         ) : (
           <>
             <h2 className="mt-2 font-display text-xl font-black leading-snug text-ink-strong">
@@ -683,6 +783,218 @@ function SuccessPanel({
           {t("cta.next")} →
         </Link>
       )}
+    </section>
+  );
+}
+
+function WorkshopPanel({
+  assignment,
+  status,
+  errorMsg,
+  photo,
+  quizChoice,
+  lang,
+  onPhotoChange,
+  onQuizChoice,
+  onSubmit,
+}: {
+  assignment: {
+    assignmentId: number;
+    partnerName: string;
+    partnerAddress: string | null;
+    partnerDescription: string | null;
+    partnerGoogleMapsUrl: string | null;
+    task: {
+      id: number;
+      instructionVi: string;
+      instructionEn: string;
+      photoReqsVi: string;
+      photoReqsEn: string;
+      quizQuestionVi: string | null;
+      quizQuestionEn: string | null;
+      quizOptions: { vi: string; en: string }[] | null;
+      quizCorrectIndex: number | null;
+      rewardPoints: number;
+    } | null;
+  } | null;
+  status: "idle" | "fetching" | "ready" | "submitting" | "submitted" | "error";
+  errorMsg: string | null;
+  photo: File | null;
+  quizChoice: number;
+  lang: "vi" | "en";
+  onPhotoChange: (f: File | null) => void;
+  onQuizChoice: (i: number) => void;
+  onSubmit: () => void;
+}) {
+  const { t } = useLang();
+
+  if (status === "fetching") {
+    return (
+      <section className="mt-4 rounded-2xl bg-cream p-5 shadow-sm ring-1 ring-line text-center text-sm text-ink-soft">
+        {t("common.loading")}
+      </section>
+    );
+  }
+
+  if (status === "error" && errorMsg) {
+    return (
+      <section className="mt-4 rounded-2xl bg-cream p-5 shadow-sm ring-1 ring-line">
+        <p className="text-sm text-wine">{errorMsg}</p>
+      </section>
+    );
+  }
+
+  if (!assignment) return null;
+
+  const task = assignment.task;
+
+  if (status === "submitted") {
+    return (
+      <section className="mt-4 rounded-2xl border border-jade bg-jade-soft p-5">
+        <p className="flex items-start gap-2 font-bold text-jade-deep">
+          <PartyPopper className="mt-0.5 h-5 w-5 shrink-0" />
+          {t("workshop.submit_success")}
+        </p>
+        <p className="mt-2 text-sm text-jade">
+          {t("workshop.pending")}
+        </p>
+      </section>
+    );
+  }
+
+  const quizQuestion =
+    task && lang === "vi" ? task.quizQuestionVi : task?.quizQuestionEn;
+  const quizOptions = task?.quizOptions ?? [];
+
+  return (
+    <section className="mt-4 space-y-4">
+      <div className="rounded-2xl bg-cream p-5 shadow-sm ring-1 ring-line">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-ink-soft">
+          {t("workshop.partner")}
+        </h3>
+        <p className="mt-2 font-display font-bold text-ink-strong">
+          {assignment.partnerName}
+        </p>
+        {assignment.partnerAddress && (
+          <p className="mt-1 text-sm text-ink-soft">{assignment.partnerAddress}</p>
+        )}
+        {assignment.partnerDescription && (
+          <p className="mt-2 text-sm leading-relaxed text-ink">
+            {assignment.partnerDescription}
+          </p>
+        )}
+        {assignment.partnerGoogleMapsUrl && (
+          <a
+            href={assignment.partnerGoogleMapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-block text-sm font-semibold text-son hover:underline"
+          >
+            {t("guide.start")} →
+          </a>
+        )}
+      </div>
+
+      {task && (
+        <div className="rounded-2xl bg-cream p-5 shadow-sm ring-1 ring-line">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-ink-soft">
+            {t("workshop.task_title")}
+          </h3>
+          <p className="mt-2 whitespace-pre-line text-[15px] leading-relaxed text-ink">
+            {lang === "vi" ? task.instructionVi : task.instructionEn}
+          </p>
+
+          <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-clay-deep">
+            {t("workshop.photo_reqs")}
+          </p>
+          <p className="mt-1 text-sm text-ink-soft">
+            {lang === "vi" ? task.photoReqsVi : task.photoReqsEn}
+          </p>
+        </div>
+      )}
+
+      {!task && (
+        <section className="rounded-2xl bg-cream p-5 shadow-sm ring-1 ring-line text-center text-sm text-ink-soft">
+          {t("workshop.no_task")}
+        </section>
+      )}
+
+      <div className="rounded-2xl bg-cream p-5 shadow-sm ring-1 ring-line">
+        <label className="block cursor-pointer rounded-2xl border-2 border-dashed border-line bg-paper/60 p-6 text-center text-sm font-medium text-ink-soft transition-colors hover:border-son hover:bg-son-soft/40 hover:text-son">
+          <Camera className="mx-auto h-6 w-6" />
+          <span className="mt-1.5 block">
+            {photo ? photo.name : t("workshop.upload_hint")}
+          </span>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            capture="environment"
+            className="sr-only"
+            onChange={(e) => {
+              const f = e.target.files?.[0] ?? null;
+              onPhotoChange(f);
+              e.currentTarget.value = "";
+            }}
+          />
+        </label>
+        {photo && (
+          <p className="mt-2 flex items-center justify-between text-xs text-ink-soft">
+            <span className="truncate">{photo.name}</span>
+            <button
+              onClick={() => onPhotoChange(null)}
+              className="ml-2 shrink-0 text-wine hover:underline"
+            >
+              <XCircle className="inline h-3.5 w-3.5" />
+            </button>
+          </p>
+        )}
+      </div>
+
+      {quizQuestion && quizOptions.length > 0 && (
+        <div className="rounded-2xl bg-cream p-5 shadow-sm ring-1 ring-line">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-ink-soft">
+            {t("workshop.quiz_question")}
+          </h3>
+          <p className="font-display mt-2 font-bold text-ink-strong">{quizQuestion}</p>
+          <div className="mt-4 space-y-2.5">
+            {quizOptions.map((o, i) => (
+              <label
+                key={i}
+                className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 text-[15px] transition-colors ${
+                  quizChoice === i
+                    ? "border-son bg-son-soft font-semibold text-son-deep"
+                    : "border-line bg-paper/50 hover:bg-gold-soft/60"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="ws-opt"
+                  className="accent-son"
+                  checked={quizChoice === i}
+                  onChange={() => onQuizChoice(i)}
+                />
+                {lang === "vi" ? o.vi : o.en}
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {status === "error" && errorMsg && (
+        <p className="rounded-xl bg-wine-soft px-4 py-2.5 text-sm font-medium text-wine">
+          {errorMsg}
+        </p>
+      )}
+
+      <button
+        onClick={onSubmit}
+        disabled={!photo || status === "submitting"}
+        className="btn-primary w-full py-3.5 disabled:opacity-50"
+      >
+        {status === "submitting"
+          ? t("workshop.submitting")
+          : t("workshop.submit")}
+      </button>
     </section>
   );
 }

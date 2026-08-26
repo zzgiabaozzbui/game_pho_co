@@ -4,7 +4,22 @@ export interface AssignResult {
   assignmentId: number;
   partnerId: number;
   partnerName: string;
+  partnerAddress: string | null;
+  partnerDescription: string | null;
+  partnerGoogleMapsUrl: string | null;
   workshopTaskId: number | null;
+  task: {
+    id: number;
+    instructionVi: string;
+    instructionEn: string;
+    photoReqsVi: string;
+    photoReqsEn: string;
+    quizQuestionVi: string | null;
+    quizQuestionEn: string | null;
+    quizOptions: { vi: string; en: string }[] | null;
+    quizCorrectIndex: number | null;
+    rewardPoints: number;
+  } | null;
 }
 
 export async function assignPartner(
@@ -41,6 +56,25 @@ export async function assignPartner(
     assignmentId: assignment.id,
     partnerId: partner.id,
     partnerName: partner.name,
+    partnerAddress: partner.address ?? null,
+    partnerDescription: partner.description ?? null,
+    partnerGoogleMapsUrl: partner.googleMapsUrl ?? null,
     workshopTaskId: task?.id ?? null,
+    task: task
+      ? {
+          id: task.id,
+          instructionVi: task.instructionVi,
+          instructionEn: task.instructionEn,
+          photoReqsVi: task.photoReqsVi,
+          photoReqsEn: task.photoReqsEn,
+          quizQuestionVi: task.quizQuestionVi,
+          quizQuestionEn: task.quizQuestionEn,
+          quizOptions: task.quizOptionsJson
+            ? (JSON.parse(task.quizOptionsJson) as { vi: string; en: string }[])
+            : null,
+          quizCorrectIndex: task.quizCorrectIndex,
+          rewardPoints: task.rewardPoints,
+        }
+      : null,
   };
 }
