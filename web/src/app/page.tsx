@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Camera, KeyRound, MapPin, Puzzle } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { ensureSession, getPlayerId, setPlayerId } from "@/lib/client";
@@ -11,11 +11,18 @@ function savedPid(): string | null {
   return typeof window === "undefined" ? null : getPlayerId();
 }
 
+function subscribeSavedPid(onChange: () => void): () => void {
+  window.addEventListener("storage", onChange);
+  return () => window.removeEventListener("storage", onChange);
+}
+
 export default function Home() {
   const { t, toggle } = useLang();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
-  const [pid, setPid] = useState<string | null>(savedPid);
+  const storedPid = useSyncExternalStore(subscribeSavedPid, savedPid, () => null);
+  const [recoveredPid, setRecoveredPid] = useState<string | null>();
+  const pid = recoveredPid ?? storedPid;
   const [startError, setStartError] = useState(false);
   const [recoverCode, setRecoverCode] = useState("");
   const [recoverMsg, setRecoverMsg] = useState<string | null>(null);
@@ -48,7 +55,7 @@ export default function Home() {
       if (res.ok) {
         const data = (await res.json()) as { playerId: string };
         setPlayerId(data.playerId);
-        setPid(data.playerId);
+        setRecoveredPid(data.playerId);
         router.push("/play");
       } else {
         setRecoverMsg(t("home.recover_fail"));
