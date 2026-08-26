@@ -55,6 +55,7 @@ export default function InlineThreeRenderer({
         mount.appendChild(renderer.domElement);
         teardown = () => {
           renderer.dispose();
+          renderer.forceContextLoss?.();
           renderer.domElement.remove();
         };
 
@@ -76,6 +77,7 @@ export default function InlineThreeRenderer({
         const gltf = await new GLTFLoader().loadAsync(modelGlbPath);
         if (disposed) {
           renderer.dispose();
+          renderer.forceContextLoss?.();
           renderer.domElement.remove();
           return;
         }
@@ -153,6 +155,7 @@ export default function InlineThreeRenderer({
           cleanupFns.forEach((f) => f());
           disposeThreeObject(scene);
           renderer.dispose();
+          renderer.forceContextLoss?.();
           canvas.remove();
         };
       } catch {

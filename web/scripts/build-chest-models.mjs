@@ -18,6 +18,7 @@ globalThis.FileReader ??= class FileReader {
         this.onloadend?.();
       })
       .catch((err) => {
+        console.error("[impeccable-shim] FileReader blob-read failed:", err);
         this.error = err;
         this.onerror?.();
         this.onloadend?.();
@@ -32,6 +33,7 @@ globalThis.FileReader ??= class FileReader {
         this.onloadend?.();
       })
       .catch((err) => {
+        console.error("[impeccable-shim] FileReader blob-read failed:", err);
         this.error = err;
         this.onerror?.();
         this.onloadend?.();
