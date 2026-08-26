@@ -11,6 +11,9 @@ const vi = {
   "cta.treasure": "Nhận kho báu văn hóa",
   "cta.treasure_short": "Rương kho báu",
   "home.location": "Hà Nội · Việt Nam",
+  "home.hero_scene_alt":
+    "Tranh phố cổ: tuyến đường chấm nối 36 phố phường vượt mái ngói tới rương kho báu",
+  "home.treasure_locked": "Rương đầu tiên đang chờ ở cuối tuyến",
   "home.recover_title": "Đã có mã khôi phục?",
   "home.recover_hint":
     "Dán mã khôi phục từ thiết bị cũ để tiếp tục điểm và tiến trình của bạn.",
@@ -148,6 +151,9 @@ const en: Record<DictKey, string> = {
   "cta.treasure": "Claim the cultural treasure",
   "cta.treasure_short": "Treasure chest",
   "home.location": "Hanoi · Vietnam",
+  "home.hero_scene_alt":
+    "Old Quarter scene: a dotted route linking 36 streets over tile roofs to the treasure chest",
+  "home.treasure_locked": "Your first chest awaits at the end of the route",
   "home.recover_title": "Have a recovery code?",
   "home.recover_hint":
     "Paste the recovery code from your old device to continue your score and progress.",
