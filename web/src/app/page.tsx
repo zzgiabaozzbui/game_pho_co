@@ -3,27 +3,24 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { KeyRound } from "lucide-react";
+import { Camera, KeyRound, MapPin, Puzzle } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { ensureSession, getPlayerId, setPlayerId } from "@/lib/client";
-import { useEffect } from "react";
+
+function savedPid(): string | null {
+  return typeof window === "undefined" ? null : getPlayerId();
+}
 
 export default function Home() {
   const { t, toggle } = useLang();
   const router = useRouter();
   const [busy, setBusy] = useState(false);
-  const [hasSession, setHasSession] = useState(false);
-  const [pid, setPid] = useState<string | null>(null);
+  const [pid, setPid] = useState<string | null>(savedPid);
+  const [startError, setStartError] = useState(false);
   const [recoverCode, setRecoverCode] = useState("");
   const [recoverMsg, setRecoverMsg] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [startError, setStartError] = useState(false);
-
-  useEffect(() => {
-    const id = getPlayerId();
-    setPid(id);
-    setHasSession(!!id);
-  }, []);
+  const hasSession = pid !== null;
 
   async function start() {
     setBusy(true);
@@ -52,7 +49,6 @@ export default function Home() {
         const data = (await res.json()) as { playerId: string };
         setPlayerId(data.playerId);
         setPid(data.playerId);
-        setHasSession(true);
         router.push("/play");
       } else {
         setRecoverMsg(t("home.recover_fail"));
@@ -101,16 +97,52 @@ export default function Home() {
 
       <div className="lattice-divider mt-8" />
 
-      <section className="mt-6 rounded-2xl border border-line bg-cream p-5">
-        <h2 className="font-display font-bold text-ink-strong">
-          {t("rules.title")}
-        </h2>
-        <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm leading-relaxed text-ink/90 marker:font-semibold marker:text-son">
-          <li>{t("rules.1")}</li>
-          <li>{t("rules.2")}</li>
-          <li>{t("rules.3")}</li>
-          <li>{t("rules.4")}</li>
-        </ol>
+      <section className="mt-6">
+        <ul
+          className={`grid grid-cols-3 gap-2 ${hasSession ? "opacity-70" : ""}`}
+        >
+          <li
+            className={`flex flex-col items-center gap-1.5 rounded-xl border border-line bg-cream px-2 text-center ${
+              hasSession ? "py-2" : "py-3"
+            }`}
+          >
+            <MapPin className="h-5 w-5 shrink-0 text-clay-deep" strokeWidth={2} />
+            <span className="text-xs font-medium leading-tight text-ink">
+              {t("home.step_go")}
+            </span>
+          </li>
+          <li
+            className={`flex flex-col items-center gap-1.5 rounded-xl border border-line bg-cream px-2 text-center ${
+              hasSession ? "py-2" : "py-3"
+            }`}
+          >
+            <Camera className="h-5 w-5 shrink-0 text-jade" strokeWidth={2} />
+            <span className="text-xs font-medium leading-tight text-ink">
+              {t("home.step_checkin")}
+            </span>
+          </li>
+          <li
+            className={`flex flex-col items-center gap-1.5 rounded-xl border border-line bg-cream px-2 text-center ${
+              hasSession ? "py-2" : "py-3"
+            }`}
+          >
+            <Puzzle className="h-5 w-5 shrink-0 text-gold" strokeWidth={2} />
+            <span className="text-xs font-medium leading-tight text-ink">
+              {t("home.step_solve")}
+            </span>
+          </li>
+        </ul>
+        <details className="mt-3">
+          <summary className="cursor-pointer text-xs font-bold uppercase tracking-wider text-ink-soft transition-colors hover:text-ink">
+            {t("rules.title")}
+          </summary>
+          <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-sm leading-relaxed text-ink/90 marker:font-semibold marker:text-son">
+            <li>{t("rules.1")}</li>
+            <li>{t("rules.2")}</li>
+            <li>{t("rules.3")}</li>
+            <li>{t("rules.4")}</li>
+          </ol>
+        </details>
       </section>
 
       <div className="mt-auto pt-10">
