@@ -19,7 +19,7 @@ import type { StateDTO } from "@/lib/state";
 import ChestReveal, { type RevealTier } from "@/components/ChestReveal";
 import type { RevealLoot } from "@/components/RewardCard";
 
-type Mode = "choose" | "gps" | "qr" | "photo";
+type Mode = "gps" | "qr" | "photo";
 
 const PHOTO_MAX_EDGE = 1600;
 
@@ -75,7 +75,7 @@ export default function StationFlow({
   const [errorState, setErrorState] = useState<
     "none" | "not_found" | "network"
   >("none");
-  const [mode, setMode] = useState<Mode>("choose");
+  const [mode, setMode] = useState<Mode>("photo");
   const [busy, setBusy] = useState(false);
   const [checkinMsg, setCheckinMsg] = useState<string | null>(null);
   const [result, setResult] = useState<SolveResult | null>(null);
@@ -454,7 +454,7 @@ function CheckinSection({
 }) {
   const { t } = useLang();
 
-  const tabs: { id: Exclude<Mode, "choose">; label: string }[] = [
+  const tabs: { id: Mode; label: string }[] = [
     { id: "gps", label: t("checkin.gps") },
     { id: "qr", label: t("checkin.qr") },
     { id: "photo", label: t("checkin.photo") },
@@ -572,7 +572,12 @@ function SuccessPanel({
   treasure: boolean;
 }) {
   const { t, lang } = useLang();
+  const [confirmingHint, setConfirmingHint] = useState(false);
   const hint = hintText ? (lang === "vi" ? hintText.vi : hintText.en) : null;
+
+  useEffect(() => {
+    setConfirmingHint(false);
+  }, [nextSlug, treasure]);
 
   return (
     <section className="mt-4 rounded-2xl border border-jade bg-jade-soft p-5">
@@ -594,9 +599,33 @@ function SuccessPanel({
             {hint}
           </p>
         </>
+      ) : confirmingHint ? (
+        <div className="mt-4 rounded-xl bg-cream px-4 py-3 ring-1 ring-line">
+          <p className="text-sm font-medium leading-snug text-ink">
+            {t("hint.confirm_title")}
+          </p>
+          <div className="mt-2.5 flex gap-2">
+            <button
+              onClick={() => {
+                setConfirmingHint(false);
+                onReveal();
+              }}
+              disabled={busy}
+              className="flex-1 rounded-lg bg-ink-strong py-2 text-sm font-semibold text-paper transition-colors hover:bg-ink disabled:opacity-50"
+            >
+              {t("hint.confirm_yes")}
+            </button>
+            <button
+              onClick={() => setConfirmingHint(false)}
+              className="flex-1 rounded-lg border border-line bg-cream py-2 text-sm font-semibold text-ink-soft transition-colors hover:text-ink"
+            >
+              {t("hint.confirm_no")}
+            </button>
+          </div>
+        </div>
       ) : (
         <button
-          onClick={onReveal}
+          onClick={() => setConfirmingHint(true)}
           disabled={busy}
           className="mt-4 w-full rounded-xl border border-jade bg-cream py-3 text-sm font-semibold text-jade-deep hover:bg-jade-soft/60 disabled:opacity-50"
         >
