@@ -26,12 +26,14 @@ model Station {
   correctIndex  Int
   hintVi        String
   hintEn        String
+  challengeType String   @default("QUIZ") // "QUIZ" | "WORKSHOP"
   lat           Float
   lng           Float
   radiusM       Int      @default(120)
   chestTierId   Int?
   qrToken       String   @unique
   isActive      Boolean  @default(true)
+  isPaid        Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -39,6 +41,7 @@ model Station {
   answers           Answer[]
   stationPartners   StationPartner[]
   workshopTasks     WorkshopTask[]
+  guestAssignments  GuestAssignment[]
 }
 
 // Người chơi ẩn danh, định danh bằng playerId lưu localStorage.
@@ -151,6 +154,24 @@ model DropRule {
   weight    Int
 }
 
+// ===== Paywall: cấu hình thanh toán trạm =====
+
+// Cấu hình tổng thể (key-value), hiện tại chỉ dùng cho paywall.
+model SiteConfig {
+  key   String @id // paywall_enabled | paywall_price_vnd | paywall_title_vi | ...
+  value String
+}
+
+// Ghi nhận player đã unlock một tramm (one-time payment).
+model PlayerUnlock {
+  id        String   @id @default(cuid())
+  playerId  String
+  stationId Int
+  createdAt DateTime @default(now())
+
+  @@unique([playerId, stationId])
+}
+
 // ===== Partner Challenge System =====
 
 // Đối tác (workshop / bảo tàng / điểm trải nghiệm).
@@ -164,12 +185,13 @@ model Partner {
   lat            Float?
   lng            Float?
   imageUrl       String?
-  isActive       Int     @default(1)
+  isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
   stationPartners StationPartner[]
   workshopTasks   WorkshopTask[]
+  guestAssignments GuestAssignment[]
 }
 
 // Liên kết trạm – đối tác (nhiều-nhiều).
@@ -193,10 +215,10 @@ model WorkshopTask {
   instructionEn    String
   photoReqsVi      String
   photoReqsEn      String
-  quizQuestionVi   String
-  quizQuestionEn   String
-  quizOptionsJson  String // JSON: [{vi, en}, ...]
-  quizCorrectIndex Int
+  quizQuestionVi   String?
+  quizQuestionEn   String?
+  quizOptionsJson  String? // JSON: [{vi, en}, ...]
+  quizCorrectIndex Int?
   rewardPoints     Int      @default(50)
   sortOrder        Int      @default(0)
   createdAt        DateTime @default(now())
@@ -204,5 +226,30 @@ model WorkshopTask {
   partner Partner @relation(fields: [partnerId], references: [id])
   station Station @relation(fields: [stationId], references: [id])
 
+  guestAssignments GuestAssignment[]
+
   @@unique([partnerId, stationId])
+}
+
+// Theo dõi khách được giao partner nào (round-robin tracking).
+model GuestAssignment {
+  id             Int       @id @default(autoincrement())
+  guestId        String
+  stationId      Int
+  partnerId      Int
+  workshopTaskId Int?
+  assignedAt     DateTime  @default(now())
+  completedAt    DateTime?
+  status         String    @default("ASSIGNED") // ASSIGNED | COMPLETED | REJECTED
+  photoPath      String?
+  reviewNote     String?
+  reviewedBy     String?
+  reviewedAt     DateTime?
+
+  station      Station      @relation(fields: [stationId], references: [id])
+  partner      Partner      @relation(fields: [partnerId], references: [id])
+  workshopTask WorkshopTask? @relation(fields: [workshopTaskId], references: [id])
+
+  @@index([stationId, partnerId])
+  @@index([guestId, stationId])
 }
