@@ -1087,6 +1087,103 @@ async function main() {
 
   await db.station.updateMany({ data: { chestTierId: tierIds["common"] } });
 
+  // ===== Sample Partners =====
+  const partnerData = [
+    {
+      name: "Xưởng Gỗ Sơn Son",
+      phone: "0912 345 678",
+      address: "42 Hàng Mã, Hoàn Kiếm, Hà Nội",
+      description: "Trải nghiệm nghệ thuật sơn son thếp vàng trên gỗ truyền thống",
+      lat: 21.0345,
+      lng: 105.8522,
+    },
+    {
+      name: "Bảo tàng Lịch sử Hà Nội",
+      phone: "024 3825 2853",
+      address: "216 Trần Quang Khải, Hoàn Kiếm, Hà Nội",
+      description: "Khám phá lịch sử Hà Nội qua các hiện vật và trưng bày",
+      lat: 21.0287,
+      lng: 105.8522,
+    },
+    {
+      name: "Workshop Giấy Dó",
+      phone: "0987 654 321",
+      address: "11 Hàng Bông, Hoàn Kiếm, Hà Nội",
+      description: "Tự tay làm giấy dó truyền thống và viết thư pháp",
+      lat: 21.0285,
+      lng: 105.8482,
+    },
+  ];
+
+  const createdPartners: Record<string, any> = {};
+  for (const pData of partnerData) {
+    const existing = await db.partner.findFirst({ where: { name: pData.name } });
+    if (existing) {
+      createdPartners[pData.name] = existing;
+    } else {
+      const created = await db.partner.create({ data: pData });
+      createdPartners[pData.name] = created;
+    }
+  }
+
+  // ===== Sample Station-Partner Links =====
+  const hangMa = await db.station.findUnique({ where: { slug: "hang-ma" } });
+  const xuongGo = createdPartners["Xưởng Gỗ Sơn Son"];
+  const giayDo = createdPartners["Workshop Giấy Dó"];
+  const baoTang = createdPartners["Bảo tàng Lịch sử Hà Nội"];
+
+  if (hangMa && xuongGo) {
+    await db.stationPartner.upsert({
+      where: { stationId_partnerId: { stationId: hangMa.id, partnerId: xuongGo.id } },
+      create: { stationId: hangMa.id, partnerId: xuongGo.id },
+      update: {},
+    });
+  }
+  if (hangMa && giayDo) {
+    await db.stationPartner.upsert({
+      where: { stationId_partnerId: { stationId: hangMa.id, partnerId: giayDo.id } },
+      create: { stationId: hangMa.id, partnerId: giayDo.id },
+      update: {},
+    });
+  }
+
+  const tranQuangKhai = await db.station.findUnique({ where: { slug: "tran-quang-khai" } });
+  if (tranQuangKhai && baoTang) {
+    await db.stationPartner.upsert({
+      where: { stationId_partnerId: { stationId: tranQuangKhai.id, partnerId: baoTang.id } },
+      create: { stationId: tranQuangKhai.id, partnerId: baoTang.id },
+      update: {},
+    });
+  }
+
+  // ===== Sample Workshop Tasks =====
+  if (xuongGo && hangMa) {
+    const existingTask = await db.workshopTask.findFirst({
+      where: { partnerId: xuongGo.id, stationId: hangMa.id },
+    });
+    if (!existingTask) {
+      await db.workshopTask.create({
+        data: {
+          partnerId: xuongGo.id,
+          stationId: hangMa.id,
+          instructionVi: "Đến xưởng và trải nghiệm kỹ thuật sơn son thếp vàng trên một món đồ gỗ nhỏ",
+          instructionEn: "Visit the workshop and experience gold-leaf lacquer technique on a small wooden item",
+          photoReqsVi: "1 ảnh chụp bạn đang thực hành sơn + 1 ảnh sản phẩm hoàn thành",
+          photoReqsEn: "1 photo of you practicing lacquer + 1 photo of the finished product",
+          quizQuestionVi: "Bạn vừa học kỹ thuật nào?",
+          quizQuestionEn: "Which technique did you just learn?",
+          quizOptionsJson: JSON.stringify([
+            { vi: "Sơn son thếp vàng", en: "Gold-leaf lacquer" },
+            { vi: "Gỗ khảm trai", en: "Mother-of-pearl inlay" },
+            { vi: "Đúc đồng", en: "Bronze casting" },
+          ]),
+          quizCorrectIndex: 0,
+          rewardPoints: 75,
+        },
+      });
+    }
+  }
+
   await db.$disconnect();
 }
 

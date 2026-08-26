@@ -35,8 +35,10 @@ model Station {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  checkIns  CheckIn[]
-  answers   Answer[]
+  checkIns          CheckIn[]
+  answers           Answer[]
+  stationPartners   StationPartner[]
+  workshopTasks     WorkshopTask[]
 }
 
 // Người chơi ẩn danh, định danh bằng playerId lưu localStorage.
@@ -147,4 +149,60 @@ model DropRule {
   chancePct Int
   tierKey   String
   weight    Int
+}
+
+// ===== Partner Challenge System =====
+
+// Đối tác (workshop / bảo tàng / điểm trải nghiệm).
+model Partner {
+  id             Int     @id @default(autoincrement())
+  name           String
+  phone          String?
+  address        String?
+  description    String?
+  googleMapsUrl  String?
+  lat            Float?
+  lng            Float?
+  imageUrl       String?
+  isActive       Int     @default(1)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  stationPartners StationPartner[]
+  workshopTasks   WorkshopTask[]
+}
+
+// Liên kết trạm – đối tác (nhiều-nhiều).
+model StationPartner {
+  id        Int @id @default(autoincrement())
+  stationId Int
+  partnerId Int
+
+  station Station @relation(fields: [stationId], references: [id])
+  partner Partner @relation(fields: [partnerId], references: [id])
+
+  @@unique([stationId, partnerId])
+}
+
+// Nhiệm vụ trải nghiệm tại workshop đối tác.
+model WorkshopTask {
+  id               Int      @id @default(autoincrement())
+  partnerId        Int
+  stationId        Int
+  instructionVi    String
+  instructionEn    String
+  photoReqsVi      String
+  photoReqsEn      String
+  quizQuestionVi   String
+  quizQuestionEn   String
+  quizOptionsJson  String // JSON: [{vi, en}, ...]
+  quizCorrectIndex Int
+  rewardPoints     Int      @default(50)
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+
+  partner Partner @relation(fields: [partnerId], references: [id])
+  station Station @relation(fields: [stationId], references: [id])
+
+  @@unique([partnerId, stationId])
 }
