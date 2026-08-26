@@ -141,7 +141,8 @@ Bo tròn vừa phải, ngôn ngữ "đá mài mềm": nút 1rem, card 0.75rem, �
 - **Internal Padding:** 16px.
 
 ### Signature: Rương kho báu (chest-box)
-Nắp + thân hình hộp CSS thuần, màu theo tier (colorHex từ DB). Nắp mở rotateX(120deg). Glow tròn vàng radial phía sau lúc chưa mở — nghi thức trước phần thưởng.
+
+Nắp vòm nửa trụ (barrel lid), thân gỗ màu tier (colorHex từ DB). **Anatomy chung mọi tier:** trim vàng đồng (#d4af37) gồm nan góc dọc, nan ngang, đinh tán, ổ khóa then, chân đế; thân giữ màu tier (clay/gold/wine/jade) — vàng đồng là trim phổ quát, không đổi theo tier. Khi mở: vài xu vàng và đá quý tràn quanh miệng rương (bake sẵn trong model GLB và SVG fallback); 2D mở bằng rotate(-100deg) quanh mép sau nắp. Glow tròn vàng radial phía sau lúc chưa mở — nghi thức trước phần thưởng.
 
 ### Navigation
 Header timber chữ paper; tab/pill active nền gold hoặc son tùy ngữ cảnh; safe-area-aware.
