@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Package, Trophy } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { fetchState } from "@/lib/client";
@@ -33,6 +33,7 @@ export default function TreasurePage() {
   const [chestsError, setChestsError] = useState(false);
   const [chestsSettled, setChestsSettled] = useState(false);
   const [copied, setCopied] = useState(false);
+  const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const loadChests = useCallback(async (playerId: string) => {
     setChestsLoading(true);
@@ -74,15 +75,22 @@ export default function TreasurePage() {
       .catch(() => setError(true));
   }, [loadChests]);
 
+  const openPending = useRef(false);
+
   async function openFinal() {
-    if (!finalChest || !state) return;
-    await fetch("/api/chests", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ playerId: state.playerId, grantId: finalChest.grantId }),
-    }).catch(() => {});
-    setFinalChest(null);
-    await loadChests(state.playerId);
+    if (!finalChest || !state || openPending.current) return;
+    openPending.current = true;
+    try {
+      await fetch("/api/chests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ playerId: state.playerId, grantId: finalChest.grantId }),
+      }).catch(() => {});
+      setFinalChest(null);
+      await loadChests(state.playerId);
+    } finally {
+      openPending.current = false;
+    }
   }
 
   function retryChests() {
@@ -159,8 +167,9 @@ export default function TreasurePage() {
       return;
     }
     if (!(await copyToClipboard(text))) return;
+    if (copiedTimer.current) clearTimeout(copiedTimer.current);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    copiedTimer.current = setTimeout(() => setCopied(false), 2000);
   }
 
   return (

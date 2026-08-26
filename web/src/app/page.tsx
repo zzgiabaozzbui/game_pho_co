@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { BookOpen, Camera, Compass, Lock, MapPin, Puzzle } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { ensureSession, getPlayerId, setPlayerId } from "@/lib/client";
@@ -121,6 +121,7 @@ export default function Home() {
   const [recoverCode, setRecoverCode] = useState("");
   const [recoverMsg, setRecoverMsg] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [chests, setChests] = useState<{ total: number; unopened: number } | null>(
     null
   );
@@ -186,8 +187,9 @@ export default function Home() {
   async function copyCode() {
     if (!pid) return;
     if (!(await copyToClipboard(pid))) return;
+    if (copiedTimer.current) clearTimeout(copiedTimer.current);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    copiedTimer.current = setTimeout(() => setCopied(false), 2000);
   }
 
   return (

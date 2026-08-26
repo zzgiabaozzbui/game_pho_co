@@ -290,7 +290,7 @@ export default function StationFlow({
       }
       await load();
     } catch {
-      setRevealedHint(null);
+      /* giữ gợi ý đã hiển thị — chỉ bỏ qua lần lấy thất bại */
     } finally {
       setBusy(false);
     }
