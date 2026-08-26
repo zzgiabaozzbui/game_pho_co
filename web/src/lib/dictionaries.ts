@@ -105,6 +105,14 @@ const vi = {
   "answer.wrong": "Chưa đúng — thử lại nhé! (mỗi lần sai trừ ít điểm)",
   "hint.show": "Xem gợi ý (−20 điểm)",
   "hint.title": "Gợi ý chỉ đường",
+  "hint.confirm_title": "Trừ 20 điểm để xem gợi ý?",
+  "hint.confirm_yes": "Xem gợi ý",
+  "hint.confirm_no": "Để sau",
+  "play.legend_solved": "Đã giải",
+  "play.legend_current": "Đang làm",
+  "play.legend_locked": "Chưa đến",
+  "play.chest_open_failed":
+    "Chưa ghi nhận được lần mở — rương vẫn đang chờ, thử lại nhé.",
   "treasure.title": "Kho báu văn hóa",
   "treasure.workshop": "Workshop trải nghiệm văn hóa",
   "treasure.locked":
@@ -114,6 +122,9 @@ const vi = {
   "treasure.partner":
     "Phần thưởng của bạn là một trải nghiệm văn hóa tại workshop đối tác của chúng tôi: một buổi học làm đồ thủ công truyền thống giữa lòng phố cổ. Xuất trình màn hình này tại cửa để nhận ưu đãi.",
   "treasure.contact": "Liên hệ đối tác: hello@kho-bau-pho-co.example",
+  "treasure.load_error": "Không tải được bộ sưu tập.",
+  "treasure.stats_heading": "Hành trình của bạn",
+  "treasure.share": "Lưu kỷ niệm hành trình",
   "common.loading": "Đang tải…",
   "common.error": "Có lỗi xảy ra, thử lại nhé.",
   "common.retry": "Thử lại",
@@ -245,6 +256,14 @@ const en: Record<DictKey, string> = {
   "answer.wrong": "Not quite — try again! (each miss costs a few points)",
   "hint.show": "Reveal hint (−20 pts)",
   "hint.title": "Hint to the next street",
+  "hint.confirm_title": "Spend 20 points to reveal the hint?",
+  "hint.confirm_yes": "Reveal it",
+  "hint.confirm_no": "Maybe later",
+  "play.legend_solved": "Solved",
+  "play.legend_current": "In progress",
+  "play.legend_locked": "Not yet",
+  "play.chest_open_failed":
+    "Your chest open wasn't confirmed yet — it's still waiting, please retry.",
   "treasure.title": "The Cultural Treasure",
   "treasure.workshop": "Cultural experience workshop",
   "treasure.locked":
@@ -254,6 +273,9 @@ const en: Record<DictKey, string> = {
   "treasure.partner":
     "Your reward is a cultural experience at our partner workshop: a hands-on traditional craft session in the heart of the Old Quarter. Show this screen at the door to redeem.",
   "treasure.contact": "Partner contact: hello@kho-bau-pho-co.example",
+  "treasure.load_error": "Couldn't load your collection.",
+  "treasure.stats_heading": "Your journey",
+  "treasure.share": "Save this journey memory",
   "common.loading": "Loading…",
   "common.error": "Something went wrong, please retry.",
   "common.retry": "Retry",
