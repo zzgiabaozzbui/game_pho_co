@@ -9,5 +9,6 @@ docker-build.log
 web/dev.log
 *.log
 .superpowers/
-# vendor là clone riêng có .git nội bộ — bootstrap lại theo AGENTS.md khi clone mới
-vendor/
+# vendor (gốc repo) là clone riêng có .git nội bộ — bootstrap lại theo AGENTS.md khi clone mới.
+# Anchor "/" để KHÔNG nuốt web/public/vendor (asset MindAR vendored phải commit).
+/vendor/

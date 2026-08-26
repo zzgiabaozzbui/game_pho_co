@@ -149,7 +149,34 @@ const pGrant = await (await fetch(`${BASE}/api/chests?playerId=${pid}`)).json();
 const pg = pGrant.unopened.concat(pGrant.collection).find((g) => g.source === "PARTNER");
 pass("PARTNER trong bộ sưu tập + redact sourceRef", !!pg && pg.sourceRef === null);
 
-console.log("=== S9. Dọn dữ liệu du khách thử nghiệm ===");
+console.log("=== S10. Đối tác M3 (marker MindAR) ===");
+try {
+  const pcfgRes = await fetch(`${BASE}/api/partner/config`);
+  const pcfg = await pcfgRes.json().catch(() => null);
+  pass(
+    "/api/partner/config -> 200 {key, mindTargetPath}",
+    pcfgRes.status === 200 && pcfg?.key === "workshop" && pcfg?.mindTargetPath === "/markers/workshop.mind",
+    JSON.stringify(pcfg)
+  );
+  pass("config KHÔNG lộ token", !!pcfg && !("token" in pcfg), `keys=[${Object.keys(pcfg ?? {})}]`);
+} catch (e) {
+  pass("/api/partner/config -> 200 {key, mindTargetPath}", false, String(e));
+}
+try {
+  const pPage = await fetch(`${BASE}/partner`);
+  pass("trang /partner -> 200", pPage.status === 200, `status=${pPage.status}`);
+} catch (e) {
+  pass("trang /partner -> 200", false, String(e));
+}
+try {
+  const lib = await fetch(`${BASE}/vendor/mindar/mindar-image-three.prod.js`);
+  const buf = await lib.arrayBuffer();
+  pass("mindar-image-three.prod.js -> 200 (>500KB)", lib.status === 200 && buf.byteLength > 500000, `${buf.byteLength}B`);
+} catch (e) {
+  pass("mindar-image-three.prod.js -> 200 (>500KB)", false, String(e));
+}
+
+console.log("=== S9. Dọn dữ liệu du khách thử nghiệm (chạy cuối) ===");
 const del = db.prepare("DELETE FROM ChestGrant WHERE playerId = ?").run(pid);
 db.prepare("DELETE FROM Answer WHERE playerId = ?").run(pid);
 db.prepare("DELETE FROM CheckIn WHERE playerId = ?").run(pid);

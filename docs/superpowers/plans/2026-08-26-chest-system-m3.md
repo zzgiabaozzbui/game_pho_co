@@ -34,7 +34,7 @@
 - Produces: `public/vendor/mindar/mindar-image-three.prod.js` (+ các file .wasm mà nó nạp) — URL tĩnh ổn định để SW cache và script-injection.
 - Produces: global `window.MINDAR.IMAGE.MindARThree` sau khi inject script (UMD build).
 
-- [ ] **Step 1: Cài + copy**
+- [x] **Step 1: Cài + copy**
 
 Run (workdir `web`):
 
@@ -44,7 +44,7 @@ npm install mind-ar; if ($?) { New-Item -ItemType Directory -Force -Path "public
 
 Sau copy: `Get-ChildItem public\vendor\mindar | Select-Object Name,Length` — ghi lại danh sách. Nếu prod js nạp thêm asset nào khác lúc runtime (xem chuỗi `locateFile`/fetch trong file), copy bổ sung cùng thư mục.
 
-- [ ] **Step 2: Hướng dẫn ops**
+- [x] **Step 2: Hướng dẫn ops**
 
 `web/public/markers/README.md`:
 
@@ -60,7 +60,7 @@ Sau copy: `Get-ChildItem public\vendor\mindar | Select-Object Name,Length` — g
 5. Test: mở `/partner?t=<token>` trên điện thoại (HTTPS), bấm Quét, chĩa vào poster.
 ```
 
-- [ ] **Step 3: CHECKPOINT** — lint/typecheck/test/build xanh (assets ngoài src không ảnh hưởng).
+- [x] **Step 3: CHECKPOINT** — lint/typecheck/test/build xanh (assets ngoài src không ảnh hưởng).
 
 ### Task 2: Schema + seed `PartnerSpot.mindTargetPath`
 
@@ -70,8 +70,8 @@ Sau copy: `Get-ChildItem public\vendor\mindar | Select-Object Name,Length` — g
 **Interfaces:**
 - Produces: cột `PartnerSpot.mindTargetPath String @default("/markers/workshop.mind")` — Task 3 đọc, Task 5 tiêu thụ.
 
-- [ ] **Step 1:** Sửa model `PartnerSpot` thêm field trên. Run `npx prisma db push` (workdir web) — sync OK.
-- [ ] **Step 2:** Seed: khối upsert PartnerSpot thêm `mindTargetPath` vào cả update lẫn create:
+- [x] **Step 1:** Sửa model `PartnerSpot` thêm field trên. Run `npx prisma db push` (workdir web) — sync OK.
+- [x] **Step 2:** Seed: khối upsert PartnerSpot thêm `mindTargetPath` vào cả update lẫn create:
 ```ts
 update: { mindTargetPath: "/markers/workshop.mind" },
 create: { key: "workshop", token: partnerToken, mindTargetPath: "/markers/workshop.mind" },
@@ -80,7 +80,7 @@ Chạy `npm run db:seed`; xác minh:
 ```powershell
 node -e "const D=require('better-sqlite3');console.log(new D('dev.db').prepare('SELECT key,mindTargetPath FROM PartnerSpot').all())"
 ```
-- [ ] **Step 3: CHECKPOINT** — lint/typecheck/test xanh.
+- [x] **Step 3: CHECKPOINT** — lint/typecheck/test xanh.
 
 ### Task 3: API `GET /api/partner/config`
 
@@ -90,7 +90,7 @@ node -e "const D=require('better-sqlite3');console.log(new D('dev.db').prepare('
 **Interfaces:**
 - Produces: `200 {key: string, mindTargetPath: string}` (findFirst PartnerSpot) · `404 {error:"not_configured"}` nếu chưa seed · rateLimit 60/phút/IP. KHÔNG trả token.
 
-- [ ] **Step 1: Implement** (pattern y hệt route chests GET — import `db`, `clientIp, rateLimit` từ `@/lib/rate-limit`):
+- [x] **Step 1: Implement** (pattern y hệt route chests GET — import `db`, `clientIp, rateLimit` từ `@/lib/rate-limit`):
 ```ts
 export async function GET(req: Request) {
   const rl = rateLimit(`partner-config:${clientIp(req)}`, { limit: 60, windowMs: 60_000 });
@@ -100,14 +100,14 @@ export async function GET(req: Request) {
   return NextResponse.json({ key: spot.key, mindTargetPath: spot.mindTargetPath });
 }
 ```
-- [ ] **Step 2: CHECKPOINT** — lint/typecheck/test xanh.
+- [x] **Step 2: CHECKPOINT** — lint/typecheck/test xanh.
 
 ### Task 4: Dictionaries `partner.*`
 
 **Files:**
 - Modify: `web/src/lib/dictionaries.ts` (nhóm sau `ar.*`)
 
-- [ ] Thêm ĐỦ cả VI + EN:
+- [x] Thêm ĐỦ cả VI + EN:
 ```
 partner.title            VI "Quà tặng từ đối tác"            EN "Partner gift"
 partner.subtitle         VI "Quét marker tại quầy workshop để nhận rương Huyền Bí" EN "Scan the marker at the workshop counter to receive an Epic chest"
@@ -123,7 +123,7 @@ partner.camera_error     VI "Không mở được camera. Hãy dùng nút nhận
 partner.marker_missing   VI "Chưa cấu hình marker — liên hệ quản trị." EN "Marker not configured — contact the admin."
 partner.to_collection    VI "Xem bộ sưu tập"                   EN "View collection"
 ```
-- [ ] CHECKPOINT typecheck PASS (parity VI/EN do DictKey bảo đảm).
+- [x] CHECKPOINT typecheck PASS (parity VI/EN do DictKey bảo đảm).
 
 ### Task 5: Trang `/partner`
 
@@ -170,38 +170,38 @@ const validShape = /^[a-f0-9]{32,128}$/.test(token); // hex từ randomBytes(24)
 ```
 - Cleanup nghiêm ngặt: unmount phải stop camera + hủy animation loop (pattern dispose như InlineThreeRenderer).
 
-- [ ] Step 1 implement · Step 2 smoke: dev server → `/partner` (không token) hiện thông báo; `/?t=sai` hiện missing_token; `/partner?t=<48hex>` hiện nút quét + nút thủ công (KHÔNG bấm quét trong môi trường không cam — chỉ xác nhận UI states render). Kill server.
-- [ ] Step 3 CHECKPOINT — lint/typecheck/test/build xanh.
+- [x] Step 1 implement · Step 2 smoke: dev server → `/partner` (không token) hiện thông báo; `/?t=sai` hiện missing_token; `/partner?t=<48hex>` hiện nút quét + nút thủ công (KHÔNG bấm quét trong môi trường không cam — chỉ xác nhận UI states render). Kill server.
+- [x] Step 3 CHECKPOINT — lint/typecheck/test/build xanh.
 
 ### Task 6: SW cache + điểm khám phá
 
 **Files:**
 - Modify: `web/public/sw.js`, `web/src/app/treasure/page.tsx`
 
-- [ ] **Step 1 sw.js:** đổi `CACHE = "pc36-v2"`; thêm điều kiện runtime-cache (song song khối `_next/static/`) cho:
+- [x] **Step 1 sw.js:** đổi `CACHE = "pc36-v2"`; thêm điều kiện runtime-cache (song song khối `_next/static/`) cho:
 ```js
 if (url.pathname.startsWith("/vendor/mindar/") || url.pathname.startsWith("/markers/")) {
   // cache-first như khối _next/static hiện có
 }
 ```
-- [ ] **Step 2 treasure CTA:** cạnh phần partner hiện có (line ~151 `t("treasure.partner")`), biến thành Link tới `/partner` (kiểm markup thật rồi sửa tối thiểu; thêm class hover).
-- [ ] Step 3 CHECKPOINT + build xanh.
+- [x] **Step 2 treasure CTA:** cạnh phần partner hiện có (line ~151 `t("treasure.partner")`), biến thành Link tới `/partner` (kiểm markup thật rồi sửa tối thiểu; thêm class hover).
+- [x] Step 3 CHECKPOINT + build xanh.
 
 ### Task 7: Admin QR token
 
 **Files:**
 - Modify: `web/src/app/admin/page.tsx` (khối partnerSpot ~line 760)
 
-- [ ] Dynamic import `qrcode` (đã có deps) khi bấm nút "QR": sinh dataURL cho `${location.origin}/partner?t=${token}` render `<img>` + ghi chú "in QR dán cạnh poster marker". Admin là tiếng Việt cứng được.
-- [ ] CHECKPOINT — lint/typecheck/test/build xanh, commit.
+- [x] Dynamic import `qrcode` (đã có deps) khi bấm nút "QR": sinh dataURL cho `${location.origin}/partner?t=${token}` render `<img>` + ghi chú "in QR dán cạnh poster marker". Admin là tiếng Việt cứng được.
+- [x] CHECKPOINT — lint/typecheck/test/build xanh, commit.
 
 ### Task 8: Kiểm chứng cuối + cập nhật tài liệu
 
-- [ ] E2E mở rộng `scripts/e2e-du-khach.mjs` thêm S10: GET `/api/partner/config` → 200 `{key:"workshop", mindTargetPath}`; `/partner` → 200; `/vendor/mindar/mindar-image-three.prod.js` → 200; chạy lại ALL PASS. Commit chung thay đổi.
-- [ ] Ràng buộc cô lập: `Get-ChildItem web\src -Recurse -Include *.ts,*.tsx | Select-String "mind-ar|MINDAR"` → CHỈ match trong `app/partner/`.
-- [ ] Tick checkbox Task 1–8 trong plan này; PENDING-HUMAN bảng dưới.
-- [ ] Cập nhật: spec dòng tiến độ (M3 code-DONE, nghiệm thu chờ thiết bị) + AGENTS.md (status M3 + cách test `/partner`).
-- [ ] CHECKPOINT CUỐI đầy đủ.
+- [x] E2E mở rộng `scripts/e2e-du-khach.mjs` thêm S10: GET `/api/partner/config` → 200 `{key:"workshop", mindTargetPath}`; `/partner` → 200; `/vendor/mindar/mindar-image-three.prod.js` → 200; chạy lại ALL PASS. Commit chung thay đổi.
+- [x] Ràng buộc cô lập: `Get-ChildItem web\src -Recurse -Include *.ts,*.tsx | Select-String "mind-ar|MINDAR"` → CHỈ match trong `app/partner/`.
+- [x] Tick checkbox Task 1–8 trong plan này; PENDING-HUMAN bảng dưới.
+- [x] Cập nhật: spec dòng tiến độ (M3 code-DONE, nghiệm thu chờ thiết bị) + AGENTS.md (status M3 + cách test `/partner`).
+- [x] CHECKPOINT CUỐI đầy đủ.
 
 ## Checklist PENDING-HUMAN (nghiệm thu vận hành — điều kiện SHIP M3)
 
@@ -219,3 +219,4 @@ if (url.pathname.startsWith("/vendor/mindar/") || url.pathname.startsWith("/mark
 - Spec coverage §6: trang riêng ✓(T5) · .mind prebuilt + in ấn thuộc ops ✓(T1 README/T2 path) · gọi claim-partner tái sử dụng ✓(T5 doClaim) · tái dùng ChestReveal ✓ · tách khỏi engine chest ✓(constraint + T8 grep) · SW cache lib+target ✓(T6) · §9 thiếu sáng ✓(PENDING-HUMAN).
 - Type consistency: `mindTargetPath` T2↔T3↔T5; keys `partner.*` T4↔T5; token shape regex khớp seed randomBytes(24).toString("hex")=48.
 - Placeholder scan: không TBD; mọi step có code/lệnh cụ thể.
+- M3 executed 2026-08-26 via SDD; device checklist pending human.
