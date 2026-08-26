@@ -1006,8 +1006,8 @@ async function main() {
   const partnerToken = randomBytes(32).toString("hex");
   let spot = await db.partnerSpot.upsert({
     where: { key: "workshop" },
-    update: {},
-    create: { key: "workshop", token: partnerToken },
+    update: { mindTargetPath: "/markers/workshop.mind" },
+    create: { key: "workshop", token: partnerToken, mindTargetPath: "/markers/workshop.mind" },
   });
   if (spot.token.length < 64) {
     spot = await db.partnerSpot.update({ where: { key: "workshop" }, data: { token: partnerToken } });

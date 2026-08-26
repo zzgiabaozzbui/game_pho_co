@@ -135,9 +135,10 @@ model ChestGrant {
 
 // Điểm nhận thưởng của địa điểm đối tác (workshop), định danh bằng token in trên tài liệu.
 model PartnerSpot {
-  id    Int    @id @default(autoincrement())
-  key   String @unique
-  token String @unique
+  id             Int    @id @default(autoincrement())
+  key            String @unique
+  token          String @unique
+  mindTargetPath String @default("/markers/workshop.mind")
 }
 
 // Cấu hình cơ chế DROP: xác suất rơi rương + trọng số chọn cấp.
