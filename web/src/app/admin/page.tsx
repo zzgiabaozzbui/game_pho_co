@@ -561,6 +561,7 @@ function ChestsTab() {
   const [editingLootForm, setEditingLootForm] = useState({ scopeKey: "", type: "POINTS", pointsAmount: "", storyVi: "", storyEn: "", youtubeUrl: "", imagePath: "", sortOrder: "" });
   const [editUploading, setEditUploading] = useState(false);
   const [previewTier, setPreviewTier] = useState<ChestTierRow | null>(null);
+  const [addingLoot, setAddingLoot] = useState(false);
 
   const load = useCallback(async () => {
     const r = await fetch("/api/admin/chests");
@@ -618,6 +619,7 @@ function ChestsTab() {
       ...(newLoot.imagePath ? { imagePath: newLoot.imagePath } : {}),
     });
     setNewLoot(EMPTY_LOOT);
+    setAddingLoot(false);
   }
 
   async function showPartnerQr() {
@@ -678,11 +680,17 @@ function ChestsTab() {
   }
 
   useEffect(() => {
-    if (!previewTier) return;
-    function onKey(e: KeyboardEvent) { if (e.key === "Escape") setPreviewTier(null); }
+    if (!previewTier && !addingLoot && !editingLoot) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        setPreviewTier(null);
+        setAddingLoot(false);
+        setEditingLoot(null);
+      }
+    }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [previewTier]);
+  }, [previewTier, addingLoot, editingLoot]);
 
   if (!data) return <p className="py-16 text-center text-ink-soft">…</p>;
 
@@ -830,11 +838,12 @@ function ChestsTab() {
         ))}
 
         {editingLoot && (
-          <div className="mt-4 rounded-xl border border-gold/40 bg-gold/5 p-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-black text-ink">Sửa loot #{editingLoot.id}</h3>
-              <button onClick={() => setEditingLoot(null)} className="text-xs text-ink-soft hover:text-ink">Hủy</button>
-            </div>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 backdrop-blur-sm" onClick={() => setEditingLoot(null)}>
+            <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-paper p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-black text-ink">Sửa loot #{editingLoot.id}</h3>
+                <button onClick={() => setEditingLoot(null)} className="text-xs text-ink-soft hover:text-ink">Hủy</button>
+              </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={label}>Scope key</label>
@@ -902,71 +911,84 @@ function ChestsTab() {
             >
               Lưu
             </button>
+            </div>
           </div>
         )}
 
-        <h3 className={`${label} font-black`}>Thêm loot mới</h3>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className={label}>Scope key (vd: station:hang-bac)</label>
-            <input className={field} value={newLoot.scopeKey} onChange={(ev) => setNewLoot({ ...newLoot, scopeKey: ev.target.value })} />
-          </div>
-          <div>
-            <label className={label}>Loại</label>
-            <select className={field} value={newLoot.type} onChange={(ev) => setNewLoot({ ...newLoot, type: ev.target.value })}>
-              {LOOT_TYPES.map((tp) => (
-                <option key={tp} value={tp}>
-                  {tp}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className={label}>Điểm (nếu POINTS)</label>
-            <input type="number" className={field} value={newLoot.pointsAmount} onChange={(ev) => setNewLoot({ ...newLoot, pointsAmount: ev.target.value })} />
-          </div>
-          <div>
-            <label className={label}>Thứ tự</label>
-            <input type="number" className={field} value={newLoot.sortOrder} onChange={(ev) => setNewLoot({ ...newLoot, sortOrder: ev.target.value })} />
-          </div>
-        </div>
-        <label className={label}>Story (VI)</label>
-        <textarea rows={2} className={field} value={newLoot.storyVi} onChange={(ev) => setNewLoot({ ...newLoot, storyVi: ev.target.value })} />
-        <label className={label}>Story (EN)</label>
-        <textarea rows={2} className={field} value={newLoot.storyEn} onChange={(ev) => setNewLoot({ ...newLoot, storyEn: ev.target.value })} />
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className={label}>YouTube URL</label>
-            <input className={field} value={newLoot.youtubeUrl} onChange={(ev) => setNewLoot({ ...newLoot, youtubeUrl: ev.target.value })} />
-          </div>
-          <div>
-            <label className={label}>Image</label>
-            <div className="mt-1 flex items-center gap-3">
-              <label className="cursor-pointer rounded-lg border border-line bg-cream px-3 py-2 text-sm text-ink hover:bg-gold/10">
-                {uploading ? "Đang upload…" : "Chọn ảnh"}
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  className="hidden"
-                  onChange={(ev) => {
-                    const f = ev.target.files?.[0];
-                    if (f) uploadLootImage(f);
-                  }}
-                />
-              </label>
-              {uploading && <span className="text-xs text-ink-soft">⏳</span>}
-            </div>
-            {newLoot.imagePath && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={lootImgSrc(newLoot.imagePath)} alt="preview" className="mt-2 h-32 max-w-full rounded-lg border border-line object-cover" />
-            )}
-            <label className={`${label} mt-2`}>Path thủ công</label>
-            <input className={field} value={newLoot.imagePath} onChange={(ev) => setNewLoot({ ...newLoot, imagePath: ev.target.value })} placeholder="/images/loot/…" />
-          </div>
-        </div>
-        <button onClick={addLoot} className="btn-primary mt-3 px-4 py-2 text-sm">
-          Thêm
+        <button onClick={() => setAddingLoot(true)} className="btn-primary mt-4 px-4 py-2 text-sm">
+          Thêm loot
         </button>
+        {addingLoot && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 backdrop-blur-sm" onClick={() => setAddingLoot(false)}>
+            <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-2xl bg-paper p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-black text-ink">Thêm loot mới</h3>
+                <button onClick={() => setAddingLoot(false)} className="text-xs text-ink-soft hover:text-ink">Hủy</button>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={label}>Scope key (vd: station:hang-bac)</label>
+                  <input className={field} value={newLoot.scopeKey} onChange={(ev) => setNewLoot({ ...newLoot, scopeKey: ev.target.value })} />
+                </div>
+                <div>
+                  <label className={label}>Loại</label>
+                  <select className={field} value={newLoot.type} onChange={(ev) => setNewLoot({ ...newLoot, type: ev.target.value })}>
+                    {LOOT_TYPES.map((tp) => (
+                      <option key={tp} value={tp}>
+                        {tp}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className={label}>Điểm (nếu POINTS)</label>
+                  <input type="number" className={field} value={newLoot.pointsAmount} onChange={(ev) => setNewLoot({ ...newLoot, pointsAmount: ev.target.value })} />
+                </div>
+                <div>
+                  <label className={label}>Thứ tự</label>
+                  <input type="number" className={field} value={newLoot.sortOrder} onChange={(ev) => setNewLoot({ ...newLoot, sortOrder: ev.target.value })} />
+                </div>
+              </div>
+              <label className={label}>Story (VI)</label>
+              <textarea rows={2} className={field} value={newLoot.storyVi} onChange={(ev) => setNewLoot({ ...newLoot, storyVi: ev.target.value })} />
+              <label className={label}>Story (EN)</label>
+              <textarea rows={2} className={field} value={newLoot.storyEn} onChange={(ev) => setNewLoot({ ...newLoot, storyEn: ev.target.value })} />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={label}>YouTube URL</label>
+                  <input className={field} value={newLoot.youtubeUrl} onChange={(ev) => setNewLoot({ ...newLoot, youtubeUrl: ev.target.value })} />
+                </div>
+                <div>
+                  <label className={label}>Image</label>
+                  <div className="mt-1 flex items-center gap-3">
+                    <label className="cursor-pointer rounded-lg border border-line bg-cream px-3 py-2 text-sm text-ink hover:bg-gold/10">
+                      {uploading ? "Đang upload…" : "Chọn ảnh"}
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                        className="hidden"
+                        onChange={(ev) => {
+                          const f = ev.target.files?.[0];
+                          if (f) uploadLootImage(f);
+                        }}
+                      />
+                    </label>
+                    {uploading && <span className="text-xs text-ink-soft">⏳</span>}
+                  </div>
+                  {newLoot.imagePath && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={lootImgSrc(newLoot.imagePath)} alt="preview" className="mt-2 h-32 max-w-full rounded-lg border border-line object-cover" />
+                  )}
+                  <label className={`${label} mt-2`}>Path thủ công</label>
+                  <input className={field} value={newLoot.imagePath} onChange={(ev) => setNewLoot({ ...newLoot, imagePath: ev.target.value })} placeholder="/images/loot/…" />
+                </div>
+              </div>
+              <button onClick={addLoot} className="btn-primary mt-3 px-4 py-2 text-sm">
+                Thêm
+              </button>
+            </div>
+          </div>
+        )}
       </section>
 
       <section className={section}>
