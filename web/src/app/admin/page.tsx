@@ -42,7 +42,7 @@ interface PendingReview {
   station: { slug: string; nameVi: string; nameEn: string; orderIndex: number };
 }
 
-type Tab = "stations" | "reviews" | "qr" | "chests" | "paywall";
+type Tab = "stations" | "reviews" | "qr" | "chests";
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState<boolean | null>(null);
@@ -92,7 +92,6 @@ export default function AdminPage() {
             ["stations", "Trạm & nội dung"],
             ["reviews", "Duyệt ảnh"],
             ["chests", "Rương"],
-            ["paywall", "Paywall"],
             ["qr", "In mã QR"],
           ] as [Tab, string][]
         ).map(([id, label]) => (
@@ -112,7 +111,6 @@ export default function AdminPage() {
         {tab === "stations" && <StationsTab />}
         {tab === "reviews" && <ReviewsTab />}
         {tab === "chests" && <ChestsTab />}
-        {tab === "paywall" && <PaywallTab />}
         {tab === "qr" && <QrTab />}
       </div>
 
