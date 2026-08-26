@@ -42,7 +42,7 @@ interface PendingReview {
   station: { slug: string; nameVi: string; nameEn: string; orderIndex: number };
 }
 
-type Tab = "stations" | "reviews" | "qr" | "chests";
+type Tab = "stations" | "reviews" | "qr" | "chests" | "partners";
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState<boolean | null>(null);
@@ -93,6 +93,7 @@ export default function AdminPage() {
             ["reviews", "Duyệt ảnh"],
             ["chests", "Rương"],
             ["qr", "In mã QR"],
+            ["partners", "Đối tác"],
           ] as [Tab, string][]
         ).map(([id, label]) => (
           <button
@@ -112,6 +113,7 @@ export default function AdminPage() {
         {tab === "reviews" && <ReviewsTab />}
         {tab === "chests" && <ChestsTab />}
         {tab === "qr" && <QrTab />}
+        {tab === "partners" && <PartnersTab />}
       </div>
 
       <Link href="/" className="mt-10 block text-center text-sm text-ink-soft underline">
@@ -1057,5 +1059,121 @@ function ChestsTab() {
       </div>
     )}
     </>
+  );
+}
+
+interface PartnerData {
+  id?: number;
+  name: string;
+  phone: string;
+  address: string;
+  description: string;
+  googleMapsUrl: string;
+  lat: string | number | null;
+  lng: string | number | null;
+}
+
+function PartnerForm({ initial, onSave, onCancel }: { initial: PartnerData | null; onSave: (d: PartnerData) => void; onCancel: () => void }) {
+  const [form, setForm] = useState<PartnerData>(initial ?? { name: "", phone: "", address: "", description: "", googleMapsUrl: "", lat: "", lng: "" });
+  return (
+    <div className="rounded-xl border border-line/40 bg-white p-4 space-y-3">
+      <input placeholder="Tên đối tác *" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full rounded-lg border px-3 py-2" />
+      <input placeholder="Số điện thoại" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="w-full rounded-lg border px-3 py-2" />
+      <input placeholder="Địa chỉ" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} className="w-full rounded-lg border px-3 py-2" />
+      <textarea placeholder="Mô tả" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="w-full rounded-lg border px-3 py-2" />
+      <input placeholder="Link Google Maps" value={form.googleMapsUrl} onChange={e => setForm({ ...form, googleMapsUrl: e.target.value })} className="w-full rounded-lg border px-3 py-2" />
+      <div className="flex gap-2">
+        <input placeholder="Vĩ độ" value={form.lat ?? ""} onChange={e => setForm({ ...form, lat: e.target.value })} className="flex-1 rounded-lg border px-3 py-2" />
+        <input placeholder="Kinh độ" value={form.lng ?? ""} onChange={e => setForm({ ...form, lng: e.target.value })} className="flex-1 rounded-lg border px-3 py-2" />
+      </div>
+      <div className="flex gap-2">
+        <button onClick={() => onSave({ ...form, lat: form.lat !== "" && form.lat !== null ? Number(form.lat) : null, lng: form.lng !== "" && form.lng !== null ? Number(form.lng) : null })}
+          className="rounded-lg bg-son px-4 py-2 text-sm font-semibold text-cream">Lưu</button>
+        <button onClick={onCancel} className="rounded-lg border px-4 py-2 text-sm">Hủy</button>
+      </div>
+    </div>
+  );
+}
+
+interface PartnerRow {
+  id: number;
+  name: string;
+  phone: string;
+  address: string;
+  description: string;
+  googleMapsUrl: string;
+  lat: number | null;
+  lng: number | null;
+}
+
+function PartnersTab() {
+  const [partners, setPartners] = useState<PartnerRow[]>([]);
+  const [editing, setEditing] = useState<PartnerRow | null>(null);
+  const [showForm, setShowForm] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/admin/partners").then(r => r.json()).then(setPartners);
+  }, []);
+
+  const handleSave = async (data: PartnerData) => {
+    if (editing) {
+      await fetch(`/api/admin/partners/${editing.id}`, {
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+    } else {
+      await fetch("/api/admin/partners", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+    }
+    setShowForm(false);
+    setEditing(null);
+    fetch("/api/admin/partners").then(r => r.json()).then(setPartners);
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm("Xóa đối tác này?")) return;
+    await fetch(`/api/admin/partners/${id}`, { method: "DELETE" });
+    fetch("/api/admin/partners").then(r => r.json()).then(setPartners);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Đối tác</h3>
+        <button onClick={() => { setEditing(null); setShowForm(true); }}
+          className="rounded-lg bg-son px-3 py-1.5 text-sm font-semibold text-cream">
+          + Thêm đối tác
+        </button>
+      </div>
+
+      {showForm && (
+        <PartnerForm
+          initial={editing}
+          onSave={handleSave}
+          onCancel={() => { setShowForm(false); setEditing(null); }}
+        />
+      )}
+
+      <div className="space-y-2">
+        {partners.map(p => (
+          <div key={p.id} className="flex items-center justify-between rounded-xl border border-line/40 bg-white/60 p-3">
+            <div>
+              <div className="font-semibold">{p.name}</div>
+              <div className="text-sm text-ink-soft">{p.address}</div>
+              <div className="text-sm text-ink-soft">{p.phone}</div>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => { setEditing(p); setShowForm(true); }}
+                className="text-sm text-son underline">Sửa</button>
+              <button onClick={() => handleDelete(p.id)}
+                className="text-sm text-red-600 underline">Xóa</button>
+            </div>
+          </div>
+        ))}
+        {partners.length === 0 && <p className="text-ink-soft">Chưa có đối tác nào</p>}
+      </div>
+    </div>
   );
 }
