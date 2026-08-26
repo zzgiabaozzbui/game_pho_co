@@ -42,7 +42,7 @@ interface PendingReview {
   station: { slug: string; nameVi: string; nameEn: string; orderIndex: number };
 }
 
-type Tab = "stations" | "reviews" | "qr" | "chests" | "partners";
+type Tab = "stations" | "reviews" | "qr" | "chests" | "partners" | "challenges";
 
 export default function AdminPage() {
   const [authed, setAuthed] = useState<boolean | null>(null);
@@ -94,6 +94,7 @@ export default function AdminPage() {
             ["chests", "Rương"],
             ["qr", "In mã QR"],
             ["partners", "Đối tác"],
+            ["challenges", "Thử thách"],
           ] as [Tab, string][]
         ).map(([id, label]) => (
           <button
@@ -114,6 +115,7 @@ export default function AdminPage() {
         {tab === "chests" && <ChestsTab />}
         {tab === "qr" && <QrTab />}
         {tab === "partners" && <PartnersTab />}
+        {tab === "challenges" && <ChallengesTab />}
       </div>
 
       <Link href="/" className="mt-10 block text-center text-sm text-ink-soft underline">
@@ -1173,6 +1175,166 @@ function PartnersTab() {
           </div>
         ))}
         {partners.length === 0 && <p className="text-ink-soft">Chưa có đối tác nào</p>}
+      </div>
+    </div>
+  );
+}
+
+function ChallengesTab() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [tasks, setTasks] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [partners, setPartners] = useState<any[]>([]);
+  const [filterPartner, setFilterPartner] = useState<string>("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [editing, setEditing] = useState<any | null>(null);
+  const [showForm, setShowForm] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/admin/partners").then(r => r.json()).then(setPartners);
+  }, []);
+
+  useEffect(() => {
+    const url = filterPartner ? `/api/admin/challenges?partnerId=${filterPartner}` : "/api/admin/challenges";
+    fetch(url).then(r => r.json()).then(setTasks);
+  }, [filterPartner]);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleSave = async (data: any) => {
+    if (editing) {
+      await fetch(`/api/admin/challenges/${editing.id}`, {
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+    } else {
+      await fetch("/api/admin/challenges", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+    }
+    setShowForm(false);
+    setEditing(null);
+    const url = filterPartner ? `/api/admin/challenges?partnerId=${filterPartner}` : "/api/admin/challenges";
+    fetch(url).then(r => r.json()).then(setTasks);
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm("Xóa nhiệm vụ này?")) return;
+    await fetch(`/api/admin/challenges/${id}`, { method: "DELETE" });
+    const url = filterPartner ? `/api/admin/challenges?partnerId=${filterPartner}` : "/api/admin/challenges";
+    fetch(url).then(r => r.json()).then(setTasks);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold">Nhiệm vụ Workshop</h3>
+        <button onClick={() => { setEditing(null); setShowForm(true); }}
+          className="rounded-lg bg-son px-3 py-1.5 text-sm font-semibold text-cream">
+          + Thêm nhiệm vụ
+        </button>
+      </div>
+
+      <select value={filterPartner} onChange={e => setFilterPartner(e.target.value)}
+        className="rounded-lg border px-3 py-2 text-sm">
+        <option value="">Tất cả đối tác</option>
+        {partners.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+      </select>
+
+      {showForm && (
+        <ChallengeForm
+          partners={partners}
+          initial={editing}
+          onSave={handleSave}
+          onCancel={() => { setShowForm(false); setEditing(null); }}
+        />
+      )}
+
+      <div className="space-y-2">
+        {tasks.map(t => (
+          <div key={t.id} className="flex items-center justify-between rounded-xl border border-line/40 bg-white/60 p-3">
+            <div>
+              <div className="font-semibold">{t.partner?.name}</div>
+              <div className="text-sm text-ink-soft">{t.instructionVi}</div>
+              <div className="text-xs text-ink-soft">+{t.rewardPoints} điểm</div>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={() => { setEditing(t); setShowForm(true); }}
+                className="text-sm text-son underline">Sửa</button>
+              <button onClick={() => handleDelete(t.id)}
+                className="text-sm text-red-600 underline">Xóa</button>
+            </div>
+          </div>
+        ))}
+        {tasks.length === 0 && <p className="text-ink-soft">Chưa có nhiệm vụ nào</p>}
+      </div>
+    </div>
+  );
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function ChallengeForm({ partners, initial, onSave, onCancel }: { partners: any[]; initial: any | null; onSave: (d: any) => void; onCancel: () => void }) {
+  const [form, setForm] = useState(initial ?? {
+    partnerId: "", stationId: "",
+    instructionVi: "", instructionEn: "",
+    photoReqsVi: "", photoReqsEn: "",
+    hasQuiz: false, quizQuestionVi: "", quizQuestionEn: "",
+    quizOptions: [{ vi: "", en: "" }, { vi: "", en: "" }, { vi: "", en: "" }],
+    quizCorrectIndex: 0,
+    rewardPoints: 50, sortOrder: 0,
+  });
+
+  return (
+    <div className="rounded-xl border border-line/40 bg-white p-4 space-y-3">
+      <select value={form.partnerId} onChange={e => setForm({ ...form, partnerId: Number(e.target.value) })} className="w-full rounded-lg border px-3 py-2">
+        <option value="">Chọn đối tác *</option>
+        {partners.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+      </select>
+      <input placeholder="Station ID" value={form.stationId} onChange={e => setForm({ ...form, stationId: Number(e.target.value) })} className="w-full rounded-lg border px-3 py-2" />
+      <textarea placeholder="Hướng dẫn (VI) *" value={form.instructionVi} onChange={e => setForm({ ...form, instructionVi: e.target.value })} className="w-full rounded-lg border px-3 py-2" />
+      <textarea placeholder="Hướng dẫn (EN) *" value={form.instructionEn} onChange={e => setForm({ ...form, instructionEn: e.target.value })} className="w-full rounded-lg border px-3 py-2" />
+      <input placeholder="Yêu cầu ảnh (VI) *" value={form.photoReqsVi} onChange={e => setForm({ ...form, photoReqsVi: e.target.value })} className="w-full rounded-lg border px-3 py-2" />
+      <input placeholder="Yêu cầu ảnh (EN) *" value={form.photoReqsEn} onChange={e => setForm({ ...form, photoReqsEn: e.target.value })} className="w-full rounded-lg border px-3 py-2" />
+
+      <label className="flex items-center gap-2 text-sm">
+        <input type="checkbox" checked={form.hasQuiz} onChange={e => setForm({ ...form, hasQuiz: e.target.checked })} />
+        Có câu hỏi bổ sung
+      </label>
+
+      {form.hasQuiz && (
+        <>
+          <input placeholder="Câu hỏi (VI)" value={form.quizQuestionVi} onChange={e => setForm({ ...form, quizQuestionVi: e.target.value })} className="w-full rounded-lg border px-3 py-2" />
+          <input placeholder="Câu hỏi (EN)" value={form.quizQuestionEn} onChange={e => setForm({ ...form, quizQuestionEn: e.target.value })} className="w-full rounded-lg border px-3 py-2" />
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {form.quizOptions.map((opt: any, i: number) => (
+            <div key={i} className="flex gap-2">
+              <input placeholder={`Đáp án ${i + 1} (VI)`} value={opt.vi} onChange={e => {
+                const opts = [...form.quizOptions]; opts[i] = { ...opts[i], vi: e.target.value }; setForm({ ...form, quizOptions: opts });
+              }} className="flex-1 rounded-lg border px-3 py-2" />
+              <input placeholder={`Đáp án ${i + 1} (EN)`} value={opt.en} onChange={e => {
+                const opts = [...form.quizOptions]; opts[i] = { ...opts[i], en: e.target.value }; setForm({ ...form, quizOptions: opts });
+              }} className="flex-1 rounded-lg border px-3 py-2" />
+            </div>
+          ))}
+          <select value={form.quizCorrectIndex} onChange={e => setForm({ ...form, quizCorrectIndex: Number(e.target.value) })} className="w-full rounded-lg border px-3 py-2">
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {form.quizOptions.map((_: any, i: number) => <option key={i} value={i}>Đáp án {i + 1} đúng</option>)}
+          </select>
+        </>
+      )}
+
+      <input type="number" placeholder="Điểm thưởng" value={form.rewardPoints} onChange={e => setForm({ ...form, rewardPoints: Number(e.target.value) })} className="w-full rounded-lg border px-3 py-2" />
+
+      <div className="flex gap-2">
+        <button onClick={() => onSave({
+          ...form,
+          quizOptionsJson: form.hasQuiz ? JSON.stringify(form.quizOptions) : null,
+          quizCorrectIndex: form.hasQuiz ? form.quizCorrectIndex : null,
+          quizQuestionVi: form.hasQuiz ? form.quizQuestionVi : null,
+          quizQuestionEn: form.hasQuiz ? form.quizQuestionEn : null,
+        })}
+          className="rounded-lg bg-son px-4 py-2 text-sm font-semibold text-cream">Lưu</button>
+        <button onClick={onCancel} className="rounded-lg border px-4 py-2 text-sm">Hủy</button>
       </div>
     </div>
   );
