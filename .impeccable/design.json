@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-26T05:05:00Z",
+  "title": "Design System: Phố Cổ Hà Nội — Truy tìm Kho báu",
+  "extensions": {
+    "colorMeta": {
+      "son": { "role": "primary", "displayName": "Sơn đỏ", "canonical": "#b4432f", "tonalRamp": ["#5a2115", "#7c2e1c", "#96351f", "#b4432f", "#c9664f", "#dd8f7c", "#eebcae", "#f7e8e4"] },
+      "gold": { "role": "secondary", "displayName": "Vàng đồng", "canonical": "#c9962b", "tonalRamp": ["#64490f", "#8a6517", "#a87e21", "#c9962b", "#d7ad55", "#e5c488", "#f1dbba", "#f6ecd7"] },
+      "jade": { "role": "secondary", "displayName": "Ngọc bích", "canonical": "#3f6c51", "tonalRamp": ["#1f3628", "#2a4939", "#2f5340", "#3f6c51", "#5d8870", "#83a693", "#abc2b5", "#ebf2ed"] },
+      "paper": { "role": "neutral", "displayName": "Giấy dó", "canonical": "#faf7f2", "tonalRamp": ["#292524", "#4a453f", "#78716c", "#a8a099", "#d6cec4", "#e8e2d9", "#fffdf9", "#faf7f2"] },
+      "timber": { "role": "neutral", "displayName": "Gỗ lim", "canonical": "#2d1b12", "tonalRamp": ["#1c1917", "#2d1b12", "#4a3320", "#66492e", "#85684b", "#a58a6f", "#c5ae96", "#e5d8c9"] },
+      "wine": { "role": "tertiary", "displayName": "Rượu vang (lỗi)", "canonical": "#8f1d1d", "tonalRamp": ["#470e0e", "#681515", "#8f1d1d", "#ab3a3a", "#c46464", "#da9393", "#ecc3c3", "#f7eaea"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Fraunces — chữ khắc biên niên", "purpose": "Tiêu đề hero, tên trạm; chỉ serif này được làm display." },
+      "body": { "displayName": "Be Vietnam Pro — chữ sổ tay", "purpose": "Thân bài, thao tác; hỗ trợ tiếng Việt đầy đủ." }
+    },
+    "shadows": [
+      { "name": "cta-lift", "value": "0 10px 20px -8px rgb(180 67 47 / 45%)", "purpose": "Bóng màu son dưới CTA chính — con dấu nổi trên giấy." },
+      { "name": "overlay-veil", "value": "rgb(28 25 23 / 85%) + backdrop blur(4px)", "purpose": "Nghi thức mở rương, cắt thế giới ngoài." }
+    ],
+    "motion": [
+      { "name": "chest-overshoot", "value": "cubic-bezier(0.34, 1.56, 0.64, 1) / 600ms", "purpose": "Duy nhất cho nắp rương mở (The Chest Overshoot Rule). UI khác dùng ease-out mượt." }
+    ],
+    "breakpoints": [{ "name": "sm", "value": "640px" }]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Con dấu son — hành động chính duy nhất mỗi màn hình.",
+      "html": "<button class=\"ds-btn-primary\">Bắt đầu hành trình</button>",
+      "css": ".ds-btn-primary { background: #b4432f; color: #faf7f2; padding: 12px 24px; font-weight: 700; border-radius: 16px; border: none; font-family: 'Be Vietnam Pro', system-ui, sans-serif; box-shadow: 0 10px 20px -8px rgb(180 67 47 / 45%); transition: background .2s ease-out; cursor: pointer; } .ds-btn-primary:hover { background: #96351f; } .ds-btn-primary:focus-visible { outline: 2px solid #1c1917; outline-offset: 2px; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Tờ kem trên giấy — bề mặt nội dung chuẩn.",
+      "html": "<div class=\"ds-card\"><h3>Tiêu đề mục</h3><p>Nội dung ngắn trên nền kem, viền mực nhạt.</p></div>",
+      "css": ".ds-card { background: #fffdf9; border: 1px solid #e8e2d9; border-radius: 12px; padding: 16px; font-family: 'Be Vietnam Pro', system-ui, sans-serif; color: #292524; } .ds-card h3 { font-family: Fraunces, Georgia, serif; margin: 0 0 6px; } .ds-card p { margin: 0; line-height: 1.55; }"
+    },
+    {
+      "name": "Header Bar",
+      "kind": "nav",
+      "refersTo": "header-bar",
+      "description": "Thanh gỗ lim — khung nghi thức của mọi trang.",
+      "html": "<header class=\"ds-header\"><span>Phố Cổ Hà Nội</span></header>",
+      "css": ".ds-header { background: #2d1b12; color: #faf7f2; padding: 12px 16px; padding-top: calc(12px + env(safe-area-inset-top)); font-family: Fraunces, Georgia, serif; font-weight: 700; letter-spacing: .02em; box-shadow: 0 1px 3px rgb(28 25 23 / 30%); }"
+    },
+    {
+      "name": "Lattice Divider",
+      "kind": "custom",
+      "refersTo": "lattice-divider",
+      "description": "Hoạ tiết cửa sổ nhà cổ — ngăn section nghi thức.",
+      "html": "<div class=\"ds-lattice\" role=\"separator\"></div>",
+      "css": ".ds-lattice { height: 4px; border-radius: 999px; opacity: .55; background-image: repeating-linear-gradient(90deg, #c9962b 0 8px, transparent 8px 16px); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Bản đồ kho báu × Nhật ký du hành",
+    "overview": "Hệ thống lai năng lượng phiêu lưu bản đồ và sự riêng tư của nhật ký du hành. Nền giấy + mực tàu; màu là con dấu vai trò: son = hành động, vàng đồng = thưởng, ngọc bích = tiến trình, rượu vang = lỗi. Motion tiết chế, overshoot dành riêng cho nắp rương.",
+    "keyCharacteristics": [
+      "Giấy ấm + mực đậm, tương phản dịu nhưng chữ rõ",
+      "Màu mang vai trò con dấu, không trang trí",
+      "Fraunces display + Be Vietnam Pro body",
+      "Motion ease-out; overshoot chỉ cho nắp rương"
+    ],
+    "rules": [
+      { "name": "The Son Speaks Once Rule", "body": "Mỗi màn hình tối đa một vùng son — hành động quan trọng nhất.", "section": "colors" },
+      { "name": "The Seal Roles Rule", "body": "Gold/jade/wine là con dấu vai trò, không phải trang trí.", "section": "colors" },
+      { "name": "The Chest Overshoot Rule", "body": "Back-out overshoot chỉ dành cho nắp rương mở.", "section": "components" }
+    ],
+    "dos": ["Dùng đúng token @theme", "Overshoot riêng cho nắp rương", "Đưa tuyến đường/bản đồ vào surface entry", "Test VI + EN trước khi ship"],
+    "donts": ["Gradient tím-xanh, glassmorphism, neon dark-mode", "Hai CTA son cùng màn hình", "UUID/playerId trần trụi nơi người chơi mới nhìn"]
+  }
+}
