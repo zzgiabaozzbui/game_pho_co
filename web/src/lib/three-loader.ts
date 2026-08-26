@@ -38,6 +38,7 @@ const TEXTURE_SLOTS = [
 ] as const;
 
 type Disposable = { dispose?(): void };
+type TextureSlot = (typeof TEXTURE_SLOTS)[number];
 
 export function disposeThreeObject(root: {
   traverse?: (cb: (o: object) => void) => void;
@@ -47,11 +48,12 @@ export function disposeThreeObject(root: {
     obj.geometry?.dispose?.();
     const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
     mats.forEach((raw) => {
-      const mat = raw as Disposable &
-        Partial<Record<(typeof TEXTURE_SLOTS)[number], Disposable>>;
-      mat.dispose?.();
+      const mat = raw as
+        | (Disposable & Partial<Record<TextureSlot, Disposable>>)
+        | undefined;
+      mat?.dispose?.();
       TEXTURE_SLOTS.forEach((slot) => {
-        mat[slot]?.dispose?.();
+        mat?.[slot]?.dispose?.();
       });
     });
   });
