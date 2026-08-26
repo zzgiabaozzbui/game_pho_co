@@ -535,6 +535,9 @@ const EMPTY_LOOT = {
   sortOrder: "",
 };
 
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+const ALLOWED_UPLOAD_MIMES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+
 function ChestsTab() {
   const [data, setData] = useState<ChestsData | null>(null);
   const [tierEdits, setTierEdits] = useState<Record<number, TierEdit>>({});
@@ -543,6 +546,7 @@ function ChestsTab() {
   const [newLoot, setNewLoot] = useState(EMPTY_LOOT);
   const [msg, setMsg] = useState("");
   const [qr, setQr] = useState<{ token: string; dataUrl: string } | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const load = useCallback(async () => {
     const r = await fetch("/api/admin/chests");
@@ -612,6 +616,35 @@ function ChestsTab() {
     } catch {
       setQr(null);
       setMsg("Lỗi tạo QR");
+    }
+  }
+
+  async function uploadLootImage(file: File) {
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setMsg("File quá lớn, tối đa 5MB");
+      return;
+    }
+    if (!ALLOWED_UPLOAD_MIMES.includes(file.type)) {
+      setMsg("Chỉ chấp nhận jpg, png, webp, gif");
+      return;
+    }
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const r = await fetch("/api/admin/chest-loot/upload", { method: "POST", body: fd });
+      if (!r.ok) {
+        const e = await r.json().catch(() => ({ error: `HTTP ${r.status}` }));
+        setMsg(`Upload lỗi: ${e.error}`);
+        return;
+      }
+      const { path } = (await r.json()) as { path: string };
+      setNewLoot((prev) => ({ ...prev, imagePath: path }));
+      setMsg("Upload thành công ✓");
+    } catch {
+      setMsg("Upload thất bại");
+    } finally {
+      setUploading(false);
     }
   }
 
@@ -707,12 +740,18 @@ function ChestsTab() {
             <div className="text-xs font-bold uppercase tracking-wide text-ink-soft">{scopeKey}</div>
             {rows.map((l) => (
               <div key={l.id} className="mt-2 flex items-center justify-between gap-3 text-sm">
-                <span>
-                  <span className="font-bold">{l.type}</span>{" "}
-                  {l.type === "POINTS" && l.pointsAmount !== null
-                    ? `${l.pointsAmount} điểm`
-                    : l.storyVi || l.storyEn || l.imagePath || l.youtubeUrl || ""}
-                  {l.sortOrder !== 0 && <span className="text-xs text-ink-soft/60"> · #{l.sortOrder}</span>}
+                <span className="flex items-center gap-2">
+                  {l.imagePath && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={l.imagePath} alt="" className="h-8 w-8 flex-shrink-0 rounded border border-line object-cover" />
+                  )}
+                  <span>
+                    <span className="font-bold">{l.type}</span>{" "}
+                    {l.type === "POINTS" && l.pointsAmount !== null
+                      ? `${l.pointsAmount} điểm`
+                      : l.storyVi || l.storyEn || l.imagePath || l.youtubeUrl || ""}
+                    {l.sortOrder !== 0 && <span className="text-xs text-ink-soft/60"> · #{l.sortOrder}</span>}
+                  </span>
                 </span>
                 <button
                   onClick={() => patch({ kind: "loot-delete", id: l.id })}
@@ -760,8 +799,28 @@ function ChestsTab() {
             <input className={field} value={newLoot.youtubeUrl} onChange={(ev) => setNewLoot({ ...newLoot, youtubeUrl: ev.target.value })} />
           </div>
           <div>
-            <label className={label}>Image path</label>
-            <input className={field} value={newLoot.imagePath} onChange={(ev) => setNewLoot({ ...newLoot, imagePath: ev.target.value })} />
+            <label className={label}>Image</label>
+            <div className="mt-1 flex items-center gap-3">
+              <label className="cursor-pointer rounded-lg border border-line bg-cream px-3 py-2 text-sm text-ink hover:bg-gold/10">
+                {uploading ? "Đang upload…" : "Chọn ảnh"}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="hidden"
+                  onChange={(ev) => {
+                    const f = ev.target.files?.[0];
+                    if (f) uploadLootImage(f);
+                  }}
+                />
+              </label>
+              {uploading && <span className="text-xs text-ink-soft">⏳</span>}
+            </div>
+            {newLoot.imagePath && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={newLoot.imagePath} alt="preview" className="mt-2 h-32 max-w-full rounded-lg border border-line object-cover" />
+            )}
+            <label className={`${label} mt-2`}>Path thủ công</label>
+            <input className={field} value={newLoot.imagePath} onChange={(ev) => setNewLoot({ ...newLoot, imagePath: ev.target.value })} placeholder="/images/loot/…" />
           </div>
         </div>
         <button onClick={addLoot} className="btn-primary mt-3 px-4 py-2 text-sm">
