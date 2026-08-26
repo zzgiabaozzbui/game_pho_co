@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { isAdminRequest } from "@/lib/auth";
 import { stationUpdateSchema } from "@/lib/validators";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 
 export async function GET(req: Request) {
   if (!isAdminRequest(req))
@@ -61,4 +62,51 @@ export async function PUT(req: Request) {
       { status: 409 }
     );
   }
+}
+
+export async function POST(req: Request) {
+  if (!isAdminRequest(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const rl = rateLimit(`admin-station-create:${clientIp(req)}`, {
+    limit: 10,
+    windowMs: 60_000,
+  });
+  if (!rl.ok)
+    return NextResponse.json({ error: "Rate limited" }, { status: 429 });
+
+  const body = await req.json();
+  const { slug, orderIndex, nameVi, nameEn, lat, lng, qrToken } = body;
+
+  if (!slug || !nameVi || !nameEn || !qrToken) {
+    return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  }
+
+  const existingSlug = await db.station.findUnique({ where: { slug } });
+  if (existingSlug) {
+    return NextResponse.json({ error: "Slug already exists" }, { status: 409 });
+  }
+
+  const station = await db.station.create({
+    data: {
+      slug,
+      orderIndex: orderIndex ?? 0,
+      nameVi,
+      nameEn,
+      storyVi: body.storyVi ?? "",
+      storyEn: body.storyEn ?? "",
+      questionVi: body.questionVi ?? "",
+      questionEn: body.questionEn ?? "",
+      optionsJson: body.optionsJson ?? "[]",
+      correctIndex: body.correctIndex ?? 0,
+      hintVi: body.hintVi ?? "",
+      hintEn: body.hintEn ?? "",
+      lat: lat ?? 0,
+      lng: lng ?? 0,
+      radiusM: body.radiusM ?? 120,
+      qrToken,
+    },
+  });
+  return NextResponse.json(station, { status: 201 });
 }
