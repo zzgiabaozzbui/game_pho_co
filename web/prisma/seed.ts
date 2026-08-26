@@ -977,10 +977,10 @@ async function main() {
   console.log(`Seeded ${count} stations.`);
 
   const tiers = [
-    { key: "common", nameVi: "Rương Thường", nameEn: "Common Chest", colorHex: "#c07a2d", sortOrder: 1 },
+    { key: "common", nameVi: "Rương Thường", nameEn: "Common Chest", colorHex: "#9a3b2b", sortOrder: 1 },
     { key: "gold", nameVi: "Rương Vàng", nameEn: "Gold Chest", colorHex: "#c9962b", sortOrder: 2 },
-    { key: "epic", nameVi: "Rương Huyền Bí", nameEn: "Epic Chest", colorHex: "#8f1d1d", sortOrder: 3 },
-    { key: "grand", nameVi: "Kho Báu Văn Hóa", nameEn: "Grand Treasure", colorHex: "#3f6c51", sortOrder: 4 },
+    { key: "epic", nameVi: "Rương Huyền Bí", nameEn: "Epic Chest", colorHex: "#b3122e", sortOrder: 3 },
+    { key: "grand", nameVi: "Kho Báu Văn Hóa", nameEn: "Grand Treasure", colorHex: "#1f5c46", sortOrder: 4 },
   ];
   const tierIds: Record<string, number> = {};
   for (const t of tiers) {

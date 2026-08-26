@@ -8,10 +8,13 @@ import InlineThreeRenderer from "./renderers/InlineThreeRenderer";
 import QuickLookLauncher from "./renderers/QuickLookLauncher";
 import WebXRRenderer from "./renderers/WebXRRenderer";
 
-const GOLD = "#d4af37";
+const GOLD = "#f0c33c";
 const GOLD_DEEP = "#7a5c10";
 const GOLD_LIGHT = "#e8bf4d";
 const OUTLINE = "#2a1a10";
+const VELVET = "#7e1220";
+const GEM_RUBY = "#d81b4a";
+const GEM_SAPPHIRE = "#2b5fb8";
 const RIVET_X = [45, 78, 122, 155];
 const COIN_SPILL = [
   { cx: 55, cy: 72, r: 5 },
@@ -19,6 +22,18 @@ const COIN_SPILL = [
   { cx: 103, cy: 71, r: 5 },
   { cx: 127, cy: 68, r: 4.5 },
   { cx: 148, cy: 72, r: 5 },
+];
+// Đống xu nhô trên miệng rương khi mở — chỉ render ở trạng thái opened
+// (xuất hiện tức thời, không animation nên không cần gate reduced-motion).
+const PILE_COINS = [
+  { cx: 66, cy: 73, r: 5.5 },
+  { cx: 90, cy: 70, r: 6 },
+  { cx: 114, cy: 72, r: 5.5 },
+  { cx: 137, cy: 70, r: 5 },
+];
+const PILE_GEMS = [
+  { cx: 79, cy: 70, size: 7, fill: GEM_RUBY },
+  { cx: 125, cy: 69, size: 6.5, fill: GEM_SAPPHIRE },
 ];
 
 // Fallback CSS 2D từ M1 — dùng khi đang nạp three HOẶC nạp lỗi (ràng buộc Global #8).
@@ -76,10 +91,39 @@ function LegacyChest({
             />
           ))}
         </g>
+        {opened && (
+          <g className="chest-pile">
+            <rect x={26} y={64} width={148} height={14} fill={VELVET} opacity={0.85} />
+            {PILE_COINS.map(({ cx, cy, r }) => (
+              <circle
+                key={`pile-coin-${cx}`}
+                cx={cx}
+                cy={cy}
+                r={r}
+                fill={GOLD_LIGHT}
+                stroke={OUTLINE}
+                strokeWidth={2}
+              />
+            ))}
+            {PILE_GEMS.map(({ cx, cy, size, fill }) => (
+              <rect
+                key={`pile-gem-${cx}`}
+                x={cx - size / 2}
+                y={cy - size / 2}
+                width={size}
+                height={size}
+                fill={fill}
+                stroke={OUTLINE}
+                strokeWidth={1.5}
+                transform={`rotate(45 ${cx} ${cy})`}
+              />
+            ))}
+          </g>
+        )}
         <g className="chest-lid">
           <path
             d="M 18 78 A 82 54 0 0 1 182 78 Z"
-            fill={colorHex}
+            fill={opened ? VELVET : colorHex}
             stroke={OUTLINE}
             strokeWidth={3}
             strokeLinejoin="round"
