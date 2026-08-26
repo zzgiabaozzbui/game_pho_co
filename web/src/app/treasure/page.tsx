@@ -147,9 +147,12 @@ export default function TreasurePage() {
             <h2 className="text-xs font-bold uppercase tracking-widest text-gold">
               {t("treasure.workshop")}
             </h2>
-            <p className="mt-3 text-[15px] leading-relaxed text-paper/90">
+            <Link
+              href="/partner"
+              className="mt-3 block text-[15px] leading-relaxed text-paper/90 underline decoration-gold/40 underline-offset-4 transition hover:text-gold hover:decoration-gold"
+            >
               {t("treasure.partner")}
-            </p>
+            </Link>
             <p className="mt-4 text-sm text-paper/65">
               {t("treasure.contact")}
             </p>

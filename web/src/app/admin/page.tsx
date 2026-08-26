@@ -542,6 +542,7 @@ function ChestsTab() {
   const [weights, setWeights] = useState<Record<string, number>>({});
   const [newLoot, setNewLoot] = useState(EMPTY_LOOT);
   const [msg, setMsg] = useState("");
+  const [qr, setQr] = useState<{ token: string; dataUrl: string } | null>(null);
 
   const load = useCallback(async () => {
     const r = await fetch("/api/admin/chests");
@@ -599,6 +600,19 @@ function ChestsTab() {
       ...(newLoot.imagePath ? { imagePath: newLoot.imagePath } : {}),
     });
     setNewLoot(EMPTY_LOOT);
+  }
+
+  async function showPartnerQr() {
+    const spot = data?.partnerSpot;
+    if (!spot) return;
+    try {
+      const { toDataURL } = await import("qrcode");
+      const dataUrl = await toDataURL(`${location.origin}/partner?t=${spot.token}`);
+      setQr({ token: spot.token, dataUrl });
+    } catch {
+      setQr(null);
+      setMsg("Lỗi tạo QR");
+    }
   }
 
   if (!data) return <p className="py-16 text-center text-ink-soft">…</p>;
@@ -765,9 +779,27 @@ function ChestsTab() {
             <p className="mt-1 break-all font-mono text-sm">
               Token: <code>{data.partnerSpot.token}</code>
             </p>
-            <button onClick={() => patch({ kind: "regenerate_partner_token" })} className="btn-primary mt-3 px-4 py-2 text-sm">
-              Tạo token mới
-            </button>
+            <div className="mt-3 flex gap-2">
+              <button onClick={showPartnerQr} className="btn-primary px-4 py-2 text-sm">
+                QR
+              </button>
+              <button
+                onClick={() => {
+                  setQr(null);
+                  patch({ kind: "regenerate_partner_token" });
+                }}
+                className="btn-primary px-4 py-2 text-sm"
+              >
+                Tạo token mới
+              </button>
+            </div>
+            {qr && data.partnerSpot.token === qr.token && (
+              <div className="mt-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={qr.dataUrl} alt="QR token đối tác" className="h-44 w-44 rounded-xl border border-line bg-white p-2" />
+                <p className="mt-2 text-xs text-ink-soft">In QR này dán cạnh poster marker tại quầy.</p>
+              </div>
+            )}
           </>
         ) : (
           <p className="mt-3 text-sm text-ink-soft">Chưa có địa điểm đối tác.</p>
