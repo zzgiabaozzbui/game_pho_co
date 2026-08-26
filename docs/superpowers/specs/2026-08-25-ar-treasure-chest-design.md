@@ -2,7 +2,7 @@
 
 - Ngày: 2026-08-25 · Cập nhật tiến độ: 2026-08-26
 - Trạng thái: Đã duyệt thiết kế qua hội thoại (Phần 1–4 + các điểm khóa của người duyệt)
-- Tiến độ: **M1 ĐÃ SHIP 2026-08-26** — 14/14 task plan M1 `[x]`, checkpoint cuối xanh (lint/typecheck/vitest 38/38 tests + E2E API Task 14). **M2 code-DONE + merged vào main 2026-08-26** (plan: `docs/superpowers/plans/2026-08-26-chest-system-m2.md`; final review sạch sau fix wave XSS/loading/cache) — **nghiệm thu vận hành chờ checklist thiết bị thật** (plan Task 9 Step 4: Android WebXR / iOS Quick Look / PWA, cần HTTPS) trước khi tuyên bố SHIP.
+- Tiến độ: **M1 ĐÃ SHIP 2026-08-26** — 14/14 task plan M1 `[x]`, checkpoint cuối xanh (lint/typecheck/vitest 38/38 tests + E2E API Task 14). **M2 code-DONE + merged vào main 2026-08-26** (plan: `docs/superpowers/plans/2026-08-26-chest-system-m2.md`; final review sạch sau fix wave XSS/loading/cache) — **nghiệm thu vận hành chờ checklist thiết bị thật** (plan Task 9 Step 4: Android WebXR / iOS Quick Look / PWA, cần HTTPS) trước khi tuyên bố SHIP. · **M3 code-DONE 2026-08-26** — nghiệm thu vận hành chờ compile marker + checklist thiết bị thật (plan M3 Task 8 PENDING-HUMAN).
 - Remote chính thức: https://github.com/zzgiabaozzbui/game_pho_co — repo git hoạt động từ 2026-08-26 (branch `main`); các plan M1 giữ quy ước CHECKPOINT vì viết trước khi có git. File spec là nguồn sự thật cho writing-plans.
 
 ## 1. Mục tiêu & phạm vi
@@ -13,7 +13,7 @@ Game truy tìm kho báu Phố cổ thêm hệ thống **hòm thưởng nhiều c
 |-----|----------|----------------------|
 | **M1** ✅ ship 2026-08-26 | Engine rơi rương + API + admin + UI mở 2D | Hoàn chỉnh **không phụ thuộc three.js** |
 | **M2** ✅ code-done 2026-08-26 | 3D inline + WebXR Android + Quick Look iOS | ChestReveal thay renderer, không đổi game logic |
-| **M3** | Quét marker MindAR tại điểm đối tác | MindAR tách hoàn toàn khỏi engine chest |
+| **M3** ✅ code-done 2026-08-26 | Quét marker MindAR tại điểm đối tác | MindAR tách hoàn toàn khỏi engine chest |
 
 Quyết định đã chốt với chủ sản phẩm: làm trọn 3 mốc; ảnh tự quản (upload), video dùng link YouTube; cả 3 cơ chế rơi (cố định theo trạm, ngẫu nhiên có pity, thành tích); mở ngay tại chỗ (không túi đồ); phương án kỹ thuật B (WebXR hybrid).
 

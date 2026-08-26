@@ -22,6 +22,7 @@ Từ ngữ chuẩn trong code/docs: *trạm* (station = 1 phố), *gợi ý* (hi
 - Giao diện người chơi song ngữ vi/en qua `src/lib/dictionaries.ts` + `i18n.tsx`; cấm chuỗi cứng tiếng Việt trong JSX người chơi.
 - **Hệ thống hòm thưởng M1 đã ship (2026-08-26)**: engine thuần `src/lib/chests.ts` + service grant idempotent `src/lib/chest-grants.ts`; API `/api/chests` (GET + POST open CAS), `/api/chests/claim-partner`, `/api/admin/chests`; UI `ChestReveal` 2D gắn ở StationFlow/play/treasure; admin tab "Rương". Spec: `docs/superpowers/specs/2026-08-25-ar-treasure-chest-design.md`.
 - **M2 (three.js inline + WebXR Android + Quick Look iOS)**: plan tại `docs/superpowers/plans/2026-08-26-chest-system-m2.md` — code-DONE + merged vào main 2026-08-26; nghiệm thu vận hành chờ checklist thiết bị thật (plan Task 9 Step 4: Android WebXR / iOS Quick Look / PWA cần HTTPS).
+- **M3 (MindAR marker đối tác)**: code-DONE + merged 2026-08-26 — trang `/partner?t=<token>` (QR in tại quầy), assets `/vendor/mindar/`, marker ops theo `web/public/markers/README.md`; nghiệm thu chờ checklist thiết bị thật.
 - **Git remote**: https://github.com/zzgiabaozzbui/game_pho_co — repo git hoạt động từ 2026-08-26 (branch `main`); plan M1/M2 giữ quy ước CHECKPOINT vì viết trước khi có git.
 
 ## Lệnh chính (chạy trong `web/`)
