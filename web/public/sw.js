@@ -1,4 +1,4 @@
-const CACHE = "pc36-v1";
+const CACHE = "pc36-v2";
 const OFFLINE_URL = "/offline.html";
 
 self.addEventListener("install", (event) => {
@@ -41,6 +41,23 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (url.pathname.startsWith("/_next/static/")) {
+    event.respondWith(
+      caches.match(request).then(
+        (hit) =>
+          hit ||
+          fetch(request).then((res) => {
+            const copy = res.clone();
+            caches.open(CACHE).then((cache) => cache.put(request, copy));
+            return res;
+          })
+      )
+    );
+  }
+
+  if (
+    url.pathname.startsWith("/vendor/mindar/") ||
+    url.pathname.startsWith("/markers/")
+  ) {
     event.respondWith(
       caches.match(request).then(
         (hit) =>
