@@ -134,6 +134,55 @@ const vi = {
   "common.back": "Quay lại bản đồ",
   "lang.switch": "EN",
 
+  "guide.entry": "Hướng dẫn sử dụng",
+  "guide.title": "Hướng dẫn sử dụng",
+  "guide.subtitle":
+    "Tất cả những gì bạn cần cho hành trình 36 phố phường.",
+  "guide.start_cta": "Vào chơi ngay",
+  "guide.s1_title": "Bốn bước của hành trình",
+  "guide.s1_go": "Đến địa điểm",
+  "guide.s1_go_desc":
+    "Nhận gợi ý vị trí trên bản đồ, đi đến đúng địa danh phố cổ.",
+  "guide.s1_checkin": "Chụp ảnh check-in",
+  "guide.s1_checkin_desc":
+    "Chụp chính diện tòa nhà hoặc biển tên đường. Quản trị viên duyệt ảnh rồi câu đố mới mở.",
+  "guide.s1_solve": "Giải đố mở đường",
+  "guide.s1_solve_desc":
+    "Trả lời đúng ngay lần đầu để nhận trọn điểm và giữ chuỗi hoàn hảo.",
+  "guide.s1_chest": "Nhận rương kho báu",
+  "guide.s1_chest_desc":
+    "Mỗi trạm có rương riêng; thỉnh thoảng còn rơi thêm rương bất ngờ.",
+  "guide.s2_title": "Điểm & gợi ý",
+  "guide.s2_desc":
+    "Trả lời đúng ngay lần đầu nhận 100 điểm. Sai sẽ mất ít điểm. Xem gợi ý chỉ đường trừ 20 điểm (có hỏi lại trước khi trừ), mỗi trạm tối đa xuống sàn 50 điểm.",
+  "guide.s3_title": "Rương & thành tích",
+  "guide.s3_desc_1":
+    "Có 4 cấp rương: Thường, Vàng, Huyền Bí và Kho Báu Văn Hóa. Rương rơi ngẫu nhiên sau khi giải đố; mở rương nhận điểm, câu chuyện, ảnh hoặc video.",
+  "guide.s3_desc_2":
+    "Cột mốc thành tích: 6 và 18 phố, chuỗi 5 trạm hoàn hảo, 2000 điểm — và rương Kho Báu khi đi hết 36/36.",
+  "guide.s4_title": "Quà tại workshop đối tác",
+  "guide.s4_desc":
+    "Ở workshop đối tác: quét QR in tại quầy để mở trang nhận quà, sau đó quét marker poster bằng camera. Nhận rương Huyền Bí kèm trải nghiệm văn hóa.",
+  "guide.s5_title": "Đổi máy không mất thành tích",
+  "guide.s5_desc":
+    "Trang chủ có mã khôi phục — sao chép và lưu lại. Trên máy mới, dán mã vào mục Khôi phục là tiếp tục hành trình.",
+  "guide.s6_title": "Offline & cài ứng dụng",
+  "guide.s6_desc":
+    "Thêm vào màn hình chính từ menu trình duyệt để chạy như app. Trang hướng dẫn này luôn đọc được; dữ liệu bản đồ cần mạng lần đầu.",
+  "guide.faq_title": "Hỏi nhanh",
+  "guide.faq_q1": "Ảnh check-in bị từ chối?",
+  "guide.faq_a1":
+    "Chụp lại rõ hơn: đủ sáng, chính diện, nhìn thấy tên đường hoặc đặc trưng công trình. Ảnh mới gửi sẽ vào hàng chờ duyệt lại.",
+  "guide.faq_q2": "Không check-in bằng GPS được?",
+  "guide.faq_a2":
+    "Dùng cách gửi ảnh — luôn hoạt động kể cả khi thiết bị chặn định vị.",
+  "guide.faq_q3": "Quên mã khôi phục?",
+  "guide.faq_a3":
+    "Mở lại trang chủ trên máy cũ để xem lại mã, hoặc bắt đầu hành trình mới (điểm cũ không cộng dồn).",
+  "guide.faq_q4": "Đổi tiếng Việt / English ở đâu?",
+  "guide.faq_a4": "Nút nhỏ ở góc phải trên mỗi trang.",
+  "guide.back_home": "Về trang chủ",
+
   "admin.login": "Đăng nhập quản trị",
   "admin.password": "Mật khẩu",
   "admin.submit": "Đăng nhập",
@@ -287,6 +336,55 @@ const en: Record<DictKey, string> = {
   "common.retry": "Retry",
   "common.back": "Back to map",
   "lang.switch": "VI",
+
+  "guide.entry": "How to play",
+  "guide.title": "How to play",
+  "guide.subtitle":
+    "Everything you need for your 36-street journey.",
+  "guide.start_cta": "Start playing",
+  "guide.s1_title": "The four steps",
+  "guide.s1_go": "Go to the spot",
+  "guide.s1_go_desc":
+    "Follow the map to each Old Quarter landmark.",
+  "guide.s1_checkin": "Snap a check-in photo",
+  "guide.s1_checkin_desc":
+    "Photograph the building or street sign head-on. Once an admin approves it, the puzzle unlocks.",
+  "guide.s1_solve": "Solve the puzzle",
+  "guide.s1_solve_desc":
+    "Answer right on the first try for full points and a perfect streak.",
+  "guide.s1_chest": "Earn treasure chests",
+  "guide.s1_chest_desc":
+    "Every station hides a chest; surprise chests drop now and then.",
+  "guide.s2_title": "Points & hints",
+  "guide.s2_desc":
+    "A first-try answer earns 100 pts. Wrong answers cost a few. Route hints cost 20 pts (with a confirmation first), down to a 50-pt floor per station.",
+  "guide.s3_title": "Chests & achievements",
+  "guide.s3_desc_1":
+    "There are four chest tiers: Common, Gold, Epic and Grand Treasure. Chests drop randomly after solves and hold points, stories, photos or videos.",
+  "guide.s3_desc_2":
+    "Achievement milestones: 6 and 18 streets, a 5-street perfect streak, 2000 pts — plus the Grand chest at 36/36.",
+  "guide.s4_title": "Partner workshop gift",
+  "guide.s4_desc":
+    "At the partner workshop: scan the counter QR to open the gift page, then scan the poster marker with your camera to claim an Epic chest plus a cultural experience.",
+  "guide.s5_title": "Keep your progress across devices",
+  "guide.s5_desc":
+    "Your home screen shows a recovery code — copy and keep it. On a new device, paste it into the Recover box to continue.",
+  "guide.s6_title": "Offline & install",
+  "guide.s6_desc":
+    "Use your browser menu to add the app to your home screen. This guide reads offline; map data needs network the first time.",
+  "guide.faq_title": "Quick FAQ",
+  "guide.faq_q1": "Check-in photo rejected?",
+  "guide.faq_a1":
+    "Retake brighter and head-on, showing the street sign or a distinctive feature. Resubmitted photos re-enter review.",
+  "guide.faq_q2": "GPS check-in failing?",
+  "guide.faq_a2":
+    "Use the photo method instead — it works even when location is blocked.",
+  "guide.faq_q3": "Lost your recovery code?",
+  "guide.faq_a3":
+    "Reopen the home screen on your old device to see it again, or start fresh (old progress won't carry over).",
+  "guide.faq_q4": "Where do I switch Vietnamese/English?",
+  "guide.faq_a4": "The small pill in the top-right corner of every page.",
+  "guide.back_home": "Back home",
 
   "admin.login": "Admin sign-in",
   "admin.password": "Password",

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
-import { Camera, Compass, Lock, MapPin, Puzzle } from "lucide-react";
+import { BookOpen, Camera, Compass, Lock, MapPin, Puzzle } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { ensureSession, getPlayerId, setPlayerId } from "@/lib/client";
 
@@ -359,6 +359,14 @@ export default function Home() {
           </details>
         )}
       </div>
+
+      <Link
+        href="/huong-dan"
+        className="mt-5 inline-flex items-center gap-1.5 self-center rounded-full border border-line bg-cream px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-gold-soft"
+      >
+        <BookOpen className="h-4 w-4 text-clay-deep" strokeWidth={2} aria-hidden="true" />
+        {t("guide.entry")}
+      </Link>
     </main>
   );
 }
