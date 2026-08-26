@@ -139,3 +139,22 @@ export const partnerClaimSchema = z.object({
   lat: z.number().optional(),
   lng: z.number().optional(),
 });
+
+export const workshopTaskCreateSchema = z.object({
+  partnerId: z.number().int().positive(),
+  stationId: z.number().int().positive(),
+  instructionVi: z.string().min(1).max(2000),
+  instructionEn: z.string().min(1).max(2000),
+  photoReqsVi: z.string().min(1).max(2000),
+  photoReqsEn: z.string().min(1).max(2000),
+  quizQuestionVi: z.string().min(1).max(1000),
+  quizQuestionEn: z.string().min(1).max(1000),
+  quizOptionsJson: z.string().min(1),
+  quizCorrectIndex: z.number().int().min(0).max(9),
+  rewardPoints: z.number().int().min(0).default(50),
+  sortOrder: z.number().int().min(0).default(0),
+});
+
+export const workshopTaskUpdateSchema = workshopTaskCreateSchema.extend({
+  id: z.number().int().positive(),
+});
