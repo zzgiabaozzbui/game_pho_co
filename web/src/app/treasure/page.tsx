@@ -8,6 +8,7 @@ import { fetchState } from "@/lib/client";
 import type { StateDTO } from "@/lib/state";
 import ChestReveal, { type RevealTier } from "@/components/ChestReveal";
 import RewardCard, { type RevealLoot } from "@/components/RewardCard";
+import { copyToClipboard } from "@/lib/clipboard";
 
 interface ChestView {
   grantId: number;
@@ -101,13 +102,9 @@ export default function TreasurePage() {
       }
       return;
     }
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      })
-      .catch(() => {});
+    if (!(await copyToClipboard(text))) return;
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   return (

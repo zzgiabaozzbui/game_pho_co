@@ -6,6 +6,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { Camera, Compass, Lock, MapPin, Puzzle } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { ensureSession, getPlayerId, setPlayerId } from "@/lib/client";
+import { copyToClipboard } from "@/lib/clipboard";
 
 function HeroScene({ label }: { label: string }) {
   return (
@@ -182,15 +183,11 @@ export default function Home() {
     }
   }
 
-  function copyCode() {
+  async function copyCode() {
     if (!pid) return;
-    navigator.clipboard
-      .writeText(pid)
-      .then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      })
-      .catch(() => {});
+    if (!(await copyToClipboard(pid))) return;
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   return (
