@@ -267,6 +267,8 @@ const en: Record<DictKey, string> = {
   "play.legend_locked": "Not yet",
   "play.chest_open_failed":
     "Your chest open wasn't confirmed yet — it's still waiting, please retry.",
+  "play.progress_compact": "{done}/{total} streets · {score} pts",
+  "play.route_legend": "Your route",
   "treasure.title": "The Cultural Treasure",
   "treasure.workshop": "Cultural experience workshop",
   "treasure.locked":
@@ -279,6 +281,7 @@ const en: Record<DictKey, string> = {
   "treasure.load_error": "Couldn't load your collection.",
   "treasure.stats_heading": "Your journey",
   "treasure.share": "Save this journey memory",
+  "treasure.open_now": "Open the treasure",
   "common.loading": "Loading…",
   "common.error": "Something went wrong, please retry.",
   "common.retry": "Retry",
