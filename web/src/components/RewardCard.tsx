@@ -46,6 +46,8 @@ export default function RewardCard({ item }: { item: RevealLoot }) {
         <img
           src={`/api/uploads/${item.imagePath}`}
           alt=""
+          loading="lazy"
+          decoding="async"
           className="max-h-48 w-full rounded-lg object-contain"
         />
       )}

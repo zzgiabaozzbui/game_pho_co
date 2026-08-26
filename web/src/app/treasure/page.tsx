@@ -28,11 +28,18 @@ export default function TreasurePage() {
   const [collection, setCollection] = useState<
     Array<{ tier: RevealTier | null; loot: RevealLoot[] }>
   >([]);
+  const [chestsLoading, setChestsLoading] = useState(true);
+  const [chestsError, setChestsError] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const loadChests = useCallback(async (playerId: string) => {
+    setChestsLoading(true);
     try {
       const res = await fetch(`/api/chests?playerId=${playerId}`);
-      if (!res.ok) return;
+      if (!res.ok) {
+        setChestsError(true);
+        return;
+      }
       const data = (await res.json()) as {
         unopened?: ChestView[];
         collection?: ChestView[];
@@ -46,8 +53,11 @@ export default function TreasurePage() {
       setCollection(
         (data.collection ?? []).map((c) => ({ tier: c.tier, loot: c.loot ?? [] }))
       );
+      setChestsError(false);
     } catch {
-      setCollection([]);
+      setChestsError(true);
+    } finally {
+      setChestsLoading(false);
     }
   }, []);
 
@@ -72,8 +82,49 @@ export default function TreasurePage() {
     await loadChests(state.playerId);
   }
 
+  function retryChests() {
+    if (!state || chestsLoading) return;
+    void loadChests(state.playerId);
+  }
+
+  async function shareJourney() {
+    if (!state) return;
+    const text = `${t("treasure.title")}\n${t("treasure.done", {
+      total: state.total as unknown as number,
+      score: state.score,
+    })}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: t("treasure.title"), text });
+      } catch {
+        /* người chơi hủy chia sẻ */
+      }
+      return;
+    }
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch(() => {});
+  }
+
   return (
-    <main className="paper-noise flex min-h-dvh flex-col items-center bg-gradient-to-b from-timber via-[#1f130c] to-[#14100d] px-6 py-10 pb-[calc(2.5rem_+_env(safe-area-inset-bottom))] text-center text-paper">
+    <main className="paper-noise flex min-h-dvh flex-col items-center bg-gradient-to-b from-timber via-ink to-ink-strong px-6 py-10 pb-[calc(2.5rem_+_env(safe-area-inset-bottom))] text-center text-paper">
+      <style>{`
+        @keyframes treasure-hero-in {
+          from { opacity: 0; transform: scale(0.55); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        .treasure-hero-in {
+          animation: treasure-hero-in 0.5s ease-out both;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .treasure-hero-in { animation: none; }
+        }
+      `}</style>
+
       <button
         onClick={toggle}
         className="self-end rounded-full border border-gold/40 px-3 py-1 text-xs font-semibold hover:bg-gold/10"
@@ -81,7 +132,10 @@ export default function TreasurePage() {
         {t("lang.switch")}
       </button>
 
-      <div className="mt-10 rounded-full bg-gold/10 p-5 shadow-[0_0_60px_-10px_rgba(201,150,43,0.45)]">
+      <div
+        key={finalChest ? "sealed" : "revealed"}
+        className="treasure-hero-in mt-10 rounded-full bg-gold/10 p-5 shadow-[0_0_60px_-10px_rgba(201,150,43,0.45)]"
+      >
         {state?.completedAll ? (
           <Trophy className="h-14 w-14 text-gold" strokeWidth={1.5} />
         ) : (
@@ -125,10 +179,7 @@ export default function TreasurePage() {
           <p className="mt-2 text-sm text-gold">
             {t("progress.of", { done: state.done, total: state.total })}
           </p>
-          <Link
-            href="/play"
-            className="mt-8 rounded-2xl bg-gold px-8 py-3.5 font-bold text-timber shadow-lg shadow-gold/25 active:scale-[0.99]"
-          >
+          <Link href="/play" className="btn-primary mt-8 px-8 py-3.5 active:scale-[0.99]">
             {t("cta.toMap")}
           </Link>
         </>
@@ -136,12 +187,19 @@ export default function TreasurePage() {
 
       {state?.completedAll && (
         <>
-          <p className="font-display mt-6 max-w-sm text-lg leading-relaxed text-paper/90">
-            {t("treasure.done", {
-              total: state.total as unknown as number,
-              score: state.score,
-            })}
-          </p>
+          <div className="lattice-divider mt-8 w-full max-w-xs" />
+
+          <section className="mt-6 w-full max-w-sm">
+            <h2 className="text-xs font-bold uppercase tracking-widest text-gold">
+              {t("treasure.stats_heading")}
+            </h2>
+            <p className="font-display mt-3 text-lg leading-relaxed text-paper/90">
+              {t("treasure.done", {
+                total: state.total as unknown as number,
+                score: state.score,
+              })}
+            </p>
+          </section>
 
           <section className="mt-8 w-full max-w-sm rounded-3xl border border-gold/50 bg-white/5 p-6 backdrop-blur">
             <h2 className="text-xs font-bold uppercase tracking-widest text-gold">
@@ -158,7 +216,14 @@ export default function TreasurePage() {
             </p>
           </section>
 
-          <Link href="/play" className="mt-8 text-sm text-paper/60 underline">
+          <button
+            onClick={shareJourney}
+            className="mt-8 rounded-2xl border border-gold/60 bg-jade/30 px-8 py-3.5 font-bold tracking-wide text-paper shadow-[0_10px_20px_-10px_rgba(47,83,64,0.7)] transition active:scale-[0.98]"
+          >
+            {copied ? t("home.recover_copied") : t("treasure.share")}
+          </button>
+
+          <Link href="/play" className="btn-primary mt-8 px-8 py-3.5 active:scale-[0.99]">
             {t("common.back")}
           </Link>
         </>
@@ -169,11 +234,28 @@ export default function TreasurePage() {
           <h2 className="text-xs font-bold uppercase tracking-widest text-gold">
             {t("chest.collection_title")}
           </h2>
-          {collection.length === 0 ? (
+          {chestsLoading && (
+            <p className="mt-4 animate-pulse text-sm text-paper/70">
+              {t("common.loading")}
+            </p>
+          )}
+          {!chestsLoading && chestsError && (
+            <div className="mt-4 flex flex-col items-center gap-3">
+              <p className="text-sm text-paper/80">{t("treasure.load_error")}</p>
+              <button
+                onClick={retryChests}
+                className="rounded-full border border-gold/40 px-4 py-1.5 text-sm font-semibold text-gold hover:bg-gold/10"
+              >
+                {t("common.retry")}
+              </button>
+            </div>
+          )}
+          {!chestsLoading && !chestsError && collection.length === 0 && (
             <p className="mt-4 text-sm text-paper/60">
               {t("chest.empty_collection")}
             </p>
-          ) : (
+          )}
+          {collection.length > 0 && (
             <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
               {collection.map((c, i) => (
                 <div
