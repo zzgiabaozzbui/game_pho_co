@@ -62,7 +62,14 @@ export async function GET(req: Request) {
       sourceRef: g.source === "PARTNER" ? null : g.sourceRef,
       createdAt: g.createdAt,
       tier: t
-        ? { key: t.key, nameVi: t.nameVi, nameEn: t.nameEn, colorHex: t.colorHex }
+        ? {
+            key: t.key,
+            nameVi: t.nameVi,
+            nameEn: t.nameEn,
+            colorHex: t.colorHex,
+            modelGlbPath: t.modelGlbPath,
+            modelUsdzPath: t.modelUsdzPath,
+          }
         : null,
       loot: parseSnapshot(g.lootSnapshotJson),
     };
