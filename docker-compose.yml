@@ -11,7 +11,6 @@ services:
       NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:3000}
     volumes:
       - phoco_data:/data
-      - ./loot-images:/app/public/images/loot
 
   mysql:
     image: mysql:8.4

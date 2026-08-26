@@ -44,7 +44,7 @@ export default function RewardCard({ item }: { item: RevealLoot }) {
       {item.type === "IMAGE" && item.imagePath && (
         /* eslint-disable-next-line @next/next/no-img-element */
         <img
-          src={`/api/uploads/${item.imagePath}`}
+          src={item.imagePath.startsWith("/api/") ? item.imagePath : `/api/uploads/${item.imagePath}`}
           alt=""
           loading="lazy"
           decoding="async"

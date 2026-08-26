@@ -535,6 +535,13 @@ const EMPTY_LOOT = {
   sortOrder: "",
 };
 
+function lootImgSrc(p: string | null): string {
+  if (!p) return "";
+  if (p.startsWith("/api/")) return p;
+  const m = p.match(/\/images\/loot\/([^/?]+)/);
+  return m ? `/api/images/loot?name=${m[1]}` : p;
+}
+
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 const ALLOWED_UPLOAD_MIMES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
@@ -743,7 +750,7 @@ function ChestsTab() {
                 <span className="flex items-center gap-2">
                   {l.imagePath && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={l.imagePath} alt="" className="h-8 w-8 flex-shrink-0 rounded border border-line object-cover" />
+                    <img src={lootImgSrc(l.imagePath)} alt="" className="h-8 w-8 flex-shrink-0 rounded border border-line object-cover" />
                   )}
                   <span>
                     <span className="font-bold">{l.type}</span>{" "}
@@ -817,7 +824,7 @@ function ChestsTab() {
             </div>
             {newLoot.imagePath && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={newLoot.imagePath} alt="preview" className="mt-2 h-32 max-w-full rounded-lg border border-line object-cover" />
+              <img src={lootImgSrc(newLoot.imagePath)} alt="preview" className="mt-2 h-32 max-w-full rounded-lg border border-line object-cover" />
             )}
             <label className={`${label} mt-2`}>Path thủ công</label>
             <input className={field} value={newLoot.imagePath} onChange={(ev) => setNewLoot({ ...newLoot, imagePath: ev.target.value })} placeholder="/images/loot/…" />
