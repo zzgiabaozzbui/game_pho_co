@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Printer } from "lucide-react";
+import ChestReveal from "@/components/ChestReveal";
+import type { RevealTier } from "@/components/ChestReveal";
+import type { RevealLoot } from "@/components/RewardCard";
 
 interface StationRow {
   slug: string;
@@ -554,6 +557,10 @@ function ChestsTab() {
   const [msg, setMsg] = useState("");
   const [qr, setQr] = useState<{ token: string; dataUrl: string } | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [editingLoot, setEditingLoot] = useState<LootRow | null>(null);
+  const [editingLootForm, setEditingLootForm] = useState({ scopeKey: "", type: "POINTS", pointsAmount: "", storyVi: "", storyEn: "", youtubeUrl: "", imagePath: "", sortOrder: "" });
+  const [editUploading, setEditUploading] = useState(false);
+  const [previewTier, setPreviewTier] = useState<ChestTierRow | null>(null);
 
   const load = useCallback(async () => {
     const r = await fetch("/api/admin/chests");
@@ -655,6 +662,28 @@ function ChestsTab() {
     }
   }
 
+  async function uploadLootImageEdit(file: File) {
+    if (file.size > MAX_UPLOAD_BYTES) { setMsg("File quá lớn, tối đa 5MB"); return; }
+    if (!ALLOWED_UPLOAD_MIMES.includes(file.type)) { setMsg("Chỉ chấp nhận jpg, png, webp, gif"); return; }
+    setEditUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const r = await fetch("/api/admin/chest-loot/upload", { method: "POST", body: fd });
+      if (!r.ok) { const e = await r.json().catch(() => ({ error: `HTTP ${r.status}` })); setMsg(`Upload lỗi: ${e.error}`); return; }
+      const { path } = (await r.json()) as { path: string };
+      setEditingLootForm((prev) => ({ ...prev, imagePath: path }));
+      setMsg("Upload thành công ✓");
+    } catch { setMsg("Upload thất bại"); } finally { setEditUploading(false); }
+  }
+
+  useEffect(() => {
+    if (!previewTier) return;
+    function onKey(e: KeyboardEvent) { if (e.key === "Escape") setPreviewTier(null); }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [previewTier]);
+
   if (!data) return <p className="py-16 text-center text-ink-soft">…</p>;
 
   const field = "mt-1 w-full rounded-lg border border-line bg-cream px-3 py-2 text-sm";
@@ -669,6 +698,7 @@ function ChestsTab() {
   }
 
   return (
+    <>
     <div className="space-y-6">
       <section className={section}>
         <h2 className="text-sm font-black uppercase tracking-wide">Cấp rương</h2>
@@ -676,9 +706,17 @@ function ChestsTab() {
           const e = tierEdits[t.id] ?? {};
           return (
             <div key={t.id} className="mt-4 rounded-xl border border-line p-3 first:mt-3">
-              <div className="flex items-center gap-2 text-sm font-bold">
-                <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: e.colorHex ?? t.colorHex }} />
-                {t.key}
+              <div className="flex items-center justify-between text-sm font-bold">
+                <span className="flex items-center gap-2">
+                  <span className="inline-block h-3 w-3 rounded-full" style={{ backgroundColor: e.colorHex ?? t.colorHex }} />
+                  {t.key}
+                </span>
+                <button
+                  onClick={() => setPreviewTier(t)}
+                  className="rounded-lg border border-line bg-cream px-3 py-1 text-xs font-semibold text-ink hover:bg-gold/10"
+                >
+                  Xem trước
+                </button>
               </div>
               <label className={label}>Tên (VI)</label>
               <input className={field} value={e.nameVi ?? t.nameVi} onChange={(ev) => setTierEdits({ ...tierEdits, [t.id]: { ...e, nameVi: ev.target.value } })} />
@@ -760,16 +798,112 @@ function ChestsTab() {
                     {l.sortOrder !== 0 && <span className="text-xs text-ink-soft/60"> · #{l.sortOrder}</span>}
                   </span>
                 </span>
-                <button
-                  onClick={() => patch({ kind: "loot-delete", id: l.id })}
-                  className="rounded-lg bg-wine px-3 py-1.5 text-xs font-semibold text-white hover:bg-wine/85"
-                >
-                  Xóa
-                </button>
+                <span className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setEditingLoot(l);
+                      setEditingLootForm({
+                        scopeKey: l.scopeKey,
+                        type: l.type,
+                        pointsAmount: l.pointsAmount !== null ? String(l.pointsAmount) : "",
+                        storyVi: l.storyVi ?? "",
+                        storyEn: l.storyEn ?? "",
+                        youtubeUrl: l.youtubeUrl ?? "",
+                        imagePath: l.imagePath ?? "",
+                        sortOrder: String(l.sortOrder),
+                      });
+                    }}
+                    className="rounded-lg bg-gold/20 px-3 py-1.5 text-xs font-semibold text-ink hover:bg-gold/35"
+                  >
+                    Sửa
+                  </button>
+                  <button
+                    onClick={() => patch({ kind: "loot-delete", id: l.id })}
+                    className="rounded-lg bg-wine px-3 py-1.5 text-xs font-semibold text-white hover:bg-wine/85"
+                  >
+                    Xóa
+                  </button>
+                </span>
               </div>
             ))}
           </div>
         ))}
+
+        {editingLoot && (
+          <div className="mt-4 rounded-xl border border-gold/40 bg-gold/5 p-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-black text-ink">Sửa loot #{editingLoot.id}</h3>
+              <button onClick={() => setEditingLoot(null)} className="text-xs text-ink-soft hover:text-ink">Hủy</button>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={label}>Scope key</label>
+                <input className={field} value={editingLootForm.scopeKey} onChange={(ev) => setEditingLootForm({ ...editingLootForm, scopeKey: ev.target.value })} />
+              </div>
+              <div>
+                <label className={label}>Loại</label>
+                <select className={field} value={editingLootForm.type} onChange={(ev) => setEditingLootForm({ ...editingLootForm, type: ev.target.value })}>
+                  {LOOT_TYPES.map((tp) => <option key={tp} value={tp}>{tp}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className={label}>Điểm</label>
+                <input type="number" className={field} value={editingLootForm.pointsAmount} onChange={(ev) => setEditingLootForm({ ...editingLootForm, pointsAmount: ev.target.value })} />
+              </div>
+              <div>
+                <label className={label}>Thứ tự</label>
+                <input type="number" className={field} value={editingLootForm.sortOrder} onChange={(ev) => setEditingLootForm({ ...editingLootForm, sortOrder: ev.target.value })} />
+              </div>
+            </div>
+            <label className={label}>Story (VI)</label>
+            <textarea rows={2} className={field} value={editingLootForm.storyVi} onChange={(ev) => setEditingLootForm({ ...editingLootForm, storyVi: ev.target.value })} />
+            <label className={label}>Story (EN)</label>
+            <textarea rows={2} className={field} value={editingLootForm.storyEn} onChange={(ev) => setEditingLootForm({ ...editingLootForm, storyEn: ev.target.value })} />
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={label}>YouTube URL</label>
+                <input className={field} value={editingLootForm.youtubeUrl} onChange={(ev) => setEditingLootForm({ ...editingLootForm, youtubeUrl: ev.target.value })} />
+              </div>
+              <div>
+                <label className={label}>Image</label>
+                <div className="mt-1 flex items-center gap-3">
+                  <label className="cursor-pointer rounded-lg border border-line bg-cream px-3 py-2 text-sm text-ink hover:bg-gold/10">
+                    {editUploading ? "Đang upload…" : "Chọn ảnh"}
+                    <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={(ev) => { const f = ev.target.files?.[0]; if (f) uploadLootImageEdit(f); }} />
+                  </label>
+                  {editUploading && <span className="text-xs text-ink-soft">⏳</span>}
+                </div>
+                {editingLootForm.imagePath && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={lootImgSrc(editingLootForm.imagePath)} alt="preview" className="mt-2 h-32 max-w-full rounded-lg border border-line object-cover" />
+                )}
+                <label className={`${label} mt-2`}>Path thủ công</label>
+                <input className={field} value={editingLootForm.imagePath} onChange={(ev) => setEditingLootForm({ ...editingLootForm, imagePath: ev.target.value })} placeholder="/images/loot/…" />
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                const points = Number(editingLootForm.pointsAmount);
+                patch({
+                  kind: "loot-update",
+                  id: editingLoot.id,
+                  scopeKey: editingLootForm.scopeKey.trim() || undefined,
+                  type: editingLootForm.type || undefined,
+                  sortOrder: editingLootForm.sortOrder !== "" ? Number(editingLootForm.sortOrder) : undefined,
+                  ...(Number.isInteger(points) ? { pointsAmount: points } : {}),
+                  ...(editingLootForm.storyVi ? { storyVi: editingLootForm.storyVi } : {}),
+                  ...(editingLootForm.storyEn ? { storyEn: editingLootForm.storyEn } : {}),
+                  ...(editingLootForm.youtubeUrl ? { youtubeUrl: editingLootForm.youtubeUrl } : {}),
+                  ...(editingLootForm.imagePath ? { imagePath: editingLootForm.imagePath } : {}),
+                });
+                setEditingLoot(null);
+              }}
+              className="btn-primary mt-3 px-4 py-2 text-sm"
+            >
+              Lưu
+            </button>
+          </div>
+        )}
 
         <h3 className={`${label} font-black`}>Thêm loot mới</h3>
         <div className="grid grid-cols-2 gap-3">
@@ -874,5 +1008,32 @@ function ChestsTab() {
 
       {msg && <p className="text-sm font-medium text-jade-deep">{msg}</p>}
     </div>
+    {previewTier && (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+        onClick={(ev) => { if (ev.target === ev.currentTarget) setPreviewTier(null); }}
+      >
+        <ChestReveal
+          tier={{
+            key: previewTier.key,
+            nameVi: previewTier.nameVi,
+            nameEn: previewTier.nameEn,
+            colorHex: previewTier.colorHex,
+            modelGlbPath: previewTier.modelGlbPath,
+            modelUsdzPath: previewTier.modelUsdzPath,
+          } satisfies RevealTier}
+          loot={data.loot.slice(0, 4).map((l) => ({
+            type: l.type,
+            pointsAmount: l.pointsAmount ?? undefined,
+            storyVi: l.storyVi ?? undefined,
+            storyEn: l.storyEn ?? undefined,
+            imagePath: l.imagePath ?? undefined,
+            youtubeUrl: l.youtubeUrl ?? undefined,
+          })) satisfies RevealLoot[]}
+          onClose={() => setPreviewTier(null)}
+        />
+      </div>
+    )}
+    </>
   );
 }

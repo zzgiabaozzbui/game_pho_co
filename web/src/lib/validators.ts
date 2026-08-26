@@ -84,6 +84,21 @@ export const chestPatchSchema = z.discriminatedUnion("kind", [
   }),
   z.object({ kind: z.literal("loot-delete"), id: z.number().int() }),
   z.object({
+    kind: z.literal("loot-update"),
+    id: z.number().int(),
+    scopeKey: z.string().min(1).optional(),
+    type: z.enum(["POINTS", "STORY", "IMAGE", "VIDEO"]).optional(),
+    pointsAmount: z.number().int().optional(),
+    storyVi: z.string().optional(),
+    storyEn: z.string().optional(),
+    imagePath: z.string().optional(),
+    youtubeUrl: z
+      .string()
+      .regex(/^https:\/\/(www\.)?(youtube\.com|youtu\.be)\//, "youtube link only")
+      .optional(),
+    sortOrder: z.number().int().optional(),
+  }),
+  z.object({
     kind: z.literal("drop-rule"),
     chancePct: z.number().int().min(0).max(100),
     rules: z.array(z.object({ tierKey: z.string(), weight: z.number().int().min(0) })).min(1),

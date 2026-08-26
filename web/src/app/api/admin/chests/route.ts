@@ -53,6 +53,12 @@ export async function PATCH(req: Request) {
       case "loot-delete":
         await db.chestLoot.delete({ where: { id: d.id } });
         break;
+      case "loot-update": {
+        const { kind: _lu, id: lootId, ...lootFields } = d;
+        void _lu;
+        await db.chestLoot.update({ where: { id: lootId }, data: lootFields });
+        break;
+      }
       case "drop-rule":
         await db.$transaction([
           db.dropRule.deleteMany(),
