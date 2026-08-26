@@ -56,6 +56,8 @@ export const stationUpdateSchema = z.object({
   orderIndex: z.number().int().min(1).max(999),
   isActive: z.boolean(),
   chestTierId: z.number().int().nullable().optional(),
+  challengeType: z.enum(["QUIZ", "WORKSHOP"]).optional(),
+  partnerIds: z.array(z.number().int()).optional(),
 });
 
 export const chestPatchSchema = z.discriminatedUnion("kind", [

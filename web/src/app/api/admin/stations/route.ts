@@ -10,12 +10,15 @@ export async function GET(req: Request) {
 
   const stations = await db.station.findMany({
     orderBy: { orderIndex: "asc" },
+    include: { stationPartners: { select: { partnerId: true } } },
   });
   return NextResponse.json(
     stations.map((s) => ({
       ...s,
       options: JSON.parse(s.optionsJson) as { vi: string; en: string }[],
       optionsJson: undefined,
+      partnerIds: s.stationPartners.map((sp) => sp.partnerId),
+      stationPartners: undefined,
     }))
   );
 }
@@ -53,8 +56,19 @@ export async function PUT(req: Request) {
         orderIndex: s.orderIndex,
         isActive: s.isActive,
         chestTierId: s.chestTierId,
+        challengeType: s.challengeType ?? "QUIZ",
       },
     });
+
+    if (s.partnerIds !== undefined) {
+      await db.stationPartner.deleteMany({ where: { stationId: updated.id } });
+      if (s.partnerIds.length > 0) {
+        await db.stationPartner.createMany({
+          data: s.partnerIds.map((pid) => ({ stationId: updated.id, partnerId: pid })),
+        });
+      }
+    }
+
     return NextResponse.json({ ok: true, slug: updated.slug });
   } catch {
     return NextResponse.json(
@@ -106,6 +120,7 @@ export async function POST(req: Request) {
       lng: lng ?? 0,
       radiusM: body.radiusM ?? 120,
       qrToken,
+      challengeType: body.challengeType ?? "QUIZ",
     },
   });
   return NextResponse.json(station, { status: 201 });

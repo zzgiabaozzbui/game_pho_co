@@ -8,6 +8,7 @@ import type { RevealTier } from "@/components/ChestReveal";
 import type { RevealLoot } from "@/components/RewardCard";
 
 interface StationRow {
+  id: number;
   slug: string;
   orderIndex: number;
   nameVi: string;
@@ -26,6 +27,7 @@ interface StationRow {
   qrToken: string;
   isActive: boolean;
   chestTierId?: number | null;
+  challengeType: string;
 }
 
 interface TierOption {
@@ -155,6 +157,32 @@ function Login({ onSubmit }: { onSubmit: (p: string) => void }) {
 }
 
 const EMPTY_FIELD = "";
+
+function PartnerPicker({ linkedPartnerIds, onChange }: { linkedPartnerIds: number[]; onChange: (ids: number[]) => void }) {
+  const [allPartners, setAllPartners] = useState<{ id: number; name: string }[]>([]);
+
+  useEffect(() => {
+    fetch("/api/admin/partners").then((r) => r.json()).then(setAllPartners);
+  }, []);
+
+  const toggle = (partnerId: number) => {
+    const next = linkedPartnerIds.includes(partnerId)
+      ? linkedPartnerIds.filter((id) => id !== partnerId)
+      : [...linkedPartnerIds, partnerId];
+    onChange(next);
+  };
+
+  return (
+    <div className="space-y-1">
+      {allPartners.map((p) => (
+        <label key={p.id} className="flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={linkedPartnerIds.includes(p.id)} onChange={() => toggle(p.id)} />
+          {p.name}
+        </label>
+      ))}
+    </div>
+  );
+}
 
 function StationsTab() {
   const [list, setList] = useState<StationRow[]>([]);
@@ -307,6 +335,26 @@ function StationsTab() {
         ))}
       </select>
 
+      <label className={label}>Loại thử thách</label>
+      <select
+        className={field}
+        value={draft.challengeType ?? "QUIZ"}
+        onChange={(e) => setDraft({ ...draft, challengeType: e.target.value })}
+      >
+        <option value="QUIZ">Câu hỏi (Quiz)</option>
+        <option value="WORKSHOP">Trải nghiệm Workshop</option>
+      </select>
+
+      {draft.challengeType === "WORKSHOP" && (
+        <>
+          <label className={label}>Đối tác tại trạm này</label>
+          <PartnerPicker
+            linkedPartnerIds={(draft as StationRow & { partnerIds?: number[] }).partnerIds ?? []}
+            onChange={(ids) => setDraft({ ...draft, partnerIds: ids } as StationRow & { partnerIds: number[] })}
+          />
+        </>
+      )}
+
       <label className={label}>Câu chuyện (VI)</label>
       <textarea rows={3} className={field} value={draft.storyVi} onChange={(e) => setDraft({ ...draft, storyVi: e.target.value })} />
       <label className={label}>Story (EN)</label>
@@ -356,6 +404,34 @@ function StationsTab() {
       </p>
 
       <div className="sticky bottom-3 mt-5 flex items-center gap-3 rounded-2xl bg-cream/90 p-3 shadow-lg ring-1 ring-line backdrop-blur">
+        <button
+          onClick={() => {
+            setDraft({
+              id: 0, slug: "", orderIndex: 0, nameVi: "", nameEn: "",
+              storyVi: "", storyEn: "", questionVi: "", questionEn: "",
+              options: [], correctIndex: 0, hintVi: "", hintEn: "",
+              challengeType: "QUIZ", lat: 0, lng: 0, radiusM: 120,
+              qrToken: "", isActive: true, chestTierId: null,
+            } as StationRow);
+            setSelectedSlug("");
+            setMsg("");
+          }}
+          className="rounded-lg bg-son px-3 py-1.5 text-sm font-semibold text-cream"
+        >
+          + Thêm trạm
+        </button>
+        {draft.id > 0 && (
+          <button
+            onClick={async () => {
+              if (!confirm("Xóa trạm này?")) return;
+              await fetch(`/api/admin/stations/${draft.id}`, { method: "DELETE" });
+              location.reload();
+            }}
+            className="rounded-lg border border-red-300 px-3 py-1.5 text-sm text-red-600"
+          >
+            Xóa trạm
+          </button>
+        )}
         <button onClick={save} className="btn-primary flex-1 py-3">
           Lưu thay đổi
         </button>
