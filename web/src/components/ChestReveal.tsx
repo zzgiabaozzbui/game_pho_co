@@ -20,11 +20,13 @@ export default function ChestReveal({
   loot,
   onClose,
   notice,
+  sealedAction,
 }: {
   tier: RevealTier;
   loot: RevealLoot[];
   onClose: () => void;
   notice?: React.ReactNode;
+  sealedAction?: React.ReactNode;
 }) {
   const { t } = useLang();
   const [opened, setOpened] = useState(false);
@@ -43,9 +45,12 @@ export default function ChestReveal({
       {!opened && <div className="chest-glow" />}
       <ChestVisual tier={tier} opened={opened} onTapChest={() => setOpened(true)} />
       {!opened ? (
-        <p className="text-sm font-semibold text-paper/90">
-          {t("chest.tap_to_open")}
-        </p>
+        <>
+          <p className="text-sm font-semibold text-paper/90">
+            {t("chest.tap_to_open")}
+          </p>
+          {sealedAction}
+        </>
       ) : (
         <ul className="mt-2 flex w-full max-w-sm flex-col gap-2">
           {loot.map((item, i) => (

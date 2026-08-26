@@ -3,7 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
-import { ArrowLeft, Trophy } from "lucide-react";
+import { ArrowLeft, Gift, Trophy } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { haversineM } from "@/lib/geo";
 import { fetchState } from "@/lib/client";
@@ -123,16 +123,19 @@ export default function PlayPage() {
         </Link>
         <div className="flex flex-col items-center">
           <span className="font-display text-sm font-bold">{t("app.name")}</span>
-          <span className="text-xs text-gold">
-            {t("progress.of", { done: state.done, total: state.total })}
-            {" · "}
-            {t("score.label")} {state.score}
+          <span className="flex items-center gap-1.5 text-xs text-gold">
+            {t("play.progress_compact", {
+              done: state.done,
+              total: state.total,
+              score: state.score,
+            })}
+            {unopenedCount > 0 && (
+              <span className="flex items-center gap-0.5 rounded-full bg-gold px-1.5 py-0.5 font-bold leading-none text-timber">
+                <Gift className="h-3 w-3" aria-hidden="true" />
+                {unopenedCount}
+              </span>
+            )}
           </span>
-          {unopenedCount > 0 && (
-            <span className="mt-0.5 rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold text-timber">
-              {t("chest.unopened_badge", { count: unopenedCount })}
-            </span>
-          )}
         </div>
         <button
           onClick={toggle}
@@ -191,19 +194,24 @@ export default function PlayPage() {
           </>
         ) : null}
 
-        <div className="mt-6 flex items-center gap-4 text-[11px] font-semibold text-ink-soft">
-          <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-jade" aria-hidden />
-            {t("play.legend_solved")}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-clay" aria-hidden />
-            {t("play.legend_current")}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-son" aria-hidden />
-            {t("play.legend_locked")}
-          </span>
+        <div className="mt-6">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-ink-soft">
+            {t("play.route_legend")}
+          </p>
+          <div className="mt-2 flex items-center gap-4 text-[11px] font-semibold text-ink-soft">
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-jade" aria-hidden />
+              {t("play.legend_solved")}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-clay" aria-hidden />
+              {t("play.legend_current")}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-son" aria-hidden />
+              {t("play.legend_locked")}
+            </span>
+          </div>
         </div>
 
         <div className="-mx-5 mt-2 overflow-x-auto px-5 pb-1">
