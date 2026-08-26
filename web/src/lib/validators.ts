@@ -123,3 +123,84 @@ export const partnerClaimSchema = z.object({
   lat: z.number().optional(),
   lng: z.number().optional(),
 });
+
+// ===== Partner =====
+export const partnerCreateSchema = z.object({
+  name: z.string().min(1).max(200),
+  phone: z.string().max(30).optional().nullable(),
+  address: z.string().max(500).optional().nullable(),
+  description: z.string().max(2000).optional().nullable(),
+  googleMapsUrl: z.string().url().max(2000).optional().nullable(),
+  lat: z.number().min(-90).max(90).optional().nullable(),
+  lng: z.number().min(-180).max(180).optional().nullable(),
+  imageUrl: z.string().max(2000).optional().nullable(),
+});
+
+export const partnerUpdateSchema = partnerCreateSchema.partial().extend({
+  id: z.number().int().positive(),
+});
+
+export const partnerDeleteSchema = z.object({
+  id: z.number().int().positive(),
+});
+
+// ===== WorkshopTask =====
+export const workshopTaskCreateSchema = z.object({
+  partnerId: z.number().int().positive(),
+  stationId: z.number().int().positive(),
+  instructionVi: z.string().min(1).max(500),
+  instructionEn: z.string().min(1).max(500),
+  photoReqsVi: z.string().min(1).max(500),
+  photoReqsEn: z.string().min(1).max(500),
+  quizQuestionVi: z.string().max(500).optional().nullable(),
+  quizQuestionEn: z.string().max(500).optional().nullable(),
+  quizOptionsJson: z.string().max(2000).optional().nullable(),
+  quizCorrectIndex: z.number().int().min(0).optional().nullable(),
+  rewardPoints: z.number().int().positive().default(50),
+  sortOrder: z.number().int().min(0).default(0),
+});
+
+export const workshopTaskUpdateSchema = workshopTaskCreateSchema.partial().extend({
+  id: z.number().int().positive(),
+});
+
+export const workshopTaskDeleteSchema = z.object({
+  id: z.number().int().positive(),
+});
+
+// ===== Station (mở rộng) =====
+export const stationCreateSchema = z.object({
+  slug: z.string().min(1).max(100),
+  orderIndex: z.number().int().min(0),
+  nameVi: z.string().min(1).max(200),
+  nameEn: z.string().min(1).max(200),
+  storyVi: z.string().default(""),
+  storyEn: z.string().default(""),
+  questionVi: z.string().default(""),
+  questionEn: z.string().default(""),
+  optionsJson: z.string().default("[]"),
+  correctIndex: z.number().int().min(0).default(0),
+  hintVi: z.string().default(""),
+  hintEn: z.string().default(""),
+  challengeType: z.enum(["QUIZ", "WORKSHOP"]).default("QUIZ"),
+  lat: z.number(),
+  lng: z.number(),
+  radiusM: z.number().int().positive().default(120),
+  qrToken: z.string().min(1).max(100),
+});
+
+export const stationDeleteSchema = z.object({
+  id: z.number().int().positive(),
+});
+
+// ===== Assignment =====
+export const assignRequestSchema = z.object({
+  guestId: z.string().uuid(),
+  stationId: z.number().int().positive(),
+});
+
+export const workshopSubmitSchema = z.object({
+  guestId: z.string().uuid(),
+  assignmentId: z.number().int().positive(),
+  quizAnswer: z.number().int().min(0).optional(),
+});
