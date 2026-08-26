@@ -181,6 +181,7 @@ const vi = {
     "Mở lại trang chủ trên máy cũ để xem lại mã, hoặc bắt đầu hành trình mới (điểm cũ không cộng dồn).",
   "guide.faq_q4": "Đổi tiếng Việt / English ở đâu?",
   "guide.faq_a4": "Nút nhỏ ở góc phải trên mỗi trang.",
+  "guide.back_home": "Về trang chủ",
 
   "admin.login": "Đăng nhập quản trị",
   "admin.password": "Mật khẩu",
@@ -383,6 +384,7 @@ const en: Record<DictKey, string> = {
     "Reopen the home screen on your old device to see it again, or start fresh (old progress won't carry over).",
   "guide.faq_q4": "Where do I switch Vietnamese/English?",
   "guide.faq_a4": "The small pill in the top-right corner of every page.",
+  "guide.back_home": "Back home",
 
   "admin.login": "Admin sign-in",
   "admin.password": "Password",

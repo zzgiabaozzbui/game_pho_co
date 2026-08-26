@@ -211,7 +211,7 @@ export default function HuongDanPage() {
           href="/"
           className="inline-flex items-center gap-2 self-center rounded-full border border-line bg-cream px-5 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-gold-soft"
         >
-          {t("common.back")}
+          {t("guide.back_home")}
         </Link>
       </div>
     </main>
