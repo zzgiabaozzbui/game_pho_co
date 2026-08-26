@@ -23,6 +23,15 @@ export const metadata: Metadata = {
     "Hành trình truy tìm kho báu văn hóa qua 36 phố phường Hà Nội xưa.",
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, title: "Phố cổ 36", statusBarStyle: "black-translucent" },
+  openGraph: {
+    type: "website",
+    siteName: "Kho báu Phố cổ",
+    locale: "vi_VN",
+    alternateLocale: ["en_US"],
+    title: "Kho báu Phố cổ | Old Quarter Treasure",
+    description:
+      "Hành trình truy tìm kho báu văn hóa qua 36 phố phường Hà Nội xưa.",
+  },
 };
 
 export const viewport: Viewport = {
