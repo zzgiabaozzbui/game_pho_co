@@ -9,6 +9,8 @@ import QuickLookLauncher from "./renderers/QuickLookLauncher";
 import WebXRRenderer from "./renderers/WebXRRenderer";
 
 const GOLD = "#d4af37";
+const GOLD_DEEP = "#7a5c10";
+const GOLD_LIGHT = "#e8bf4d";
 const OUTLINE = "#2a1a10";
 const RIVET_X = [45, 78, 122, 155];
 const COIN_SPILL = [
@@ -51,8 +53,8 @@ function LegacyChest({
           <rect x={22} y={129} width={156} height={8} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
           {RIVET_X.map((x) => (
             <g key={`rivet-${x}`}>
-              <circle cx={x} cy={83} r={2.2} fill="#7a5c10" />
-              <circle cx={x} cy={133} r={2.2} fill="#7a5c10" />
+              <circle cx={x} cy={83} r={2.2} fill={GOLD_DEEP} />
+              <circle cx={x} cy={133} r={2.2} fill={GOLD_DEEP} />
             </g>
           ))}
           <rect x={88} y={90} width={24} height={26} rx={4} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
@@ -68,7 +70,7 @@ function LegacyChest({
               cx={cx}
               cy={cy}
               r={r}
-              fill="#e8bf4d"
+              fill={GOLD_LIGHT}
               stroke={OUTLINE}
               strokeWidth={2}
             />

@@ -211,6 +211,8 @@ for (const t of TIERS) {
   const obj = buildChest(t.colorHex);
   const glb = await exportGLB(obj);
 
+  // USDZ không diễn đạt được DoubleSide — ép FrontSide SAU khi export GLB
+  // (GLB giữ DoubleSide cho lòng vòm nắp; thứ tự này không được đổi)
   obj.traverse((o) => {
     if (o.isMesh && o.material && o.material.side !== THREE.FrontSide) {
       o.material.side = THREE.FrontSide;
