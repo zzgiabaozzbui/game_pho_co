@@ -19,10 +19,12 @@ export default function ChestReveal({
   tier,
   loot,
   onClose,
+  notice,
 }: {
   tier: RevealTier;
   loot: RevealLoot[];
   onClose: () => void;
+  notice?: React.ReactNode;
 }) {
   const { t } = useLang();
   const [opened, setOpened] = useState(false);
@@ -51,6 +53,7 @@ export default function ChestReveal({
           ))}
         </ul>
       )}
+      {notice}
     </div>
   );
 }

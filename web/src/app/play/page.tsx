@@ -33,6 +33,9 @@ export default function PlayPage() {
   const [pos, setPos] = useState<{ lat: number; lng: number } | null>(null);
   const [unopenedCount, setUnopenedCount] = useState(0);
   const [queue, setQueue] = useState<GrantView[]>([]);
+  const [openPhase, setOpenPhase] = useState<"idle" | "pending" | "failed">(
+    "idle"
+  );
 
   const load = useCallback(async () => {
     try {
@@ -63,6 +66,24 @@ export default function PlayPage() {
     (p: { lat: number; lng: number }) => setPos(p),
     []
   );
+
+  async function confirmChestOpen(grantId: number) {
+    if (!state) return;
+    setOpenPhase("pending");
+    try {
+      const res = await fetch("/api/chests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ playerId: state.playerId, grantId }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      setOpenPhase("idle");
+      setQueue((q) => q.slice(1));
+      await load();
+    } catch {
+      setOpenPhase("failed");
+    }
+  }
 
   if (error)
     return (
@@ -170,7 +191,22 @@ export default function PlayPage() {
           </>
         ) : null}
 
-        <div className="mt-6 -mx-5 overflow-x-auto px-5 pb-1">
+        <div className="mt-6 flex items-center gap-4 text-[11px] font-semibold text-ink-soft">
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-jade" aria-hidden />
+            {t("play.legend_solved")}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-clay" aria-hidden />
+            {t("play.legend_current")}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-son" aria-hidden />
+            {t("play.legend_locked")}
+          </span>
+        </div>
+
+        <div className="-mx-5 mt-2 overflow-x-auto px-5 pb-1">
           <div className="flex gap-2">
             {state.stations.map((s) => (
               <StationChip key={s.slug} station={s} />
@@ -184,16 +220,25 @@ export default function PlayPage() {
           key={queue[0].grantId}
           tier={queue[0].tier}
           loot={queue[0].loot}
-          onClose={async () => {
-            const current = queue[0];
-            setQueue((q) => q.slice(1));
-            await fetch("/api/chests", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ playerId: state.playerId, grantId: current.grantId }),
-            }).catch(() => {});
-            await load();
+          onClose={() => {
+            if (openPhase === "pending") return;
+            void confirmChestOpen(queue[0].grantId);
           }}
+          notice={
+            openPhase === "failed" ? (
+              <div className="flex w-full max-w-sm flex-col items-center gap-2">
+                <p className="rounded-xl bg-wine-soft px-4 py-2.5 text-sm font-medium text-wine">
+                  {t("play.chest_open_failed")}
+                </p>
+                <button
+                  onClick={() => void confirmChestOpen(queue[0].grantId)}
+                  className="rounded-full border border-paper/40 px-5 py-2 text-sm font-semibold text-paper transition-colors hover:bg-paper/10"
+                >
+                  {t("common.retry")}
+                </button>
+              </div>
+            ) : null
+          }
         />
       )}
     </main>
