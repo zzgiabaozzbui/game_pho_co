@@ -17,6 +17,7 @@ export default function Home() {
   const [recoverCode, setRecoverCode] = useState("");
   const [recoverMsg, setRecoverMsg] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [startError, setStartError] = useState(false);
 
   useEffect(() => {
     const id = getPlayerId();
@@ -26,10 +27,12 @@ export default function Home() {
 
   async function start() {
     setBusy(true);
+    setStartError(false);
     try {
       await ensureSession();
       router.push("/play");
     } catch {
+      setStartError(true);
       setBusy(false);
     }
   }
@@ -114,10 +117,25 @@ export default function Home() {
         <button
           onClick={start}
           disabled={busy}
+          aria-busy={busy}
+          aria-describedby={startError ? "start-error" : undefined}
           className="btn-primary w-full py-4 text-lg active:scale-[0.99] disabled:opacity-60"
         >
-          {hasSession ? t("cta.continue") : t("cta.start")}
+          {startError && !busy
+            ? t("common.retry")
+            : hasSession
+              ? t("cta.continue")
+              : t("cta.start")}
         </button>
+        {startError && (
+          <p
+            id="start-error"
+            role="alert"
+            className="mt-2 text-center text-sm font-medium text-wine"
+          >
+            {t("home.start_error")}
+          </p>
+        )}
         <Link
           href="/treasure"
           className="mt-3 block w-full rounded-2xl border border-line bg-cream px-6 py-3 text-center font-medium text-ink hover:bg-gold-soft"
