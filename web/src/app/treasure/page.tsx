@@ -8,6 +8,7 @@ import { fetchState } from "@/lib/client";
 import type { StateDTO } from "@/lib/state";
 import ChestReveal, { type RevealTier } from "@/components/ChestReveal";
 import RewardCard, { type RevealLoot } from "@/components/RewardCard";
+import { copyToClipboard } from "@/lib/clipboard";
 
 interface ChestView {
   grantId: number;
@@ -30,6 +31,7 @@ export default function TreasurePage() {
   >([]);
   const [chestsLoading, setChestsLoading] = useState(true);
   const [chestsError, setChestsError] = useState(false);
+  const [chestsSettled, setChestsSettled] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const loadChests = useCallback(async (playerId: string) => {
@@ -58,6 +60,7 @@ export default function TreasurePage() {
       setChestsError(true);
     } finally {
       setChestsLoading(false);
+      setChestsSettled(true);
     }
   }, []);
 
@@ -87,6 +90,60 @@ export default function TreasurePage() {
     void loadChests(state.playerId);
   }
 
+  const collectionSection = (
+    <section className="mt-8 w-full max-w-md">
+      <h2 className="text-xs font-bold uppercase tracking-widest text-gold">
+        {t("chest.collection_title")}
+      </h2>
+      {chestsLoading && (
+        <p className="mt-4 animate-pulse text-sm text-paper/70">
+          {t("common.loading")}
+        </p>
+      )}
+      {!chestsLoading && chestsError && (
+        <div className="mt-4 flex flex-col items-center gap-3">
+          <p className="text-sm text-paper/80">{t("treasure.load_error")}</p>
+          <button
+            onClick={retryChests}
+            className="rounded-full border border-gold/40 px-4 py-1.5 text-sm font-semibold text-gold hover:bg-gold/10"
+          >
+            {t("common.retry")}
+          </button>
+        </div>
+      )}
+      {!chestsLoading && !chestsError && collection.length === 0 && (
+        <p className="mt-4 text-sm text-paper/60">
+          {t("chest.empty_collection")}
+        </p>
+      )}
+      {collection.length > 0 && (
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {collection.map((c, i) => (
+            <div
+              key={i}
+              className="rounded-2xl border bg-white/5 p-4 text-left backdrop-blur"
+              style={c.tier ? { borderColor: c.tier.colorHex } : undefined}
+            >
+              {c.tier && (
+                <p
+                  className="font-display text-sm font-bold"
+                  style={{ color: c.tier.colorHex }}
+                >
+                  {lang === "vi" ? c.tier.nameVi : c.tier.nameEn}
+                </p>
+              )}
+              <ul className="mt-2 flex flex-col gap-2">
+                {c.loot.map((item, j) => (
+                  <RewardCard key={j} item={item} />
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+
   async function shareJourney() {
     if (!state) return;
     const text = `${t("treasure.title")}\n${t("treasure.done", {
@@ -101,30 +158,13 @@ export default function TreasurePage() {
       }
       return;
     }
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      })
-      .catch(() => {});
+    if (!(await copyToClipboard(text))) return;
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   }
 
   return (
     <main className="paper-noise flex min-h-dvh flex-col items-center bg-gradient-to-b from-timber via-ink to-ink-strong px-6 py-10 pb-[calc(2.5rem_+_env(safe-area-inset-bottom))] text-center text-paper">
-      <style>{`
-        @keyframes treasure-hero-in {
-          from { opacity: 0; transform: scale(0.55); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        .treasure-hero-in {
-          animation: treasure-hero-in 0.5s ease-out both;
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .treasure-hero-in { animation: none; }
-        }
-      `}</style>
-
       <button
         onClick={toggle}
         className="self-end rounded-full border border-gold/40 px-3 py-1 text-xs font-semibold hover:bg-gold/10"
@@ -133,8 +173,10 @@ export default function TreasurePage() {
       </button>
 
       <div
-        key={finalChest ? "sealed" : "revealed"}
-        className="treasure-hero-in mt-10 rounded-full bg-gold/10 p-5 shadow-[0_0_60px_-10px_rgba(201,150,43,0.45)]"
+        key={chestsSettled && finalChest ? "sealed" : "revealed"}
+        className={`mt-10 rounded-full bg-gold/10 p-5 shadow-[0_0_60px_-10px_rgba(201,150,43,0.45)]${
+          chestsSettled ? " treasure-hero-in" : ""
+        }`}
       >
         {state?.completedAll ? (
           <Trophy className="h-14 w-14 text-gold" strokeWidth={1.5} />
@@ -201,6 +243,8 @@ export default function TreasurePage() {
             </p>
           </section>
 
+          {collectionSection}
+
           <section className="mt-8 w-full max-w-sm rounded-3xl border border-gold/50 bg-white/5 p-6 backdrop-blur">
             <h2 className="text-xs font-bold uppercase tracking-widest text-gold">
               {t("treasure.workshop")}
@@ -229,65 +273,21 @@ export default function TreasurePage() {
         </>
       )}
 
-      {state && !error && (
-        <section className="mt-10 w-full max-w-md">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-gold">
-            {t("chest.collection_title")}
-          </h2>
-          {chestsLoading && (
-            <p className="mt-4 animate-pulse text-sm text-paper/70">
-              {t("common.loading")}
-            </p>
-          )}
-          {!chestsLoading && chestsError && (
-            <div className="mt-4 flex flex-col items-center gap-3">
-              <p className="text-sm text-paper/80">{t("treasure.load_error")}</p>
-              <button
-                onClick={retryChests}
-                className="rounded-full border border-gold/40 px-4 py-1.5 text-sm font-semibold text-gold hover:bg-gold/10"
-              >
-                {t("common.retry")}
-              </button>
-            </div>
-          )}
-          {!chestsLoading && !chestsError && collection.length === 0 && (
-            <p className="mt-4 text-sm text-paper/60">
-              {t("chest.empty_collection")}
-            </p>
-          )}
-          {collection.length > 0 && (
-            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {collection.map((c, i) => (
-                <div
-                  key={i}
-                  className="rounded-2xl border bg-white/5 p-4 text-left backdrop-blur"
-                  style={c.tier ? { borderColor: c.tier.colorHex } : undefined}
-                >
-                  {c.tier && (
-                    <p
-                      className="font-display text-sm font-bold"
-                      style={{ color: c.tier.colorHex }}
-                    >
-                      {lang === "vi" ? c.tier.nameVi : c.tier.nameEn}
-                    </p>
-                  )}
-                  <ul className="mt-2 flex flex-col gap-2">
-                    {c.loot.map((item, j) => (
-                      <RewardCard key={j} item={item} />
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-      )}
+      {state && !error && !state.completedAll && collectionSection}
 
       {state?.completedAll && finalChest && (
         <ChestReveal
           tier={finalChest.tier}
           loot={finalChest.loot}
           onClose={openFinal}
+          sealedAction={
+            <button
+              onClick={openFinal}
+              className="btn-primary px-8 py-3 active:scale-[0.99]"
+            >
+              {t("treasure.open_now")}
+            </button>
+          }
         />
       )}
     </main>

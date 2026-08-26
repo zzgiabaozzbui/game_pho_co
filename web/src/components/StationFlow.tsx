@@ -289,6 +289,8 @@ export default function StationFlow({
         setRevealedHint(data.hint);
       }
       await load();
+    } catch {
+      setRevealedHint(null);
     } finally {
       setBusy(false);
     }
@@ -433,6 +435,7 @@ export default function StationFlow({
 
       {queue.length > 0 && queue[0].tier && (
         <ChestReveal
+          key={queue[0].grantId}
           tier={queue[0].tier}
           loot={queue[0].loot}
           onClose={() => {
@@ -608,7 +611,7 @@ function SuccessPanel({
 
   useEffect(() => {
     setConfirmingHint(false);
-  }, [nextSlug, treasure]);
+  }, [treasure]);
 
   return (
     <section className="mt-4 rounded-2xl border border-jade bg-jade-soft p-5">
