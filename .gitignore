@@ -12,3 +12,5 @@ web/dev.log
 # vendor (gốc repo) là clone riêng có .git nội bộ — bootstrap lại theo AGENTS.md khi clone mới.
 # Anchor "/" để KHÔNG nuốt web/public/vendor (asset MindAR vendored phải commit).
 /vendor/
+
+loot-images/
