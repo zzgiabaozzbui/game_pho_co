@@ -77,6 +77,16 @@ function runQuietly(fn: () => void): void {
   }
 }
 
+function teardownContainer(container: HTMLElement | null): void {
+  if (!container) return;
+  container.querySelectorAll("video").forEach((video) => {
+    const stream = video.srcObject as MediaStream | null;
+    stream?.getTracks().forEach((track) => track.stop());
+    video.remove();
+  });
+  container.querySelectorAll("canvas").forEach((canvas) => canvas.remove());
+}
+
 export default function PartnerPage() {
   const { t, toggle } = useLang();
   const [phase, setPhase] = useState<Phase>("booting");
@@ -89,8 +99,10 @@ export default function PartnerPage() {
   const [apiError, setApiError] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const containerElRef = useRef<HTMLElement | null>(null);
   const mindarRef = useRef<MindARThreeInstance | null>(null);
   const activeRef = useRef(false);
+  const aliveRef = useRef(true);
   const claimedRef = useRef(false);
   const busyRef = useRef(false);
 
@@ -108,18 +120,16 @@ export default function PartnerPage() {
       runQuietly(() => mindar.renderer.setAnimationLoop(null));
       runQuietly(() => mindar.stop());
     }
-    const container = containerRef.current;
-    if (container) {
-      container.querySelectorAll("video").forEach((video) => {
-        const stream = video.srcObject as MediaStream | null;
-        stream?.getTracks().forEach((track) => track.stop());
-        video.remove();
-      });
-      container.querySelectorAll("canvas").forEach((canvas) => canvas.remove());
-    }
+    teardownContainer(containerElRef.current);
   }, []);
 
-  useEffect(() => () => stopScan(), [stopScan]);
+  useEffect(() => {
+    aliveRef.current = true;
+    return () => {
+      aliveRef.current = false;
+      stopScan();
+    };
+  }, [stopScan]);
 
   const doClaim = useCallback(async () => {
     if (!TOKEN_RE.test(token)) return;
@@ -177,25 +187,40 @@ export default function PartnerPage() {
 
   const startScan = useCallback(async () => {
     if (busyRef.current) return;
+    const container = containerRef.current;
+    if (!container) {
+      setPhase("error-lib");
+      return;
+    }
+    containerElRef.current = container;
     busyRef.current = true;
     claimedRef.current = false;
     setApiError(false);
     setPhase("loading-lib");
     try {
-      await loadMindArScript();
+      try {
+        await loadMindArScript();
+      } catch {
+        if (aliveRef.current) setPhase("error-lib");
+        return;
+      }
+      if (!aliveRef.current) return;
 
       const cfgRes = await fetch("/api/partner/config", { cache: "no-store" });
+      if (!aliveRef.current) return;
       if (!cfgRes.ok) {
         setPhase("marker-missing");
         return;
       }
       const cfg = (await cfgRes.json()) as { mindTargetPath?: string };
+      if (!aliveRef.current) return;
       const target = cfg.mindTargetPath;
       if (!target) {
         setPhase("marker-missing");
         return;
       }
       const headRes = await fetch(target, { method: "HEAD" });
+      if (!aliveRef.current) return;
       if (!headRes.ok) {
         setPhase("marker-missing");
         return;
@@ -203,8 +228,7 @@ export default function PartnerPage() {
 
       const w = window as MindARWindow;
       const Ctor = w.MINDAR?.IMAGE?.MindARThree;
-      const container = containerRef.current;
-      if (!Ctor || !container) {
+      if (!Ctor) {
         setPhase("error-lib");
         return;
       }
@@ -218,6 +242,13 @@ export default function PartnerPage() {
       });
       mindarRef.current = mindarThree;
       await mindarThree.start();
+      if (!aliveRef.current) {
+        runQuietly(() => mindarThree.renderer.setAnimationLoop(null));
+        runQuietly(() => mindarThree.stop());
+        mindarRef.current = null;
+        teardownContainer(container);
+        return;
+      }
       activeRef.current = true;
 
       const anchor = mindarThree.addAnchor(0);
@@ -236,8 +267,10 @@ export default function PartnerPage() {
 
       setPhase("scanning");
     } catch {
-      stopScan();
-      setPhase("error-camera");
+      if (aliveRef.current) {
+        stopScan();
+        setPhase("error-camera");
+      }
     } finally {
       busyRef.current = false;
     }
