@@ -113,6 +113,8 @@ const vi = {
   "play.legend_locked": "Chưa đến",
   "play.chest_open_failed":
     "Chưa ghi nhận được lần mở — rương vẫn đang chờ, thử lại nhé.",
+  "play.progress_compact": "Đã đi {done}/{total} phố · {score} điểm",
+  "play.route_legend": "Tuyến của bạn",
   "treasure.title": "Kho báu văn hóa",
   "treasure.workshop": "Workshop trải nghiệm văn hóa",
   "treasure.locked":
@@ -125,6 +127,7 @@ const vi = {
   "treasure.load_error": "Không tải được bộ sưu tập.",
   "treasure.stats_heading": "Hành trình của bạn",
   "treasure.share": "Lưu kỷ niệm hành trình",
+  "treasure.open_now": "Mở kho báu",
   "common.loading": "Đang tải…",
   "common.error": "Có lỗi xảy ra, thử lại nhé.",
   "common.retry": "Thử lại",
