@@ -70,6 +70,7 @@ export default function WebXRRenderer({
         if (disposed) {
           void session.end().catch(() => {});
           renderer.dispose();
+          renderer.forceContextLoss?.();
           return;
         }
 
@@ -118,6 +119,7 @@ export default function WebXRRenderer({
           renderer.domElement.remove();
           disposeThreeObject(scene);
           renderer.dispose();
+          renderer.forceContextLoss?.();
         };
 
         const viewerSpace = await session.requestReferenceSpace("viewer");
@@ -182,6 +184,7 @@ export default function WebXRRenderer({
           renderer.domElement.remove();
           disposeThreeObject(scene);
           renderer.dispose();
+          renderer.forceContextLoss?.();
           onOpened();
         };
         session.addEventListener("end", finish);
