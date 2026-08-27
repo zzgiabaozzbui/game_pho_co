@@ -63,7 +63,7 @@ export async function DELETE(
   if (relatedCount > 0 || taskCount > 0) {
     await db.partner.update({
       where: { id: numId },
-      data: { isActive: 0 },
+      data: { isActive: false },
     });
     return NextResponse.json({ deactivated: true, relatedCount, taskCount });
   }

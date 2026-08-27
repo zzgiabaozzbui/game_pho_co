@@ -128,7 +128,7 @@ export const partnerCreateSchema = z.object({
   lat: z.number().min(-90).max(90).optional(),
   lng: z.number().min(-180).max(180).optional(),
   imageUrl: z.string().max(500).optional(),
-  isActive: z.number().int().min(0).max(1).default(1),
+  isActive: z.boolean().default(true),
 });
 
 export const partnerUpdateSchema = partnerCreateSchema.extend({
