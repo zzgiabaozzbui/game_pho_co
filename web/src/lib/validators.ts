@@ -124,9 +124,18 @@ export const partnerCreateSchema = z.object({
   phone: z.string().max(30).optional(),
   address: z.string().max(200).optional(),
   description: z.string().max(2000).optional(),
-  googleMapsUrl: z.string().url().max(500).optional(),
-  lat: z.number().min(-90).max(90).optional(),
-  lng: z.number().min(-180).max(180).optional(),
+  googleMapsUrl: z.preprocess(
+    (v) => (v === "" || v === null ? undefined : v),
+    z.string().url().max(500).optional()
+  ),
+  lat: z.preprocess(
+    (v) => (v === "" || v === null || v === undefined ? undefined : Number(v)),
+    z.number().min(-90).max(90).optional()
+  ),
+  lng: z.preprocess(
+    (v) => (v === "" || v === null || v === undefined ? undefined : Number(v)),
+    z.number().min(-180).max(180).optional()
+  ),
   imageUrl: z.string().max(500).optional(),
   isActive: z.boolean().default(true),
 });

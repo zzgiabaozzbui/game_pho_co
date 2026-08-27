@@ -12,6 +12,21 @@ export interface RevealLoot {
   youtubeUrl?: string;
 }
 
+function youtubeId(url: string): string | null {
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes("youtu.be")) return u.pathname.slice(1) || null;
+    if (u.hostname.includes("youtube.com") || u.hostname.includes("youtube-nocookie.com")) {
+      if (u.pathname === "/watch") return u.searchParams.get("v");
+      const m = u.pathname.match(/\/(embed|shorts)\/([^/?]+)/);
+      if (m) return m[2];
+    }
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
 export default function RewardCard({ item }: { item: RevealLoot }) {
   const { t, lang } = useLang();
   return (
@@ -30,17 +45,40 @@ export default function RewardCard({ item }: { item: RevealLoot }) {
           </span>
         </span>
       )}
-      {item.type === "VIDEO" && item.youtubeUrl && (
-        <a
-          href={item.youtubeUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center gap-2 font-semibold text-son hover:underline"
-        >
-          <PlayCircle className="h-4 w-4 shrink-0" />
-          {t("chest.watch_video")}
-        </a>
-      )}
+      {item.type === "VIDEO" && item.youtubeUrl && (() => {
+        const id = youtubeId(item.youtubeUrl);
+        if (id) {
+          return (
+            <span className="block">
+              <span className="mb-1 flex items-center gap-2 text-sm font-semibold text-son">
+                <PlayCircle className="h-4 w-4 shrink-0" />
+                {t("chest.watch_video")}
+              </span>
+              <div className="aspect-video w-full overflow-hidden rounded-lg ring-1 ring-line">
+                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/${id}`}
+                  title={t("chest.watch_video")}
+                  className="h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </span>
+          );
+        }
+        return (
+          <a
+            href={item.youtubeUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-2 font-semibold text-son hover:underline"
+          >
+            <PlayCircle className="h-4 w-4 shrink-0" />
+            {t("chest.watch_video")}
+          </a>
+        );
+      })()}
       {item.type === "IMAGE" && item.imagePath && (
         /* eslint-disable-next-line @next/next/no-img-element */
         <img
@@ -48,7 +86,7 @@ export default function RewardCard({ item }: { item: RevealLoot }) {
           alt=""
           loading="lazy"
           decoding="async"
-          className="max-h-48 w-full rounded-lg object-contain"
+          className="max-h-72 w-full rounded-lg object-contain"
         />
       )}
     </li>
