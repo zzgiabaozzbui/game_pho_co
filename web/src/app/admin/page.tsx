@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Printer } from "lucide-react";
 import ChestReveal from "@/components/ChestReveal";
 import type { RevealTier } from "@/components/ChestReveal";
+import RewardCard from "@/components/RewardCard";
 import type { RevealLoot } from "@/components/RewardCard";
 
 interface StationRow {
@@ -676,6 +677,7 @@ function ChestsTab() {
   const [editingLootForm, setEditingLootForm] = useState({ scopeKey: "", type: "POINTS", pointsAmount: "", storyVi: "", storyEn: "", youtubeUrl: "", imagePath: "", sortOrder: "" });
   const [editUploading, setEditUploading] = useState(false);
   const [previewTier, setPreviewTier] = useState<ChestTierRow | null>(null);
+  const [previewLoot, setPreviewLoot] = useState<LootRow | null>(null);
   const [addingLoot, setAddingLoot] = useState(false);
 
   const load = useCallback(async () => {
@@ -795,17 +797,18 @@ function ChestsTab() {
   }
 
   useEffect(() => {
-    if (!previewTier && !addingLoot && !editingLoot) return;
+    if (!previewTier && !addingLoot && !editingLoot && !previewLoot) return;
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
         setPreviewTier(null);
         setAddingLoot(false);
         setEditingLoot(null);
+        setPreviewLoot(null);
       }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [previewTier, addingLoot, editingLoot]);
+  }, [previewTier, addingLoot, editingLoot, previewLoot]);
 
   if (!data) return <p className="py-16 text-center text-ink-soft">…</p>;
 
@@ -945,6 +948,12 @@ function ChestsTab() {
                     className="rounded-lg bg-wine px-3 py-1.5 text-xs font-semibold text-white hover:bg-wine/85"
                   >
                     Xóa
+                  </button>
+                  <button
+                    onClick={() => setPreviewLoot(l)}
+                    className="rounded-lg border border-line bg-cream px-3 py-1.5 text-xs font-semibold text-ink hover:bg-gold/10"
+                  >
+                    Xem trước
                   </button>
                 </span>
               </div>
@@ -1169,6 +1178,32 @@ function ChestsTab() {
           })) satisfies RevealLoot[]}
           onClose={() => setPreviewTier(null)}
         />
+      </div>
+    )}
+
+    {previewLoot && (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
+        onClick={(ev) => { if (ev.target === ev.currentTarget) setPreviewLoot(null); }}
+      >
+        <div className="w-full max-w-sm rounded-2xl bg-paper p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-black text-ink">Xem trước loot</h3>
+            <button onClick={() => setPreviewLoot(null)} className="text-xs text-ink-soft hover:text-ink">Đóng</button>
+          </div>
+          <ul className="mt-4 space-y-2">
+            <RewardCard
+              item={{
+                type: previewLoot.type,
+                pointsAmount: previewLoot.pointsAmount ?? undefined,
+                storyVi: previewLoot.storyVi ?? undefined,
+                storyEn: previewLoot.storyEn ?? undefined,
+                imagePath: previewLoot.imagePath ?? undefined,
+                youtubeUrl: previewLoot.youtubeUrl ?? undefined,
+              } satisfies RevealLoot}
+            />
+          </ul>
+        </div>
       </div>
     )}
     </>
