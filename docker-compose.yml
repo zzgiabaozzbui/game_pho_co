@@ -1,31 +1,77 @@
+# docker-compose.yml — game-pho-co (Phố cổ treasure hunt)
+#
+# Production-minded layout (tham khảo Plane):
+#   - YAML anchors (x-*-env) gom env chung, override qua .env khi deploy server
+#   - network đặt tên (phoco-internal) để cô lập, không đụng default bridge của dự án khác
+#   - volume đặt tên (phoco_data / mysql_data) — Docker tự prefix theo project, tránh xung đột tên
+#   - port published lấy từ biến (APP_PORT / MYSQL_PORT) để đổi dễ dàng trên server
+#   - restart: unless-stopped (tương thích docker compose up thường, không cần swarm)
+#
+# Build image:  docker compose build app
+# Chạy:         docker compose up -d app
+# MySQL tuỳ chọn (profile): docker compose --profile mysql up -d
+
+x-app-env: &app-env
+  NODE_ENV: production
+  DATABASE_URL: ${DATABASE_URL:-file:/data/phoco.db}
+  UPLOADS_DIR: ${UPLOADS_DIR:-/data/uploads}
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
+  SESSION_SECRET: ${SESSION_SECRET:-doi-lai-it-nhat-32-ky-tu-ngau-nhien-khi-deploy}
+  NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:3000}
+
+x-mysql-env: &mysql-env
+  MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_change_me}
+  MYSQL_DATABASE: ${MYSQL_DATABASE:-game_phoco}
+  MYSQL_USER: ${MYSQL_USER:-phoco}
+  MYSQL_PASSWORD: ${MYSQL_PASSWORD:-change_me}
+
 services:
   app:
     build: ./web
     image: phoco-web:latest
     restart: unless-stopped
+    networks:
+      - phoco-internal
     ports:
-      - "3000:3000"
+      - target: 3000
+        published: ${APP_PORT:-3000}
+        protocol: tcp
+        mode: host
     environment:
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
-      SESSION_SECRET: ${SESSION_SECRET:-demo-secret-doi-lai-it-nhat-32-ky-tu-ngau-nhien}
-      NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:3000}
+      <<: *app-env
     volumes:
       - phoco_data:/data
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - "-e"
+        - "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.status<500?0:1)).catch(()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
 
   mysql:
     image: mysql:8.4
     restart: unless-stopped
     profiles: ["mysql"]
+    networks:
+      - phoco-internal
     environment:
-      MYSQL_ROOT_PASSWORD: root_change_me
-      MYSQL_DATABASE: game_phoco
-      MYSQL_USER: phoco
-      MYSQL_PASSWORD: change_me
+      <<: *mysql-env
     ports:
-      - "3306:3306"
+      - target: 3306
+        published: ${MYSQL_PORT:-3306}
+        protocol: tcp
+        mode: host
     volumes:
       - mysql_data:/var/lib/mysql
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+networks:
+  phoco-internal:
+    driver: bridge
 
 volumes:
   phoco_data:
