@@ -105,3 +105,31 @@ export const tableauKeepKeyframes: TableauKeyframes = {
     { id: "steam", speed: 0.78, opacityFrom: 0.25, opacityTo: 0.9 },
   ],
 };
+
+/**
+ * Tableau 002 "Hai trường phái" (T19) — 3 layers, matching
+ * `assets.tableauFactions` order exactly (index-for-index): bac, nam, scan.
+ *
+ * DELIBERATELY simpler than `tableauKeepKeyframes`'s 5-layer depth stack.
+ * This composition is a chromatic SPLIT (docs/kprverse-analysis.md §2.7:
+ * "red vs blue duality... sword energy scans"), not a camera dolly through a
+ * deep scene — there's no back-to-front depth to sell here, just two facing
+ * halves and an energy seam between them. A 5-layer treatment would be
+ * inventing depth this composition doesn't have.
+ *
+ * `bac`/`nam` drift apart slightly (opposite `driftX` sign) as the reader
+ * scrolls — a faint "pulling apart" that reads as the two schools diverging,
+ * not a camera push. Same small `speed` on both keeps them visually paired
+ * (neither reads as "further away" than the other — the paragraph is
+ * explicit that neither faction is wrong). `scan` is the foreground energy
+ * seam: highest speed of the three (crawls furthest) and builds in opacity
+ * as the reader arrives, same "thicken as camera arrives" idea `steam` used
+ * in T18 — except here what's arriving is the dividing line itself.
+ */
+export const tableauFactionsKeyframes: TableauKeyframes = {
+  layers: [
+    { id: "bac", speed: 0.12, driftX: -0.03 },
+    { id: "nam", speed: 0.12, driftX: 0.03 },
+    { id: "scan", speed: 0.4, opacityFrom: 0.35, opacityTo: 0.85 },
+  ],
+};
