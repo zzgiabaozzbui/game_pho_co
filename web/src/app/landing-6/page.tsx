@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { Frame } from "./components/Frame";
+import { HeroChapter } from "./components/HeroChapter";
 import { Preloader } from "./components/Preloader";
 import { landing6Content } from "./landing-6.data";
 import { initScrollEngine, refreshScroll } from "./motion/timeline";
@@ -85,33 +86,45 @@ export default function Landing6Page() {
         data-l6-audio-seed={audioEnabled}
         style={{ position: "relative", zIndex: "var(--l6-z-content)" }}
       >
-        {content.menu.items.map(({ id, index, label }) => (
-          <section
-            key={id}
-            id={id}
-            style={{
-              minHeight: "100dvh",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              gap: "var(--l6-space-3)",
-              padding: "var(--l6-gutter)",
-            }}
-          >
-            <p className="l6-pretitle">
-              {content.frame.chapterLabel} {index}
-            </p>
-            <h2 className="l6-display">{label}</h2>
-            <div
-              className="l6-panel"
-              style={{ padding: "var(--l6-space-3)", maxWidth: "48rem" }}
+        {content.menu.items.map(({ id, index, label }) => {
+          // T13: hero có ruột thật, HeroChapter tự lo layout/padding của nó.
+          // 8 chương còn lại giữ nguyên vỏ placeholder cho T14-T22.
+          if (id === "hero") {
+            return (
+              <section key={id} id={id}>
+                <HeroChapter content={content.hero} />
+              </section>
+            );
+          }
+
+          return (
+            <section
+              key={id}
+              id={id}
+              style={{
+                minHeight: "100dvh",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                gap: "var(--l6-space-3)",
+                padding: "var(--l6-gutter)",
+              }}
             >
-              <p className="l6-hud">
-                {id} — placeholder, nội dung do task sau dựng
+              <p className="l6-pretitle">
+                {content.frame.chapterLabel} {index}
               </p>
-            </div>
-          </section>
-        ))}
+              <h2 className="l6-display">{label}</h2>
+              <div
+                className="l6-panel"
+                style={{ padding: "var(--l6-space-3)", maxWidth: "48rem" }}
+              >
+                <p className="l6-hud">
+                  {id} — placeholder, nội dung do task sau dựng
+                </p>
+              </div>
+            </section>
+          );
+        })}
       </main>
     </>
   );

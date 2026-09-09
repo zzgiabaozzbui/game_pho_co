@@ -1,0 +1,95 @@
+/*
+ * Hero chapter (T13). Full-viewport intro — see HeroChapter.tsx doc comment
+ * for why this is NOT a `createChapter()` pin/scrub.
+ */
+
+.root {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--l6-space-2);
+  padding: var(--l6-gutter);
+  text-align: center;
+}
+
+/* Chỉ ẩn khỏi mắt, giữ cho screen reader — dùng cho tiêu đề emblem (SEO/a11y,
+   emblem thật là WebGL plane không có text) và bản tĩnh của mỗi chữ scramble
+   (trình đọc màn hình không nên đọc glyph nhiễu giữa chừng animation). */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.words {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.word {
+  color: var(--l6-text);
+}
+
+.scrollCue {
+  position: absolute;
+  bottom: var(--l6-space-5);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--l6-space-1);
+}
+
+.scrollCueLine {
+  width: 1px;
+  height: 2.5rem;
+  background: linear-gradient(to bottom, var(--l6-hair-strong), transparent);
+  position: relative;
+  overflow: hidden;
+}
+
+.scrollCueDot {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 3px;
+  height: 3px;
+  transform: translateX(-50%);
+  background: var(--l6-accent);
+  border-radius: 999px;
+  animation: cueDrop 1.6s var(--l6-ease-inout) infinite;
+}
+
+.scrollCueDot.noAnim {
+  animation: none;
+  top: 50%;
+}
+
+@keyframes cueDrop {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
