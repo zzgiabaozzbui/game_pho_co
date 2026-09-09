@@ -1,0 +1,195 @@
+/*
+ * Story Project chapter (T15). 4 stacked horizontal rows, hairline dividers —
+ * see StoryProjectChapter.tsx doc comment for why this is rows, not panels.
+ */
+
+.rows {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+  padding: var(--l6-gutter);
+}
+
+.rows > :global(.l6-pretitle) {
+  margin-bottom: var(--l6-space-2);
+}
+
+.row {
+  border-top: var(--l6-hair-w) solid var(--l6-hair);
+  padding: var(--l6-space-3) 0;
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity var(--l6-dur-slow) var(--l6-ease-out),
+    transform var(--l6-dur-slow) var(--l6-ease-out);
+}
+/* Closes the stack's bottom edge — last row needs a border-bottom too. */
+.row:last-child {
+  border-bottom: var(--l6-hair-w) solid var(--l6-hair);
+}
+
+.rows.revealed .row {
+  opacity: 1;
+  transform: none;
+}
+.rows.revealed .row:nth-child(2) {
+  transition-delay: 80ms;
+}
+.rows.revealed .row:nth-child(3) {
+  transition-delay: 160ms;
+}
+.rows.revealed .row:nth-child(4) {
+  transition-delay: 240ms;
+}
+.rows.revealed .row:nth-child(5) {
+  transition-delay: 320ms;
+}
+
+/* ---- Row 1: strapline + terminal ---------------------------------------- */
+
+.row:nth-child(2) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--l6-space-4);
+}
+
+.strapline {
+  max-width: 42rem;
+  font-size: clamp(1.5rem, 3.2vw, 2.75rem);
+}
+
+.terminal {
+  flex: 0 0 auto;
+  width: 16rem;
+  max-width: 100%;
+  padding: var(--l6-space-2);
+  border: var(--l6-hair-w) solid var(--l6-hair-strong);
+  background: var(--l6-surface);
+  display: flex;
+  flex-direction: column;
+  gap: var(--l6-space-1);
+}
+
+.terminalLine {
+  color: var(--l6-accent);
+  min-height: 1.4em; /* stable box while the line swaps length */
+}
+
+/* ---- Row 2: coordinates + degree mark + map ----------------------------- */
+
+.coordRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--l6-space-3);
+}
+
+.degreeMark {
+  flex: 0 0 auto;
+  display: flex;
+}
+
+.coordinates {
+  font-size: clamp(1rem, 1.6vw, 1.375rem);
+  letter-spacing: 0.05em;
+  color: var(--l6-text);
+}
+
+.map {
+  flex: 0 0 auto;
+  width: 6rem;
+  height: 4.5rem;
+  object-fit: contain;
+  opacity: 0.8;
+}
+
+/* ---- Row 3: cross-hatch + question --------------------------------------- */
+
+.questionRow {
+  position: relative;
+  padding-left: calc(var(--l6-space-5) + var(--l6-space-2));
+  display: flex;
+  align-items: center;
+}
+
+.question {
+  max-width: 34rem;
+  font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+}
+
+/* Cheap diagonal cross-hatch corner motif — a handful of repeated 45deg
+   lines via a CSS gradient, not an SVG/asset. Sits in the row's top-left
+   corner per the reference's "diagonal cross-hatch corner line". */
+.crossHatch {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--l6-space-5);
+  height: 100%;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--l6-hair-strong) 0,
+    var(--l6-hair-strong) 1px,
+    transparent 1px,
+    transparent 8px
+  );
+}
+
+/* ---- Row 4: sprite bounding box ------------------------------------------ */
+
+.spriteRow {
+  display: flex;
+  justify-content: center;
+}
+
+.spriteBox {
+  width: 100%;
+  max-width: 22rem;
+  aspect-ratio: 16 / 9;
+}
+
+/* ---- Shared media / placeholder (same treatment as StoryIntroChapter's) -- */
+
+.media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--l6-space-2);
+  background: var(--l6-surface-2);
+  border: var(--l6-hair-w) dashed var(--l6-hair-strong);
+}
+
+/* ---- Narrow viewport: stack row 1 and row 2's flanks, no horizontal overflow --- */
+@media (max-width: 47.9375rem) {
+  .row:nth-child(2) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .terminal {
+    width: 100%;
+  }
+  .coordRow {
+    flex-wrap: wrap;
+  }
+  .map {
+    width: 4.5rem;
+    height: 3.375rem;
+  }
+  .questionRow {
+    padding-left: calc(var(--l6-space-4) + var(--l6-space-1));
+  }
+}
