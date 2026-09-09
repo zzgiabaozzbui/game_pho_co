@@ -35,6 +35,9 @@ export interface Landing6Content {
     brandSub: string;
     audioOn: string;
     audioOff: string;
+    /** Nhãn nút chuyển giao diện (post-plan enhancement) — hiển thị trạng thái hiện tại, cùng dạng với audioOn/audioOff. */
+    themeLight: string;
+    themeDark: string;
     menu: string;
     close: string;
     console: string;
@@ -132,6 +135,8 @@ export const landing6Content: Record<Lang, Landing6Content> = {
       brandSub: "36 PHỐ PHƯỜNG",
       audioOn: "TIẾNG BẬT",
       audioOff: "TIẾNG TẮT",
+      themeLight: "GIAO DIỆN SÁNG",
+      themeDark: "GIAO DIỆN TỐI",
       menu: "MỤC LỤC",
       close: "ĐÓNG",
       console: "SỔ TAY",
@@ -297,6 +302,8 @@ export const landing6Content: Record<Lang, Landing6Content> = {
       brandSub: "36 OLD STREETS",
       audioOn: "SOUND ON",
       audioOff: "SOUND OFF",
+      themeLight: "LIGHT MODE",
+      themeDark: "DARK MODE",
       menu: "MENU",
       close: "CLOSE",
       console: "CONSOLE",

@@ -150,7 +150,9 @@
   position: fixed;
   inset: 0;
   z-index: var(--l6-z-overlay);
-  background: rgba(0, 0, 0, 0.72);
+  /* Was a hardcoded rgba(0,0,0,0.72) — same light-mode text-vs-backdrop bug
+     as Frame.module.css's .overlay; fixed the same way. */
+  background: color-mix(in srgb, var(--l6-void) 72%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;

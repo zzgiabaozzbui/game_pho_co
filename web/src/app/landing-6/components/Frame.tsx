@@ -25,6 +25,7 @@ import { useCallback, useRef, useState } from "react";
 import type { ChapterId, Landing6Content } from "../landing-6.data";
 import { CHAPTER_IDS } from "../landing-6.data";
 import { audioEngine } from "../../landing-4/components/AudioSynthesizer";
+import { useTheme } from "../lib/useTheme";
 import { prefersReducedMotion, scrollToChapter } from "../motion/timeline";
 import { useActiveChapter, useGlobalProgress } from "../motion/useScrollProgress";
 import { Console } from "./Console";
@@ -39,6 +40,7 @@ interface FrameProps {
 
 export function Frame({ content, audioOn, onToggleAudio }: FrameProps) {
   const progress = useGlobalProgress();
+  const { theme, toggle: toggleTheme } = useTheme();
   const activeIndex = useActiveChapter(CHAPTER_IDS);
   const activeItem = content.menu.items[activeIndex] ?? content.menu.items[0];
 
@@ -111,6 +113,14 @@ export function Frame({ content, audioOn, onToggleAudio }: FrameProps) {
             aria-pressed={audioOn}
           >
             {audioOn ? content.frame.audioOn : content.frame.audioOff}
+          </button>
+          <button
+            type="button"
+            className={styles.iconBtn}
+            onClick={toggleTheme}
+            aria-pressed={theme === "light"}
+          >
+            {theme === "light" ? content.frame.themeLight : content.frame.themeDark}
           </button>
           <button
             ref={consoleBtnRef}

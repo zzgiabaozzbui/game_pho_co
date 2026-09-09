@@ -28,10 +28,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { useTheme } from "../lib/useTheme";
 import { onGlobalProgress, prefersReducedMotion } from "../motion/timeline";
-import { createCardMesh } from "./CardMesh";
+import { createCardMesh, refreshCardTheme } from "./CardMesh";
 import type { StageObject } from "./EmblemShader";
-import { createEmblemMesh } from "./EmblemShader";
+import { createEmblemMesh, refreshEmblemTheme } from "./EmblemShader";
 import { Fallback } from "./Fallback";
 
 // Uncapped DPR on a 3x mobile screen tanks frame rate for pixels nobody sees.
@@ -40,6 +41,18 @@ const MAX_DPR = 2;
 export function Stage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [webglOk, setWebglOk] = useState(true);
+  const { theme } = useTheme();
+
+  // The card/emblem materials read `--l6-*` once, at creation (the mount
+  // effect below has `[]` deps — the mesh factories are singletons, see
+  // CardMesh.ts's own doc comment). A live theme toggle after mount needs an
+  // explicit re-sync; this effect is the trigger, `refreshCardTheme` /
+  // `refreshEmblemTheme` are the no-op-if-unmounted setters (module-level,
+  // mirroring `setCardHidden`'s pattern).
+  useEffect(() => {
+    refreshCardTheme();
+    refreshEmblemTheme();
+  }, [theme]);
 
   useEffect(() => {
     const container = containerRef.current;

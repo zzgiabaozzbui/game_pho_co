@@ -100,7 +100,10 @@
   position: fixed;
   inset: 0;
   z-index: var(--l6-z-overlay);
-  background: rgba(0, 0, 0, 0.92);
+  /* Was a hardcoded rgba(0,0,0,0.92) — broke in light mode: --l6-text flips
+     to dark ink, so dark-on-black-backdrop text vanished. color-mix keeps
+     the same "near-opaque ground" look in both themes. */
+  background: color-mix(in srgb, var(--l6-void) 92%, transparent);
   display: flex;
   flex-direction: column;
   padding: var(--l6-gutter);

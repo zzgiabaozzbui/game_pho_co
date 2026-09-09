@@ -113,8 +113,14 @@
     transform var(--l6-dur) var(--l6-ease-out);
 }
 
+/* ponytail: fixed white, not var(--l6-text) — this label sits on the video
+   teaser's own dark scrim (.teaserOverlay, a fixed black tint over the
+   thumbnail image), not on the page's --l6-void ground. --l6-text flips to
+   dark ink in light mode, which would then sit on that same dark scrim and
+   vanish. The scrim's darkness is theme-invariant (dimming an image, not page
+   chrome), so the label needs to be too. */
 .teaserLabel {
-  color: var(--l6-text);
+  color: #ffffff;
 }
 
 /* Hover lift/brightness — skipped entirely under reduced motion via the

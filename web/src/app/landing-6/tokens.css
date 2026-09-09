@@ -83,6 +83,49 @@
   font-family: var(--l6-sans);
 }
 
+/*
+ * Post-plan enhancement: real light theme, toggled from Frame's HUD (see
+ * lib/useTheme.tsx). Every dark value above stays the DEFAULT — a user who
+ * never touches the toggle sees byte-for-byte the same page as before this
+ * change. This block only OVERRIDES the tokens that actually need to flip for
+ * a light ground; --l6-z-*, --l6-space-*, --l6-fs-*, motion timing and type
+ * scale are theme-independent and are not repeated here.
+ *
+ * Derived from the game's existing light "paper" theme (globals.css), so
+ * landing-6 in light mode reads as the same game, not a new palette:
+ *   --color-paper #faf7f2       -> ground (was --l6-void #000000)
+ *   --color-jade-deep #2f5340   -> --l6-bac (was the brightened #5da37a)
+ *   --color-son-deep #96351f    -> --l6-nam (was the brightened #d9583f)
+ *   --color-gold #c9962b        -> darkened further to #7a5d1e for --l6-accent
+ *     (the game's own gold reads too light as TEXT on paper — used here as
+ *     l6-pretitle/HUD text color, not just a swatch — see Nhật ký contrast
+ *     spot-checks in docs/plans/landing-6.md for the actual ratios)
+ * Each pair keeps its dark-mode RELATIONSHIP: accent is still "the warm
+ * highlight" (now a deep brass rather than a bright one, because a light
+ * ground needs the accent to go dark to stay legible, same as text does),
+ * bac/nam are still the cool/warm faction pair, just the game's actual
+ * darker jade/son tones instead of the brightened ones used against black.
+ */
+.l6[data-theme="light"] {
+  --l6-void: #faf7f2; /* --color-paper */
+  --l6-surface: #f2ebdd;
+  --l6-surface-2: #ebe1cd;
+
+  --l6-accent: #7a5d1e;
+  --l6-accent-dim: #a9852f;
+  --l6-accent-glow: rgba(201, 150, 43, 0.28); /* game's own --color-gold, not the darkened text accent — glow is decorative, not text */
+
+  --l6-bac: #2f5340; /* --color-jade-deep */
+  --l6-nam: #96351f; /* --color-son-deep */
+
+  --l6-text: #1c1917; /* --color-ink-strong */
+  --l6-text-muted: rgba(28, 25, 23, 0.72);
+  --l6-text-faint: rgba(28, 25, 23, 0.44);
+
+  --l6-hair: rgba(28, 25, 23, 0.14);
+  --l6-hair-strong: rgba(28, 25, 23, 0.3);
+}
+
 /* Monospace surfaces share tabular numerals so telemetry digits do not jitter
    while they tick. */
 .l6 .l6-mono {

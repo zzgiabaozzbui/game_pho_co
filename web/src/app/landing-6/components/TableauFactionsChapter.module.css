@@ -105,7 +105,11 @@
   inset: 0;
   z-index: 10;
   pointer-events: none;
-  background: linear-gradient(to bottom, var(--l6-void) 0%, rgba(0, 0, 0, 0.5) 30%, transparent 55%);
+  /* Middle stop was a hardcoded rgba(0,0,0,0.5) — happened to equal
+     --l6-void at 50% in dark mode (void IS black) but stayed literal black
+     in light mode instead of fading through the light void. color-mix keeps
+     it tied to the theme like the 0%/100% stops already are. */
+  background: linear-gradient(to bottom, var(--l6-void) 0%, color-mix(in srgb, var(--l6-void) 50%, transparent) 30%, transparent 55%);
 }
 
 .copy {

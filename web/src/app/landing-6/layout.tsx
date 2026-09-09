@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
+import { ThemeRoot } from "./components/ThemeRoot";
 import "./tokens.css";
 
 // JetBrains Mono có subset "vietnamese" trên Google Fonts, nên mọi bề mặt HUD
@@ -28,5 +29,7 @@ export const metadata: Metadata = {
 export default function Landing6Layout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return <div className={`l6 ${jetbrainsMono.variable}`}>{children}</div>;
+  return (
+    <ThemeRoot className={`l6 ${jetbrainsMono.variable}`}>{children}</ThemeRoot>
+  );
 }

@@ -72,7 +72,9 @@
   inset: 0;
   z-index: 10;
   pointer-events: none;
-  background: linear-gradient(to top, var(--l6-void) 0%, rgba(0, 0, 0, 0.6) 30%, transparent 60%);
+  /* Middle stop was a hardcoded rgba(0,0,0,0.6) — see TableauFactionsChapter
+     for why that broke in light mode; color-mix ties it to the theme. */
+  background: linear-gradient(to top, var(--l6-void) 0%, color-mix(in srgb, var(--l6-void) 60%, transparent) 30%, transparent 60%);
 }
 
 .copy {

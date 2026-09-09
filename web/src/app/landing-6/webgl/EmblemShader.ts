@@ -18,18 +18,26 @@ import { PLACEHOLDER, assets, resolveAsset } from "../assets";
 
 /** Fallback if the CSS custom property can't be read (SSR, or var missing). Mirrors --l6-accent in tokens.css. */
 const FALLBACK_ACCENT = 0xe8b64a;
+/** Mirrors --l6-void in tokens.css (dark default). */
+const FALLBACK_VOID = 0x000000;
 
-function readAccentColor(): number {
-  if (typeof window === "undefined") return FALLBACK_ACCENT;
-  const raw = getComputedStyle(document.documentElement)
-    .getPropertyValue("--l6-accent")
-    .trim();
-  if (!raw) return FALLBACK_ACCENT;
+function readCssColor(cssVar: string, fallback: number): number {
+  if (typeof window === "undefined") return fallback;
+  // Same fix as CardMesh.ts's `readColor` — `--l6-*` lives on the `.l6` scope
+  // div, not `document.documentElement`, so this always fell through to
+  // `fallback` before (see that file's comment for the full story).
+  const scopeEl = document.querySelector<HTMLElement>(".l6") ?? document.documentElement;
+  const raw = getComputedStyle(scopeEl).getPropertyValue(cssVar).trim();
+  if (!raw) return fallback;
   try {
     return new THREE.Color(raw).getHex();
   } catch {
-    return FALLBACK_ACCENT;
+    return fallback;
   }
+}
+
+function readAccentColor(): number {
+  return readCssColor("--l6-accent", FALLBACK_ACCENT);
 }
 
 /** Per-frame data Stage.tsx feeds to every registered mesh. */
@@ -70,17 +78,26 @@ const emblemFragmentShader = /* glsl */ `
   uniform sampler2D uDiffuse;
   uniform sampler2D uGradient;
   uniform float uTime;
+  uniform vec3 uVoid;
   varying vec2 vUv;
 
   void main() {
     vec4 diffuse = texture2D(uDiffuse, vUv);
     vec4 gradient = texture2D(uGradient, vUv);
-    // Gradient map modulates a rim-light/depth feel on top of the diffuse
-    // base shape: brighter where the gradient map is bright. A slow
-    // time-driven shimmer keeps the emblem from reading as a flat sticker.
+    // uDiffuse (emblem-pho-diffuse.webp) is an OPAQUE flat-black-bg/white-text
+    // image — a lossy .webp with no alpha channel, so diffuse.a is always 1
+    // and there is no transparent margin for the page ground to show through.
+    // Originally that was fine: the plane's "background" pixels (diffuse.rgb
+    // ~ 0) rendered as near-black, invisible against the dark --l6-void page.
+    // Post-plan light theme: treat diffuse.r as a foreground mask instead of
+    // literal color — background pixels resolve to the THEME's void color
+    // (so the plane blends into the page instead of always being a black
+    // square), foreground text stays bright with its existing rim-light/
+    // shimmer modulation.
     float shimmer = 0.06 * sin(uTime * 0.6 + vUv.y * 6.0);
-    vec3 lit = diffuse.rgb * (0.65 + 0.55 * gradient.r) + shimmer;
-    gl_FragColor = vec4(lit, diffuse.a);
+    vec3 fg = vec3(0.65 + 0.55 * gradient.r) + shimmer;
+    vec3 lit = mix(uVoid, fg, diffuse.r);
+    gl_FragColor = vec4(lit, 1.0);
   }
 `;
 
@@ -96,6 +113,25 @@ export function setEmblemHidden(hidden: boolean): void {
   emblemHidden = hidden;
 }
 
+let currentShaderUniforms: { uVoid: { value: THREE.Color } } | null = null;
+let currentFallbackMaterial: THREE.MeshBasicMaterial | null = null;
+
+/**
+ * Post-plan enhancement (light theme): same live-refresh need as
+ * CardMesh.ts's `refreshCardTheme` — `createEmblemMesh()` reads `--l6-*`
+ * once, at creation. Call this after `data-theme` changes so the one live
+ * instance re-syncs (the shader's `uVoid` uniform, or the fallback plane's
+ * flat color when textures are missing).
+ */
+export function refreshEmblemTheme(): void {
+  if (currentShaderUniforms) {
+    currentShaderUniforms.uVoid.value.setHex(readCssColor("--l6-void", FALLBACK_VOID));
+  }
+  if (currentFallbackMaterial) {
+    currentFallbackMaterial.color.setHex(readAccentColor());
+  }
+}
+
 export function createEmblemMesh(): StageObject {
   const geometry = new THREE.PlaneGeometry(2.4, 1.2, 1, 1);
   let material: THREE.Material;
@@ -108,27 +144,32 @@ export function createEmblemMesh(): StageObject {
     // ponytail: degrade path for a future regression (both textures are real
     // today, per T04) — flat accent-colored plane instead of crashing on a
     // missing texture.
-    material = new THREE.MeshBasicMaterial({
+    const fallbackMaterial = new THREE.MeshBasicMaterial({
       color: readAccentColor(),
       transparent: true,
       opacity: 0.85,
     });
+    material = fallbackMaterial;
+    currentFallbackMaterial = fallbackMaterial;
   } else {
     const loader = new THREE.TextureLoader();
     const diffuse = loader.load(diffusePath);
     const gradient = loader.load(gradientPath);
     diffuse.colorSpace = THREE.SRGBColorSpace;
     ownedTextures = [diffuse, gradient];
+    const shaderUniforms = {
+      uDiffuse: { value: diffuse },
+      uGradient: { value: gradient },
+      uTime: { value: 0 },
+      uVoid: { value: new THREE.Color(readCssColor("--l6-void", FALLBACK_VOID)) },
+    };
     material = new THREE.ShaderMaterial({
       vertexShader: emblemVertexShader,
       fragmentShader: emblemFragmentShader,
       transparent: true,
-      uniforms: {
-        uDiffuse: { value: diffuse },
-        uGradient: { value: gradient },
-        uTime: { value: 0 },
-      },
+      uniforms: shaderUniforms,
     });
+    currentShaderUniforms = shaderUniforms;
   }
 
   const mesh = new THREE.Mesh(geometry, material);
@@ -156,6 +197,10 @@ export function createEmblemMesh(): StageObject {
       geometry.dispose();
       material.dispose();
       ownedTextures.forEach((t) => t.dispose());
+      if (currentFallbackMaterial === material) currentFallbackMaterial = null;
+      if (material instanceof THREE.ShaderMaterial && currentShaderUniforms === material.uniforms) {
+        currentShaderUniforms = null;
+      }
     },
   };
 }

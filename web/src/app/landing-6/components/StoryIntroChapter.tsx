@@ -93,7 +93,10 @@ export function StoryIntroChapter({ content }: { content: Landing6Content["story
           {!playing && (
             <div className={styles.teaserOverlay}>
               <span className={`l6-hud ${styles.teaserLabel}`}>{content.videoLabel}</span>
-              <span className="l6-mono l6-hud">{content.videoDuration}</span>
+              {/* Same fixed-white fix as teaserLabel above — this also sits on
+                  the dark scrim, not the page ground, so it can't use
+                  .l6-hud's theme-relative --l6-text-faint either. */}
+              <span className={`l6-mono l6-hud ${styles.teaserLabel}`}>{content.videoDuration}</span>
             </div>
           )}
         </button>

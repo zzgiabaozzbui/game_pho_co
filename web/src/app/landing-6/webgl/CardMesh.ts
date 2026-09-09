@@ -21,7 +21,15 @@ const FALLBACK_SURFACE_2 = 0x14110e; // --l6-surface-2
 
 function readColor(cssVar: string, fallback: number): number {
   if (typeof window === "undefined") return fallback;
-  const raw = getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim();
+  // Bug found while wiring the light theme: `--l6-*` is defined on the `.l6`
+  // scope div (layout.tsx), NOT on `document.documentElement` — reading the
+  // latter silently always missed and fell through to `fallback`, which
+  // happened to match the dark-theme defaults, masking this since T11.
+  // `refreshCardTheme()`'s whole point is re-reading the LIVE value on
+  // toggle, so this had to be fixed for the light theme to actually reach
+  // the card.
+  const scopeEl = document.querySelector<HTMLElement>(".l6") ?? document.documentElement;
+  const raw = getComputedStyle(scopeEl).getPropertyValue(cssVar).trim();
   if (!raw) return fallback;
   try {
     return new THREE.Color(raw).getHex();
@@ -113,6 +121,27 @@ export function setCardHidden(hidden: boolean): void {
   cardHidden = hidden;
 }
 
+let currentFaceMaterial: THREE.MeshBasicMaterial | null = null;
+let currentEdgeMaterial: THREE.LineBasicMaterial | null = null;
+
+/**
+ * Post-plan enhancement (light theme): `createCardMesh()` reads `--l6-*` CSS
+ * vars once, at creation time. That's fine for the INITIAL paint (the theme
+ * class is already applied before Stage mounts), but a live toggle after
+ * mount otherwise leaves the card's flat colors stuck on whichever theme was
+ * active at load. Mirrors `setCardHidden`'s module-level-flag pattern (see
+ * that function's doc comment) — call this after the `data-theme` attribute
+ * changes to re-sync the one live card instance.
+ */
+export function refreshCardTheme(): void {
+  if (currentFaceMaterial) {
+    currentFaceMaterial.color.setHex(readColor("--l6-surface-2", FALLBACK_SURFACE_2));
+  }
+  if (currentEdgeMaterial) {
+    currentEdgeMaterial.color.setHex(readColor("--l6-accent", FALLBACK_ACCENT));
+  }
+}
+
 export function createCardMesh(): StageObject {
   const group = new THREE.Group();
 
@@ -133,6 +162,7 @@ export function createCardMesh(): StageObject {
   });
   const face = new THREE.Mesh(geometry, faceMaterial);
   group.add(face);
+  currentFaceMaterial = faceMaterial;
 
   const edgesGeometry = new THREE.EdgesGeometry(geometry);
   const edgeMaterial = new THREE.LineBasicMaterial({
@@ -140,6 +170,7 @@ export function createCardMesh(): StageObject {
   });
   const edges = new THREE.LineSegments(edgesGeometry, edgeMaterial);
   group.add(edges);
+  currentEdgeMaterial = edgeMaterial;
 
   let tiltX = 0;
   let tiltY = 0;
@@ -164,6 +195,8 @@ export function createCardMesh(): StageObject {
       faceMaterial.dispose();
       edgesGeometry.dispose();
       edgeMaterial.dispose();
+      if (currentFaceMaterial === faceMaterial) currentFaceMaterial = null;
+      if (currentEdgeMaterial === edgeMaterial) currentEdgeMaterial = null;
     },
   };
 }
