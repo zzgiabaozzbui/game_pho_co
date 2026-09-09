@@ -9,7 +9,7 @@
 
 | Phần | Nội dung chính | Files bị sửa / tạo mới | Điều kiện Verify | Trạng thái | Commit SHA |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Phần 1** | Migration `landing-6/motion/` → `web/src/lib/motion/` | Move 5 files sang `src/lib/motion/`; cập nhật 32 imports trên 17 files `landing-6/**` | `tsc --noEmit` sạch; `next build` sạch; grep 0 import cũ; `/landing-6` giữ nguyên preloader, 4 tableau pins, menu, bottom rail, console | `TODO` | - |
+| **Phần 1** | Migration `landing-6/motion/` → `web/src/lib/motion/` | Move 5 files sang `src/lib/motion/`; cập nhật 32 imports trên 17 files `landing-6/**` | `tsc --noEmit` sạch; `next build` sạch; grep 0 import cũ; `/landing-6` giữ nguyên preloader, 4 tableau pins, menu, bottom rail, console | `DONE` | `cdfc40d` |
 | **Phần 2** | Thêm option `pin?: boolean` vào `createChapter()` | `web/src/lib/motion/timeline.ts`, `web/src/lib/motion/timeline.test.ts` | Default `pin: true`; khi `pin: false` thì `end: "bottom top"`; Vitest pass; `tsc` + `next build` sạch | `TODO` | - |
 | **Phần 3** | Wire engine vào `/landing-3` | `web/src/app/landing-3/page.tsx` | `initScrollEngine()` mount / unmount sạch; chuyển 5 anchor links sang `scrollToChapter(id)`; cuộn mượt không giật; `tsc` + `next build` sạch | `TODO` | - |
 | **Phần 4** | Parallax nhiều lớp toàn trang | `web/src/app/landing-3/page.tsx`, `web/src/app/landing-3/components/CloudBackground.tsx` | Parallax hero bọc ngoài `<img>`; scale-110+ không lộ mép; 3 decor icons đúng speed, góc, không đè nút; 4 mây theo section gần nhất; không scroll ngang; `tsc` + `next build` sạch | `TODO` | - |
