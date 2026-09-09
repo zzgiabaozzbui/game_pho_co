@@ -6,13 +6,18 @@ import { Frame } from "./components/Frame";
 import { Preloader } from "./components/Preloader";
 import { landing6Content } from "./landing-6.data";
 import { initScrollEngine, refreshScroll } from "./motion/timeline";
+import { Stage } from "./webgl/Stage";
 
 /**
- * Khung route landing-6 (T06, HUD T07, preloader T08).
+ * Khung route landing-6 (T06, HUD T07, preloader T08, WebGL stage T09-T12).
  *
  * Đây mới là vỏ: 9 section trống đúng id/thứ tự, đủ để chứng minh scroll
- * engine + token + font mono + i18n chạy thông. T13–T22 thay ruột từng section,
- * T09 chèn canvas WebGL.
+ * engine + token + font mono + i18n chạy thông. T13–T22 thay ruột từng section.
+ * `<Stage>` (T09) mount sibling với Frame/main, tự quản lý canvas WebGL fixed
+ * ở `--l6-z-webgl` — không cần gate theo `entered` vì Stage tự đọc
+ * `prefersReducedMotion()`/global progress qua module `motion/timeline.ts`,
+ * nhưng vẫn đặt SAU gate `entered` để không khởi renderer khi preloader còn
+ * che (không ai nhìn thấy canvas lúc đó).
  */
 export default function Landing6Page() {
   const { lang } = useLang();
@@ -74,6 +79,7 @@ export default function Landing6Page() {
           sau đó — hai state độc lập. Khi T23 có engine thật, Frame nên khởi
           tạo state audioOn của nó = audioEnabled thay vì luôn false; việc đó
           để lại cho T23 vì hiện Frame chưa nhận prop này. */}
+      <Stage />
       <Frame content={content} />
       <main
         data-l6-audio-seed={audioEnabled}
