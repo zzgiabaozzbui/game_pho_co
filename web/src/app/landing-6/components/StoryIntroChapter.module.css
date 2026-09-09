@@ -1,0 +1,193 @@
+/*
+ * Story Intro chapter (T14). Asymmetric 3-block grid, no pin/scrub — see
+ * StoryIntroChapter.tsx doc comment.
+ */
+
+.grid {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "topleft right" "bottomleft right";
+  gap: var(--l6-gutter);
+  padding: var(--l6-gutter);
+  align-items: stretch;
+}
+
+.block {
+  position: relative; /* anchors the 4 crosshair corner marks */
+  padding: var(--l6-space-3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--l6-dur-slow) var(--l6-ease-out),
+    transform var(--l6-dur-slow) var(--l6-ease-out);
+}
+
+/* Stagger: each block reveals a beat after the last, domino-style like the
+   hero word cascade (HeroChapter.tsx). */
+.grid.revealed .topleft {
+  opacity: 1;
+  transform: none;
+}
+.grid.revealed .bottomleft {
+  opacity: 1;
+  transform: none;
+  transition-delay: 120ms;
+}
+.grid.revealed .right {
+  opacity: 1;
+  transform: none;
+  transition-delay: 240ms;
+}
+
+.topleft {
+  grid-area: topleft;
+}
+
+.bottomleft {
+  grid-area: bottomleft;
+}
+
+.paragraph {
+  max-width: 34rem;
+}
+
+.right {
+  grid-area: right;
+  gap: var(--l6-space-3);
+}
+
+.sideMedia {
+  flex: 1;
+  min-height: 8rem;
+}
+
+/* ---- Media / placeholder ------------------------------------------------ */
+
+.media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Opaque (not just hairline) so the persistent WebGL card parked to this
+   chapter's right (CardMesh.ts keyframe p=0.111) doesn't show through the
+   empty placeholder and read as clutter behind the label — see
+   StoryIntroChapter.tsx's MediaSlot comment. */
+.placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--l6-space-2);
+  background: var(--l6-surface-2);
+  border: var(--l6-hair-w) dashed var(--l6-hair-strong);
+}
+
+.teaser {
+  position: relative;
+  flex: 1;
+  min-height: 12rem;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  overflow: hidden;
+}
+
+.teaser:focus-visible {
+  outline: var(--l6-hair-w) solid var(--l6-accent);
+  outline-offset: 2px;
+}
+
+.teaserOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--l6-space-1);
+  background: rgba(0, 0, 0, 0.35);
+  transition:
+    background var(--l6-dur) var(--l6-ease-out),
+    transform var(--l6-dur) var(--l6-ease-out);
+}
+
+.teaserLabel {
+  color: var(--l6-text);
+}
+
+/* Hover lift/brightness — skipped entirely under reduced motion via the
+   global rule in tokens.css (transition-duration -> 0.01ms), so this stays
+   a no-op there rather than needing its own @media guard. */
+.teaser:hover .teaserOverlay,
+.teaser:focus-visible .teaserOverlay {
+  background: rgba(0, 0, 0, 0.15);
+  transform: scale(1.03);
+}
+
+/* ---- Crosshairs ---------------------------------------------------------- */
+
+.crosshair {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  pointer-events: none;
+}
+.crosshair::before,
+.crosshair::after {
+  content: "";
+  position: absolute;
+  background: var(--l6-hair-strong);
+}
+.crosshair::before {
+  left: 4px;
+  top: 0;
+  width: 1px;
+  height: 9px;
+}
+.crosshair::after {
+  top: 4px;
+  left: 0;
+  width: 9px;
+  height: 1px;
+}
+
+.crosshair-tl {
+  top: -5px;
+  left: -5px;
+}
+.crosshair-tr {
+  top: -5px;
+  right: -5px;
+}
+.crosshair-bl {
+  bottom: -5px;
+  left: -5px;
+}
+.crosshair-br {
+  bottom: -5px;
+  right: -5px;
+}
+
+/* ---- Narrow viewport: stack, don't collapse the asymmetry into mush ----- */
+@media (max-width: 47.9375rem) {
+  .grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas: "topleft" "right" "bottomleft";
+  }
+}

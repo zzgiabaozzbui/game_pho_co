@@ -5,6 +5,7 @@ import { useLang } from "@/lib/i18n";
 import { Frame } from "./components/Frame";
 import { HeroChapter } from "./components/HeroChapter";
 import { Preloader } from "./components/Preloader";
+import { StoryIntroChapter } from "./components/StoryIntroChapter";
 import { landing6Content } from "./landing-6.data";
 import { initScrollEngine, refreshScroll } from "./motion/timeline";
 import { Stage } from "./webgl/Stage";
@@ -93,6 +94,16 @@ export default function Landing6Page() {
             return (
               <section key={id} id={id}>
                 <HeroChapter content={content.hero} />
+              </section>
+            );
+          }
+
+          // T14: storyIntro has real content, StoryIntroChapter owns its own
+          // layout. 7 remaining chapters keep the placeholder shell for T15-T22.
+          if (id === "storyIntro") {
+            return (
+              <section key={id} id={id}>
+                <StoryIntroChapter content={content.storyIntro} />
               </section>
             );
           }

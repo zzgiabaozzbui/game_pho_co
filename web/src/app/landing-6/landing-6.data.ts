@@ -66,6 +66,8 @@ export interface Landing6Content {
     paragraph: string;
     videoLabel: string;
     videoDuration: string;
+    /** aria-label của nút phát video teaser (T14) — video chưa có file thật, nhưng nút vẫn cần mô tả cho screen reader. */
+    videoPlayAria: string;
   };
   storyProject: {
     pretitle: string;
@@ -170,6 +172,7 @@ export const landing6Content: Record<Lang, Landing6Content> = {
         "Sáu giờ sáng, phố còn ẩm sương. Một gánh phở đặt xuống góc quen, nắp nồi hé ra, khói bốc lên trắng cả vỉa hè. Người ta ngồi xuống ghế nhựa, húp một thìa nước dùng, rồi đi làm. Bao nhiêu năm rồi vẫn thế — cho đến khi những gánh như thế lặng lẽ biến mất khỏi phố, từng gánh một.",
       videoLabel: "XEM ĐOẠN GIỚI THIỆU",
       videoDuration: "01:48",
+      videoPlayAria: "Phát đoạn giới thiệu",
     },
     storyProject: {
       pretitle: "NGƯỜI GIỮ LỬA",
@@ -331,6 +334,7 @@ export const landing6Content: Record<Lang, Landing6Content> = {
         "Six in the morning, the street still damp with mist. A phở cart sets down on its usual corner, the lid lifts, and steam whitens the whole pavement. People sit on plastic stools, take one spoonful of broth, then go to work. It was like that for years — until carts like that began disappearing from the street, one at a time.",
       videoLabel: "WATCH THE TEASER",
       videoDuration: "01:48",
+      videoPlayAria: "Play the teaser",
     },
     storyProject: {
       pretitle: "KEEPER OF THE FLAME",
