@@ -52,6 +52,22 @@
   color: var(--l6-text);
 }
 
+/* T26: same srOnly pattern as HeroChapter/LaunchChapter — pairs with the
+   aria-hidden count-up span so a screen reader gets one announcement of the
+   settled total instead of ~85 rapid-fire live-region updates (rAF tween
+   over COUNT_DURATION_MS). */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ---- Middle: reserved for the WebGL card, not DOM art --------------------- */
 
 .middle {

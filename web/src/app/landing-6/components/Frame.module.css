@@ -4,6 +4,31 @@
  * của pill, thứ inline style không diễn tả được.
  */
 
+/* T26: hidden-until-focused skip link, first thing in the DOM (see Frame.tsx
+   doc comment) — lets a keyboard user jump past the HUD chrome (audio/menu/
+   console buttons + 9 chapter pills) straight to <main>. */
+.skipLink {
+  position: fixed;
+  top: var(--l6-space-2);
+  left: var(--l6-space-2);
+  z-index: var(--l6-z-preloader);
+  pointer-events: auto;
+  background: var(--l6-void);
+  color: var(--l6-text);
+  border: var(--l6-hair-w) solid var(--l6-accent);
+  padding: var(--l6-space-2) var(--l6-space-3);
+  font-family: var(--l6-mono);
+  font-size: var(--l6-fs-hud);
+  text-transform: uppercase;
+  letter-spacing: var(--l6-tracking-hud);
+  transform: translateY(-150%);
+  transition: transform var(--l6-dur-fast) var(--l6-ease-out);
+}
+
+.skipLink:focus {
+  transform: translateY(0);
+}
+
 .iconBtn {
   pointer-events: auto;
   background: transparent;
@@ -45,7 +70,10 @@
   pointer-events: auto;
   background: transparent;
   border: var(--l6-hair-w) solid var(--l6-hair);
-  color: var(--l6-text-faint);
+  /* T26: this is functional nav (jump-to-chapter), not secondary HUD chrome
+     — --l6-text-faint (44% white on black) measures ~4.25:1, just under the
+     4.5:1 AA floor for its 10px size. --l6-text-muted (72%) clears it. */
+  color: var(--l6-text-muted);
   font-family: var(--l6-mono);
   font-size: var(--l6-fs-hud);
   letter-spacing: var(--l6-tracking-hud);

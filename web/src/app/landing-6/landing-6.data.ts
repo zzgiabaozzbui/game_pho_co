@@ -42,6 +42,8 @@ export interface Landing6Content {
     progressLabel: string;
     /** Placeholder trong Console.tsx — nội dung thật do task sau (T-console) quyết định. */
     consolePlaceholder: string;
+    /** T26: nhãn nút "bỏ qua tới nội dung" — ẩn tới khi focus, đứng trước mọi nút HUD khác trong DOM. */
+    skipToContent: string;
   };
   /** Overlay menu — mỗi chương một dòng. */
   menu: {
@@ -136,6 +138,7 @@ export const landing6Content: Record<Lang, Landing6Content> = {
       chapterLabel: "CHƯƠNG",
       progressLabel: "TIẾN ĐỘ",
       consolePlaceholder: "Nội dung sổ tay sẽ có ở task sau.",
+      skipToContent: "BỎ QUA TỚI NỘI DUNG",
     },
     menu: {
       title: "MỤC LỤC",
@@ -300,6 +303,7 @@ export const landing6Content: Record<Lang, Landing6Content> = {
       chapterLabel: "CHAPTER",
       progressLabel: "PROGRESS",
       consolePlaceholder: "Console content lands in a later task.",
+      skipToContent: "SKIP TO CONTENT",
     },
     menu: {
       title: "CONTENTS",

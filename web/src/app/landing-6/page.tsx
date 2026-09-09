@@ -124,6 +124,8 @@ export default function Landing6Page() {
       <Stage />
       <Frame content={content} audioOn={audioOn} onToggleAudio={handleToggleAudio} />
       <main
+        id="main-content"
+        tabIndex={-1}
         data-l6-audio-on={audioOn}
         style={{
           position: "relative",

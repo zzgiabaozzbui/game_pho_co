@@ -51,6 +51,7 @@ import { audioEngine } from "../../landing-4/components/AudioSynthesizer";
 import { assets } from "../assets";
 import type { GalleryCard, Landing6Content } from "../landing-6.data";
 import { createChapter, prefersReducedMotion } from "../motion/timeline";
+import { useFocusTrap } from "../motion/useFocusTrap";
 import { useReveal } from "../motion/useReveal";
 import { isMobileViewport } from "../motion/useScrollProgress";
 import { MediaSlot } from "./MediaSlot";
@@ -143,20 +144,15 @@ export function GalleryChapter({ content }: { content: Landing6Content["gallery"
     return kill;
   }, [reduced]);
 
-  // Escape closes the detail overlay; focus returns to the card that opened it.
-  useEffect(() => {
-    if (activeIndex === null) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setActiveIndex(null);
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [activeIndex]);
-
   const closeModal = () => {
     setActiveIndex(null);
-    triggerRef.current?.focus();
   };
+
+  // T26: Escape + Tab-cycling trap + return-focus-to-trigger, all in one
+  // shared hook (see motion/useFocusTrap.ts doc comment — this replaces a
+  // hand-rolled Escape-only listener that T17's own report flagged as
+  // missing the Tab-cycling part).
+  const modalRef = useFocusTrap<HTMLDivElement>(activeIndex !== null, closeModal, triggerRef.current);
 
   const openModal = (index: number, el: HTMLButtonElement) => {
     triggerRef.current = el;
@@ -236,10 +232,12 @@ export function GalleryChapter({ content }: { content: Landing6Content["gallery"
       {activeCard && (
         <div className={styles.backdrop} onClick={closeModal}>
           <div
+            ref={modalRef}
             className={styles.modal}
             role="dialog"
             aria-modal="true"
             aria-label={activeCard.name}
+            tabIndex={-1}
             onClick={(e) => e.stopPropagation()}
           >
             <button type="button" className={styles.close} aria-label={content.closeLabel} onClick={closeModal}>

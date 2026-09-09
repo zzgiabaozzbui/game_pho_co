@@ -74,7 +74,12 @@ export function LaunchChapter({ content }: { content: Landing6Content["launch"] 
       <div className={styles.left}>
         <p className="l6-pretitle">{content.pretitle}</p>
         <h2 className={`l6-display ${styles.heading}`}>
-          <HackyText text={content.heading} />
+          {/* T26: HackyText's scramble noise shouldn't reach screen readers —
+              same aria-hidden + static-srOnly pairing HeroChapter.tsx uses. */}
+          <span aria-hidden="true">
+            <HackyText text={content.heading} />
+          </span>
+          <span className={styles.srOnly}>{content.heading}</span>
         </h2>
 
         <div className={styles.ctas}>

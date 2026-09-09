@@ -91,10 +91,22 @@ export function CollectionIntroChapter({ content }: { content: Landing6Content["
     <div ref={ref} className={`${styles.grid} ${revealed ? styles.revealed : ""}`}>
       <div className={styles.left}>
         <p className="l6-pretitle">{content.pretitle}</p>
-        <p className={`l6-mono ${styles.counter}`} aria-live="polite">
+        {/* T26: was a bare aria-live="polite" region on the rAF-tweened
+            number itself — that fired one announcement per animation frame
+            (~85 over 1.4s), spamming screen readers with every intermediate
+            value. Animated span is now aria-hidden; a static srOnly span
+            (mounted once revealed, never re-renders after) gives one
+            announcement of the settled total instead. Reduced motion is
+            unaffected either way — useCountUp never tweens there. */}
+        <p className={`l6-mono ${styles.counter}`} aria-hidden="true">
           {count}
         </p>
         <p className="l6-hud">{content.countLabel}</p>
+        {revealed && (
+          <span className={styles.srOnly}>
+            {content.count} {content.countLabel}
+          </span>
+        )}
       </div>
 
       {/* Deliberately near-empty — see file doc comment: this is where

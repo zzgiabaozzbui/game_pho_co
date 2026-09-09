@@ -147,7 +147,16 @@
   .l6 *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
     transition-duration: 0.01ms !important;
+    /* T26: several chapter cascade reveals (StoryIntroChapter,
+       StoryProjectChapter, CollectionIntroChapter, LaunchChapter) hardcode a
+       per-item `transition-delay` (80-320ms) for the stagger effect. The
+       duration override above already makes each transition instant, but
+       without zeroing the delay too, reduced-motion users still wait up to
+       320ms staring at nothing before content pops in — a motion-adjacent
+       gap this global rule missed. */
+    transition-delay: 0ms !important;
     scroll-behavior: auto !important;
   }
 }

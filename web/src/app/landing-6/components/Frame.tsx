@@ -21,7 +21,7 @@
  * T08's report).
  */
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import type { ChapterId, Landing6Content } from "../landing-6.data";
 import { CHAPTER_IDS } from "../landing-6.data";
 import { audioEngine } from "../../landing-4/components/AudioSynthesizer";
@@ -44,6 +44,11 @@ export function Frame({ content, audioOn, onToggleAudio }: FrameProps) {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [consoleOpen, setConsoleOpen] = useState(false);
+  // T26: explicit trigger refs, not `document.activeElement` at open time —
+  // Safari doesn't focus a <button> on click, so the focus-trap hook needs
+  // the real element handed to it to return focus correctly on close.
+  const menuBtnRef = useRef<HTMLButtonElement>(null);
+  const consoleBtnRef = useRef<HTMLButtonElement>(null);
 
   const reduced = prefersReducedMotion();
 
@@ -65,6 +70,16 @@ export function Frame({ content, audioOn, onToggleAudio }: FrameProps) {
         pointerEvents: "none",
       }}
     >
+      {/* T26: first focusable element on the page — Frame's own controls
+          (audio/console/menu buttons, 9 bottom-rail chapter pills) render
+          BEFORE <main> in the DOM (fixed HUD, conventional header-first
+          order), which otherwise makes a keyboard user tab through all of
+          that HUD chrome before ever reaching chapter content. Visually
+          hidden until focused; jumps straight past it. */}
+      <a href="#main-content" className={styles.skipLink}>
+        {content.frame.skipToContent}
+      </a>
+
       {/* Top bar */}
       <div
         style={{
@@ -98,15 +113,19 @@ export function Frame({ content, audioOn, onToggleAudio }: FrameProps) {
             {audioOn ? content.frame.audioOn : content.frame.audioOff}
           </button>
           <button
+            ref={consoleBtnRef}
             type="button"
             className={styles.iconBtn}
+            aria-expanded={consoleOpen}
             onClick={() => setConsoleOpen(true)}
           >
             {content.frame.console}
           </button>
           <button
+            ref={menuBtnRef}
             type="button"
             className={styles.iconBtn}
+            aria-expanded={menuOpen}
             onClick={() => setMenuOpen(true)}
           >
             {content.frame.menu}
@@ -174,6 +193,7 @@ export function Frame({ content, audioOn, onToggleAudio }: FrameProps) {
               className={`${styles.pill} ${i === activeIndex ? styles.pillActive : ""}`}
               onClick={() => handleJump(item.id)}
               aria-current={i === activeIndex}
+              aria-label={`${content.frame.chapterLabel} ${item.index} — ${item.label}`}
             >
               {item.index}
             </button>
@@ -192,6 +212,7 @@ export function Frame({ content, audioOn, onToggleAudio }: FrameProps) {
         items={content.menu.items}
         onJump={handleJump}
         onClose={() => setMenuOpen(false)}
+        restoreFocusTo={menuBtnRef.current}
       />
       <Console
         open={consoleOpen}
@@ -199,6 +220,7 @@ export function Frame({ content, audioOn, onToggleAudio }: FrameProps) {
         closeLabel={content.frame.close}
         placeholder={content.frame.consolePlaceholder}
         onClose={() => setConsoleOpen(false)}
+        restoreFocusTo={consoleBtnRef.current}
       />
     </div>
   );

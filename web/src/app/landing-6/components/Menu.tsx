@@ -1,6 +1,7 @@
 "use client";
 
 import type { ChapterId } from "../landing-6.data";
+import { useFocusTrap } from "../motion/useFocusTrap";
 import styles from "./Frame.module.css";
 
 export function Menu({
@@ -10,6 +11,7 @@ export function Menu({
   items,
   onJump,
   onClose,
+  restoreFocusTo,
 }: {
   open: boolean;
   title: string;
@@ -17,11 +19,24 @@ export function Menu({
   items: Array<{ id: ChapterId; index: string; label: string }>;
   onJump: (id: ChapterId) => void;
   onClose: () => void;
+  restoreFocusTo?: HTMLElement | null;
 }) {
+  // T26: Tab-cycling trap + Escape + return-focus, same shared hook as
+  // GalleryChapter's detail modal (motion/useFocusTrap.ts) — this overlay
+  // previously had neither.
+  const overlayRef = useFocusTrap<HTMLDivElement>(open, onClose, restoreFocusTo);
+
   if (!open) return null;
 
   return (
-    <div className={`${styles.overlay} l6-mono`} role="dialog" aria-modal="true">
+    <div
+      ref={overlayRef}
+      className={`${styles.overlay} l6-mono`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      tabIndex={-1}
+    >
       <div className={styles.overlayHeader}>
         <span className="l6-pretitle">{title}</span>
         <button type="button" className={styles.iconBtn} onClick={onClose}>

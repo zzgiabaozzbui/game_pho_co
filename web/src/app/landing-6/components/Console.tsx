@@ -1,5 +1,6 @@
 "use client";
 
+import { useFocusTrap } from "../motion/useFocusTrap";
 import styles from "./Frame.module.css";
 
 /**
@@ -13,17 +14,29 @@ export function Console({
   closeLabel,
   placeholder,
   onClose,
+  restoreFocusTo,
 }: {
   open: boolean;
   title: string;
   closeLabel: string;
   placeholder: string;
   onClose: () => void;
+  restoreFocusTo?: HTMLElement | null;
 }) {
+  // T26: same shared focus-trap hook as Menu/GalleryChapter's modal.
+  const overlayRef = useFocusTrap<HTMLDivElement>(open, onClose, restoreFocusTo);
+
   if (!open) return null;
 
   return (
-    <div className={`${styles.overlay} l6-mono`} role="dialog" aria-modal="true">
+    <div
+      ref={overlayRef}
+      className={`${styles.overlay} l6-mono`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
+      tabIndex={-1}
+    >
       <div className={styles.overlayHeader}>
         <span className="l6-pretitle">{title}</span>
         <button type="button" className={styles.iconBtn} onClick={onClose}>

@@ -45,6 +45,21 @@
   max-width: 20ch;
 }
 
+/* T26: same srOnly pattern as HeroChapter.module.css — pairs with the
+   aria-hidden scramble span in LaunchChapter.tsx so a screen reader never
+   reads HackyText's mid-scramble noise glyphs. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .ctas {
   display: flex;
   flex-wrap: wrap;
