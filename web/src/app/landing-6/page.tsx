@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { CollectionIntroChapter } from "./components/CollectionIntroChapter";
 import { Frame } from "./components/Frame";
+import { GalleryChapter } from "./components/GalleryChapter";
 import { HeroChapter } from "./components/HeroChapter";
 import { Preloader } from "./components/Preloader";
 import { StoryIntroChapter } from "./components/StoryIntroChapter";
@@ -126,6 +127,17 @@ export default function Landing6Page() {
             return (
               <section key={id} id={id}>
                 <CollectionIntroChapter content={content.collectionIntro} />
+              </section>
+            );
+          }
+
+          // T17: gallery has real content, GalleryChapter owns its own
+          // layout (and its own pin/scrub via createChapter). 4 remaining
+          // chapters keep the placeholder shell.
+          if (id === "gallery") {
+            return (
+              <section key={id} id={id}>
+                <GalleryChapter content={content.gallery} />
               </section>
             );
           }

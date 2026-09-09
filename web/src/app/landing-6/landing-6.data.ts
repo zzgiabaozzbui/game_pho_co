@@ -87,6 +87,10 @@ export interface Landing6Content {
     heading: string;
     description: string;
     cards: GalleryCard[];
+    /** aria-label prefix for a card's detail button (T17) — combined with the card's own name at render time. */
+    detailAria: string;
+    /** aria-label of the detail overlay's close button (T17). */
+    closeLabel: string;
   };
   tableauKeep: { index: string; pretitle: string; title: string; paragraph: string };
   tableauFactions: {
@@ -218,6 +222,8 @@ export const landing6Content: Record<Lang, Landing6Content> = {
         { id: "mam", name: "Nước mắm", desc: "Mắm cốt nhỉ, nêm cuối cùng, chỉ một chút." },
         { id: "chanh-ot", name: "Chanh ớt", desc: "Đĩa nhỏ bên cạnh — phần của người ăn, không phải người nấu." },
       ],
+      detailAria: "Xem chi tiết",
+      closeLabel: "ĐÓNG",
     },
     tableauKeep: {
       index: "001",
@@ -380,6 +386,8 @@ export const landing6Content: Record<Lang, Landing6Content> = {
         { id: "mam", name: "Fish sauce", desc: "First-press, added last, only a little." },
         { id: "chanh-ot", name: "Lime and chilli", desc: "A small dish on the side — the eater's part, not the cook's." },
       ],
+      detailAria: "View details",
+      closeLabel: "CLOSE",
     },
     tableauKeep: {
       index: "001",
