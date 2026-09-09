@@ -26,7 +26,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { Landing6Content } from "../landing-6.data";
 import { assets, resolveAsset, PLACEHOLDER } from "../assets";
-import { prefersReducedMotion } from "../motion/timeline";
+import { prefersReducedMotion } from "@/lib/motion/timeline";
 import styles from "./Preloader.module.css";
 
 const SESSION_KEY = "l6-preloader-seen";

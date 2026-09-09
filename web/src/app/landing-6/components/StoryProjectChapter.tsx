@@ -21,8 +21,8 @@
 import { useEffect, useRef, useState } from "react";
 import { assets } from "../assets";
 import type { Landing6Content } from "../landing-6.data";
-import { prefersReducedMotion } from "../motion/timeline";
-import { useReveal } from "../motion/useReveal";
+import { prefersReducedMotion } from "@/lib/motion/timeline";
+import { useReveal } from "@/lib/motion/useReveal";
 import { MediaSlot } from "./MediaSlot";
 import styles from "./StoryProjectChapter.module.css";
 

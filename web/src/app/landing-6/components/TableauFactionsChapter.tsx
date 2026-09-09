@@ -35,9 +35,9 @@
 import { useEffect, useRef } from "react";
 import { assets } from "../assets";
 import type { Landing6Content } from "../landing-6.data";
-import { createChapter, prefersReducedMotion } from "../motion/timeline";
-import { parallaxTransform, tableauFactionsKeyframes } from "../motion/keyframes";
-import { isMobileViewport } from "../motion/useScrollProgress";
+import { createChapter, prefersReducedMotion } from "@/lib/motion/timeline";
+import { parallaxTransform, tableauFactionsKeyframes } from "@/lib/motion/keyframes";
+import { isMobileViewport } from "@/lib/motion/useScrollProgress";
 import { MediaSlot } from "./MediaSlot";
 import styles from "./TableauFactionsChapter.module.css";
 

@@ -16,8 +16,8 @@ import { TableauFactionsChapter } from "./components/TableauFactionsChapter";
 import { TableauKeepChapter } from "./components/TableauKeepChapter";
 import { TableauWorldChapter } from "./components/TableauWorldChapter";
 import { landing6Content } from "./landing-6.data";
-import { initScrollEngine, refreshScroll } from "./motion/timeline";
-import { useGlobalProgress } from "./motion/useScrollProgress";
+import { initScrollEngine, refreshScroll } from "@/lib/motion/timeline";
+import { useGlobalProgress } from "@/lib/motion/useScrollProgress";
 import { Stage } from "./webgl/Stage";
 
 /**

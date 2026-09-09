@@ -32,8 +32,8 @@
 import { useEffect } from "react";
 import type { Landing6Content } from "../landing-6.data";
 import { CHAPTER_IDS } from "../landing-6.data";
-import { prefersReducedMotion } from "../motion/timeline";
-import { useActiveChapter } from "../motion/useScrollProgress";
+import { prefersReducedMotion } from "@/lib/motion/timeline";
+import { useActiveChapter } from "@/lib/motion/useScrollProgress";
 import { setCardHidden } from "../webgl/CardMesh";
 import { setEmblemHidden } from "../webgl/EmblemShader";
 import { HackyText } from "./HackyText";

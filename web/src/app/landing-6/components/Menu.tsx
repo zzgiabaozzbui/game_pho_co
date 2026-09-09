@@ -1,7 +1,7 @@
 "use client";
 
 import type { ChapterId } from "../landing-6.data";
-import { useFocusTrap } from "../motion/useFocusTrap";
+import { useFocusTrap } from "@/lib/motion/useFocusTrap";
 import styles from "./Frame.module.css";
 
 export function Menu({

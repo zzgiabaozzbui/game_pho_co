@@ -30,7 +30,7 @@
 import { useEffect, useRef } from "react";
 import { assets, PLACEHOLDER, resolveAsset } from "../assets";
 import type { Landing6Content } from "../landing-6.data";
-import { scrollToChapter } from "../motion/timeline";
+import { scrollToChapter } from "@/lib/motion/timeline";
 import styles from "./RevealFooter.module.css";
 
 export function RevealFooter({

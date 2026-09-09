@@ -1,6 +1,6 @@
 "use client";
 
-import { useFocusTrap } from "../motion/useFocusTrap";
+import { useFocusTrap } from "@/lib/motion/useFocusTrap";
 import styles from "./Frame.module.css";
 
 /**

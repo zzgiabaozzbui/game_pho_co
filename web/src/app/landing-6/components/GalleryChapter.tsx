@@ -50,10 +50,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { audioEngine } from "../../landing-4/components/AudioSynthesizer";
 import { assets } from "../assets";
 import type { GalleryCard, Landing6Content } from "../landing-6.data";
-import { createChapter, prefersReducedMotion } from "../motion/timeline";
-import { useFocusTrap } from "../motion/useFocusTrap";
-import { useReveal } from "../motion/useReveal";
-import { isMobileViewport } from "../motion/useScrollProgress";
+import { createChapter, prefersReducedMotion } from "@/lib/motion/timeline";
+import { useFocusTrap } from "@/lib/motion/useFocusTrap";
+import { useReveal } from "@/lib/motion/useReveal";
+import { isMobileViewport } from "@/lib/motion/useScrollProgress";
 import { MediaSlot } from "./MediaSlot";
 import styles from "./GalleryChapter.module.css";
 

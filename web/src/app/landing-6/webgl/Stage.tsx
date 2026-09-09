@@ -29,7 +29,7 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { useTheme } from "../lib/useTheme";
-import { onGlobalProgress, prefersReducedMotion } from "../motion/timeline";
+import { onGlobalProgress, prefersReducedMotion } from "@/lib/motion/timeline";
 import { createCardMesh, refreshCardTheme } from "./CardMesh";
 import type { StageObject } from "./EmblemShader";
 import { createEmblemMesh, refreshEmblemTheme } from "./EmblemShader";

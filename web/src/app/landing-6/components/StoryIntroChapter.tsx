@@ -34,7 +34,7 @@
 import { useState } from "react";
 import { assets, PLACEHOLDER, resolveAsset } from "../assets";
 import type { Landing6Content } from "../landing-6.data";
-import { useReveal } from "../motion/useReveal";
+import { useReveal } from "@/lib/motion/useReveal";
 import { MediaSlot } from "./MediaSlot";
 import styles from "./StoryIntroChapter.module.css";
 

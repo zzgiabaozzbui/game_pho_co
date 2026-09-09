@@ -44,7 +44,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { prefersReducedMotion } from "../motion/timeline";
+import { prefersReducedMotion } from "@/lib/motion/timeline";
 
 const LATIN_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 /** Measured interval, see docs/kprverse-analysis.md §6.4. */
