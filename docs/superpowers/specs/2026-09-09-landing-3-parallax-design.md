@@ -22,7 +22,7 @@ Thuần cơ học, không đổi logic. Rủi ro là regression trên landing-6 
 - Di chuyển cả 5 file, giữ nguyên nội dung: `timeline.ts`, `useReveal.ts`, `useScrollProgress.ts`, `keyframes.ts`, `useFocusTrap.ts`.
 - `useFocusTrap.ts` là a11y chứ không phải motion, nhưng vẫn move cùng để diff thuần là một phép di chuyển thư mục. Không tách, không refactor.
 - `keyframes.ts` chứa lẫn phần generic (`ParallaxLayer`, `parallaxTransform`) và data riêng landing-6 (`tableauKeepKeyframes`, `tableauFactionsKeyframes`, `tableauWorldKeyframes`). Move nguyên file, **không tách**. Keyframes của landing-3 nằm ở file riêng trong `landing-3/`, chỉ import `type ParallaxLayer` + `parallaxTransform` từ shared.
-- Cập nhật 22 import site trên 17 file landing-6: `./motion/x` và `../motion/x` → `@/lib/motion/x` (alias `@/*` đã dùng sẵn trong repo).
+- Cập nhật 32 import statement trên 17 file landing-6: `./motion/x` và `../motion/x` → `@/lib/motion/x` (alias `@/*` đã dùng sẵn trong repo). Grep lại xác nhận số trước khi sửa — không import nào của `motion/` được phép còn sót ngoài `src/lib/motion/`.
 - Verify: `tsc --noEmit` sạch, `next build` sạch, mở `/landing-6` xác nhận pin/scrub/preloader/menu còn nguyên hành vi.
 
 ## Phần 2 — Thêm option `pin` cho `createChapter()`
