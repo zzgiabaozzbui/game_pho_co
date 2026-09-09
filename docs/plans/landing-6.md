@@ -105,7 +105,7 @@ Quy ước trạng thái: `TODO` / `DOING` / `DONE + <sha>`.
 | :--- | :--- | :--- | :--- |
 | T01 | Chụp lại kprverse.com bằng Playwright: screenshot 9 khối ở 3 breakpoint (390/768/1440), ghi scroll offset từng mốc pin | `docs/plans/landing-6-refs/*.png` + `scroll-map.md` | TODO |
 | T02 | Đo thông số động: thời lượng scrub từng section, easing, độ trễ damping của card, tốc độ scramble | thêm mục "Motion Spec" vào `docs/kprverse-analysis.md` | TODO |
-| T03 | Chốt design token Phở Cổ: palette, thang typography, spacing, độ dày border HUD | `landing-6/tokens.css` | TODO |
+| T03 | Chốt design token Phở Cổ: palette, thang typography, spacing, độ dày border HUD | `landing-6/tokens.css` | DONE 1cb9ad3 |
 | T04 | Kiểm kê asset: liệt kê từng asset cần, ai làm (art mới / tái dùng từ game / procedural) | `docs/plans/landing-6-assets.md` | TODO |
 
 ### Giai đoạn B — Nền tảng
@@ -167,3 +167,5 @@ Quy ước trạng thái: `TODO` / `DOING` / `DONE + <sha>`.
 | Ngày | Việc |
 | :--- | :--- |
 | 2026-09-09 | Tạo kế hoạch. Chưa bắt đầu code. |
+| 2026-09-09 | Tách nhánh `feat/landing-6` từ `main` (working tree bẩn được giữ nguyên, không đụng vào). |
+| 2026-09-09 | T03 xong. Accent gold `#e8b64a` (nâng từ `--color-gold` của game cho nổi trên nền đen); nhị nguyên Bắc `#5da37a` / Nam `#d9583f`. Token scope trong `.l6` để không rò sang theme giấy sáng ở `globals.css`. **Nợ:** `tokens.css` tham chiếu `--font-jetbrains-mono` chưa tồn tại — T06 phải nạp font này qua `next/font`, trước đó rơi về fallback mono hệ thống. |
