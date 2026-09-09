@@ -59,12 +59,12 @@ import { assets } from "../assets";
 import type { Landing6Content } from "../landing-6.data";
 import { createChapter, prefersReducedMotion } from "../motion/timeline";
 import { parallaxTransform, tableauWorldKeyframes } from "../motion/keyframes";
+import { isMobileViewport } from "../motion/useScrollProgress";
 import { MediaSlot } from "./MediaSlot";
 import styles from "./TableauWorldChapter.module.css";
 
 const SCRUB_VH_DESKTOP = 5;
 const SCRUB_VH_MOBILE = 2;
-const MOBILE_QUERY = "(max-width: 47.9375rem)";
 
 // Positional band classes, back to front — must line up 1:1 with both
 // `assets.tableauWorld.layers` and `tableauWorldKeyframes.layers`.
@@ -101,7 +101,7 @@ export function TableauWorldChapter({ content }: { content: Landing6Content["tab
     if (reduced) return;
 
     const stage = stageRef.current;
-    const scrubVh = window.matchMedia(MOBILE_QUERY).matches ? SCRUB_VH_MOBILE : SCRUB_VH_DESKTOP;
+    const scrubVh = isMobileViewport() ? SCRUB_VH_MOBILE : SCRUB_VH_DESKTOP;
     const killChapter = stage
       ? createChapter(stage, {
           scrubVh,

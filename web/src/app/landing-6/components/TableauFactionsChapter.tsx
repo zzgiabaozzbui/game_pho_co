@@ -37,12 +37,12 @@ import { assets } from "../assets";
 import type { Landing6Content } from "../landing-6.data";
 import { createChapter, prefersReducedMotion } from "../motion/timeline";
 import { parallaxTransform, tableauFactionsKeyframes } from "../motion/keyframes";
+import { isMobileViewport } from "../motion/useScrollProgress";
 import { MediaSlot } from "./MediaSlot";
 import styles from "./TableauFactionsChapter.module.css";
 
 const SCRUB_VH_DESKTOP = 2;
 const SCRUB_VH_MOBILE = 1;
-const MOBILE_QUERY = "(max-width: 47.9375rem)";
 
 // Positional order must line up 1:1 with `assets.tableauFactions` (bac, nam,
 // scanline) and `tableauFactionsKeyframes.layers` (bac, nam, scan).
@@ -79,7 +79,7 @@ export function TableauFactionsChapter({ content }: { content: Landing6Content["
     if (reduced) return;
 
     const stage = stageRef.current;
-    const scrubVh = window.matchMedia(MOBILE_QUERY).matches ? SCRUB_VH_MOBILE : SCRUB_VH_DESKTOP;
+    const scrubVh = isMobileViewport() ? SCRUB_VH_MOBILE : SCRUB_VH_DESKTOP;
     const killChapter = stage
       ? createChapter(stage, {
           scrubVh,

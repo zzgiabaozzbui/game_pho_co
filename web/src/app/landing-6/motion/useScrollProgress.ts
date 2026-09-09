@@ -9,6 +9,23 @@
 import { useEffect, useState } from "react";
 import { onGlobalProgress } from "./timeline";
 
+/**
+ * Breakpoint dùng chung cho mọi chỗ cần biết "đang ở mobile" để chọn
+ * `scrubVh` nhỏ hơn (T24) — trước đó bị copy-paste độc lập trong
+ * TableauKeepChapter/TableauFactionsChapter/TableauWorldChapter, nay 3 chương
+ * đó + GalleryChapter đều import `isMobileViewport`/`MOBILE_QUERY` từ đây thay
+ * vì tự định nghĩa lại. Giữ đúng giá trị cũ (47.9375rem = 767px) để hành vi
+ * không đổi.
+ */
+export const MOBILE_QUERY = "(max-width: 47.9375rem)";
+
+/** Đọc 1 lần lúc mount (không phải React state — các chương gọi trong effect
+ * trước khi tạo `createChapter()`, không cần re-render khi resize). */
+export function isMobileViewport(): boolean {
+  if (typeof window === "undefined" || !window.matchMedia) return false;
+  return window.matchMedia(MOBILE_QUERY).matches;
+}
+
 /** 0..1 toàn trang — bám thẳng vào ScrollTrigger qua `onGlobalProgress`. */
 export function useGlobalProgress(): number {
   const [progress, setProgress] = useState(0);

@@ -65,7 +65,10 @@
 .link {
   background: none;
   border: none;
-  padding: 0;
+  /* T24: vertical padding, not just 0 — a bare line of l6-fs-body text was a
+     ~20px-tall tap target on mobile, cramped for a footer nav item. */
+  padding: var(--l6-space-1) 0;
+  margin: calc(var(--l6-space-1) * -1) 0;
   font-family: var(--l6-sans);
   font-size: var(--l6-fs-body);
   color: var(--l6-text-muted);

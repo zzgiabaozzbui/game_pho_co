@@ -23,13 +23,26 @@
  * across the first third of progress, a quick finish through the next fifth,
  * then flat for the last ~45%. Same lesson, no backwards jump.
  *
- * **scrubVh = 3.** §2 measured the original at 1.5vh, but that number covers
- * a canvas-rendered fan (~1350px of travel). A real DOM flex track of 12
- * cards at this component's card width runs wider than that, so 1.5vh would
- * blow through the whole track in less than a second of scrolling. 3vh keeps
- * the phase-1/phase-2/hold split proportionally identical (see PHASE1_END /
- * PHASE2_END below) while giving enough scroll distance to actually traverse
- * a wider track comfortably.
+ * **scrubVh = 3 (desktop).** §2 measured the original at 1.5vh, but that
+ * number covers a canvas-rendered fan (~1350px of travel). A real DOM flex
+ * track of 12 cards at this component's card width runs wider than that, so
+ * 1.5vh would blow through the whole track in less than a second of
+ * scrolling. 3vh keeps the phase-1/phase-2/hold split proportionally
+ * identical (see PHASE1_END / PHASE2_END below) while giving enough scroll
+ * distance to actually traverse a wider track comfortably.
+ *
+ * **scrubVh = 2 on mobile (T24).** `trackEase()` is a function of normalized
+ * progress only — `translateX` is always `trackEase(p) * maxTravel`,
+ * independent of how many px of scroll a full 0..1 cycle takes. So shrinking
+ * scrubVh does NOT risk stranding the last cards unreached; it only shortens
+ * how much scroll gesture the reader spends to get through the same
+ * proportional curve (drift → sweep → hold). Measured live at 390×844: the
+ * pinned stage was ~4.3 viewport-heights tall at the old fixed scrubVh=3 —
+ * longer than any of the three tableau chapters' own (already-reduced)
+ * mobile budget, for a chapter whose card track needs less contemplation
+ * time than a slow cinematic parallax push. 2 matches TableauKeep's/
+ * TableauWorld's mobile scrubVh, same breakpoint (`isMobileViewport()`,
+ * motion/useScrollProgress.ts) the three tableau chapters use.
  */
 
 import type { CSSProperties } from "react";
@@ -39,10 +52,12 @@ import { assets } from "../assets";
 import type { GalleryCard, Landing6Content } from "../landing-6.data";
 import { createChapter, prefersReducedMotion } from "../motion/timeline";
 import { useReveal } from "../motion/useReveal";
+import { isMobileViewport } from "../motion/useScrollProgress";
 import { MediaSlot } from "./MediaSlot";
 import styles from "./GalleryChapter.module.css";
 
-const SCRUB_VH = 3;
+const SCRUB_VH_DESKTOP = 3;
+const SCRUB_VH_MOBILE = 2;
 
 // Proportional to §6.6's measured phase boundaries (drift ends at 0.50/1.5,
 // sweep ends at 0.83/1.5 of the original 1.5vh budget) — kept identical here
@@ -110,8 +125,9 @@ export function GalleryChapter({ content }: { content: Landing6Content["gallery"
     if (reduced) return;
     const stage = stageRef.current;
     if (!stage) return;
+    const scrubVh = isMobileViewport() ? SCRUB_VH_MOBILE : SCRUB_VH_DESKTOP;
     const kill = createChapter(stage, {
-      scrubVh: SCRUB_VH,
+      scrubVh,
       onProgress: (p) => {
         const track = trackRef.current;
         const viewport = viewportRef.current;
