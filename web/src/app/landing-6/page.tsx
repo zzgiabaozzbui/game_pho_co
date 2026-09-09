@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n";
+import { CollectionIntroChapter } from "./components/CollectionIntroChapter";
 import { Frame } from "./components/Frame";
 import { HeroChapter } from "./components/HeroChapter";
 import { Preloader } from "./components/Preloader";
@@ -115,6 +116,16 @@ export default function Landing6Page() {
             return (
               <section key={id} id={id}>
                 <StoryProjectChapter content={content.storyProject} />
+              </section>
+            );
+          }
+
+          // T16: collectionIntro has real content, CollectionIntroChapter
+          // owns its own layout. 5 remaining chapters keep the placeholder shell.
+          if (id === "collectionIntro") {
+            return (
+              <section key={id} id={id}>
+                <CollectionIntroChapter content={content.collectionIntro} />
               </section>
             );
           }

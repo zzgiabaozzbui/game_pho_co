@@ -152,26 +152,8 @@
   aspect-ratio: 16 / 9;
 }
 
-/* ---- Shared media / placeholder (same treatment as StoryIntroChapter's) -- */
-
-.media {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: var(--l6-space-2);
-  background: var(--l6-surface-2);
-  border: var(--l6-hair-w) dashed var(--l6-hair-strong);
-}
+/* Media/placeholder styling now lives in the shared MediaSlot.module.css
+   (extracted at T16) — nothing left to style here. */
 
 /* ---- Narrow viewport: stack row 1 and row 2's flanks, no horizontal overflow --- */
 @media (max-width: 47.9375rem) {

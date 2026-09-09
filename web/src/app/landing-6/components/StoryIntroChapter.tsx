@@ -25,12 +25,17 @@
  * clicking it today just flips `playing` state with nothing to render, which
  * is inert, not broken (no thrown error, still keyboard-focusable via the
  * underlying `<button>`).
+ *
+ * `MediaSlot` and `useReveal` now live in shared modules (extracted at T16,
+ * the 3rd call site) — see `../components/MediaSlot.tsx` and
+ * `../motion/useReveal.ts`. This file no longer carries local copies.
  */
 
-import { useEffect, useRef, useState } from "react";
-import { assets, assetLabel, PLACEHOLDER, resolveAsset } from "../assets";
+import { useState } from "react";
+import { assets, PLACEHOLDER, resolveAsset } from "../assets";
 import type { Landing6Content } from "../landing-6.data";
-import { prefersReducedMotion } from "../motion/timeline";
+import { useReveal } from "../motion/useReveal";
+import { MediaSlot } from "./MediaSlot";
 import styles from "./StoryIntroChapter.module.css";
 
 /** 4 corner marks per hairline panel — reference's "crosshair at border intersections". */
@@ -44,55 +49,6 @@ function Crosshairs() {
       ))}
     </>
   );
-}
-
-/**
- * One image slot, PLACEHOLDER-safe. Opaque background on the placeholder box
- * (not just a bare hairline) is a deliberate choice here: the persistent 3D
- * card (`CardMesh.ts`) is parked small at the right of this chapter
- * (`p=0.111` keyframe) and renders on a lower z-index — a transparent
- * placeholder box would let it show through and read as visual clutter
- * behind the label text.
- */
-function MediaSlot({ path, alt }: { path: string; alt: string }) {
-  const resolved = resolveAsset(path);
-  if (resolved === PLACEHOLDER) {
-    return (
-      <div className={styles.placeholder}>
-        <span className="l6-hud">{assetLabel(path)}</span>
-      </div>
-    );
-  }
-  // eslint-disable-next-line @next/next/no-img-element -- static public asset, not part of next/image's optimization pipeline in this section
-  return <img src={resolved} alt={alt} className={styles.media} />;
-}
-
-/** Reveal-on-enter, no scroll scrub. Reduced motion shows content immediately, no observer. */
-function useReveal<T extends HTMLElement>() {
-  const ref = useRef<T | null>(null);
-  const [revealed, setRevealed] = useState(false);
-
-  useEffect(() => {
-    if (prefersReducedMotion()) {
-      setRevealed(true);
-      return;
-    }
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setRevealed(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.2 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  return { ref, revealed };
 }
 
 export function StoryIntroChapter({ content }: { content: Landing6Content["storyIntro"] }) {

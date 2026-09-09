@@ -12,37 +12,21 @@
  * here is scroll-scrubbed. The telemetry ticker below runs on its own
  * `setInterval`, not on scroll position, so a pin would buy nothing.
  *
- * **MediaSlot: reimplemented, not imported.** `StoryIntroChapter.tsx` kept its
- * `MediaSlot` file-local (not exported) — importing a non-exported symbol
- * across files isn't possible without first promoting it to a shared module,
- * and this task's scope is this file + its CSS module only. Reimplemented
- * identically here (same PLACEHOLDER branch, same `assetLabel()` call) so the
- * sprite row degrades safely. If a 3rd chapter needs the same pattern, THAT
- * task should promote it to a shared `components/MediaSlot.tsx` — two
- * call sites is a coincidence, three is a pattern worth extracting.
+ * **MediaSlot: extracted at T16.** This file used to carry a file-local
+ * reimplementation (see the old Nhật ký entry in docs/plans/landing-6.md) —
+ * T16 crossed the "3rd call site" threshold this file's own comment named,
+ * so it now imports the shared `../components/MediaSlot.tsx` instead.
  */
 
 import { useEffect, useRef, useState } from "react";
-import { assetLabel, assets, PLACEHOLDER, resolveAsset } from "../assets";
+import { assets } from "../assets";
 import type { Landing6Content } from "../landing-6.data";
 import { prefersReducedMotion } from "../motion/timeline";
+import { useReveal } from "../motion/useReveal";
+import { MediaSlot } from "./MediaSlot";
 import styles from "./StoryProjectChapter.module.css";
 
 const TELEMETRY_INTERVAL_MS = 2200;
-
-/** Same PLACEHOLDER-safe pattern as StoryIntroChapter's MediaSlot — see file doc comment. */
-function MediaSlot({ path, alt }: { path: string; alt: string }) {
-  const resolved = resolveAsset(path);
-  if (resolved === PLACEHOLDER) {
-    return (
-      <div className={styles.placeholder}>
-        <span className="l6-hud">{assetLabel(path)}</span>
-      </div>
-    );
-  }
-  // eslint-disable-next-line @next/next/no-img-element -- static public asset
-  return <img src={resolved} alt={alt} className={styles.media} />;
-}
 
 /**
  * Cycles through `lines`, one visible at a time, on a plain interval — this
@@ -69,36 +53,8 @@ function useTelemetryCycle(lines: readonly string[]): string {
   return lines[index] ?? "";
 }
 
-/** Reveal-on-enter, same as StoryIntroChapter's useReveal (T14) — one-shot IntersectionObserver, no scrub. */
-function useReveal<T extends HTMLElement>() {
-  const ref = useRef<T | null>(null);
-  const [revealed, setRevealed] = useState(false);
-
-  useEffect(() => {
-    if (prefersReducedMotion()) {
-      setRevealed(true);
-      return;
-    }
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setRevealed(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.15 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  return { ref, revealed };
-}
-
 export function StoryProjectChapter({ content }: { content: Landing6Content["storyProject"] }) {
-  const { ref, revealed } = useReveal<HTMLDivElement>();
+  const { ref, revealed } = useReveal<HTMLDivElement>(0.15);
   const telemetryLine = useTelemetryCycle(content.telemetry);
 
   return (

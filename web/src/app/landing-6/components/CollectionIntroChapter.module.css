@@ -1,0 +1,137 @@
+/*
+ * Collection Intro chapter (T16). 3-column split, no pin/scrub — see
+ * CollectionIntroChapter.tsx doc comment.
+ */
+
+.grid {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1fr;
+  gap: var(--l6-gutter);
+  padding: var(--l6-gutter);
+  align-items: center;
+}
+
+.left,
+.middle,
+.right {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--l6-dur-slow) var(--l6-ease-out),
+    transform var(--l6-dur-slow) var(--l6-ease-out);
+}
+
+.grid.revealed .left {
+  opacity: 1;
+  transform: none;
+}
+.grid.revealed .middle {
+  opacity: 1;
+  transform: none;
+  transition-delay: 120ms;
+}
+.grid.revealed .right {
+  opacity: 1;
+  transform: none;
+  transition-delay: 240ms;
+}
+
+/* ---- Left: giant counter -------------------------------------------------- */
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l6-space-2);
+}
+
+.counter {
+  font-size: clamp(4rem, 12vw, 10rem);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--l6-text);
+}
+
+/* ---- Middle: reserved for the WebGL card, not DOM art --------------------- */
+
+.middle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 20rem;
+}
+
+/* Faint corner brackets hinting at the card slot — camera-viewfinder style,
+   not a full 4-side border (a full box would read as a competing panel
+   fighting the WebGL card for the same space). */
+.cardSlotFrame {
+  position: relative;
+  width: min(60%, 14rem);
+  aspect-ratio: 2 / 3;
+}
+.cardSlotFrame::before,
+.cardSlotFrame::after {
+  content: "";
+  position: absolute;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: var(--l6-hair-w) solid var(--l6-hair-strong);
+}
+.cardSlotFrame::before {
+  top: 0;
+  left: 0;
+  border-right: none;
+  border-bottom: none;
+}
+.cardSlotFrame::after {
+  bottom: 0;
+  right: 0;
+  border-left: none;
+  border-top: none;
+}
+
+/* ---- Right: measurement HUD ------------------------------------------------ */
+
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l6-space-3);
+}
+
+.hudTop {
+  display: flex;
+  align-items: center;
+  gap: var(--l6-space-3);
+  padding: var(--l6-space-3);
+  border: var(--l6-hair-w) solid var(--l6-hair);
+}
+
+.reticle {
+  flex: 0 0 auto;
+}
+
+.captions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l6-space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.hudBottom {
+  flex: 1;
+  min-height: 12rem;
+  aspect-ratio: 4 / 3;
+}
+
+/* ---- Narrow viewport: stack, card-slot hint moves above the HUD ----------- */
+@media (max-width: 47.9375rem) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .middle {
+    order: -1;
+    min-height: 14rem;
+  }
+}

@@ -75,22 +75,9 @@
   display: block;
 }
 
-/* Opaque (not just hairline) so the persistent WebGL card parked to this
-   chapter's right (CardMesh.ts keyframe p=0.111) doesn't show through the
-   empty placeholder and read as clutter behind the label — see
-   StoryIntroChapter.tsx's MediaSlot comment. */
-.placeholder {
-  width: 100%;
-  height: 100%;
-  min-height: 8rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: var(--l6-space-2);
-  background: var(--l6-surface-2);
-  border: var(--l6-hair-w) dashed var(--l6-hair-strong);
-}
+/* Placeholder-box styling now lives in the shared MediaSlot.module.css
+   (extracted at T16) — this file only still needs `.media` above, reused by
+   the `<video>` element in the teaser button. */
 
 .teaser {
   position: relative;
