@@ -40,6 +40,8 @@ export interface Landing6Content {
     console: string;
     chapterLabel: string;
     progressLabel: string;
+    /** Placeholder trong Console.tsx — nội dung thật do task sau (T-console) quyết định. */
+    consolePlaceholder: string;
   };
   /** Overlay menu — mỗi chương một dòng. */
   menu: {
@@ -127,6 +129,7 @@ export const landing6Content: Record<Lang, Landing6Content> = {
       console: "SỔ TAY",
       chapterLabel: "CHƯƠNG",
       progressLabel: "TIẾN ĐỘ",
+      consolePlaceholder: "Nội dung sổ tay sẽ có ở task sau.",
     },
     menu: {
       title: "MỤC LỤC",
@@ -287,6 +290,7 @@ export const landing6Content: Record<Lang, Landing6Content> = {
       console: "CONSOLE",
       chapterLabel: "CHAPTER",
       progressLabel: "PROGRESS",
+      consolePlaceholder: "Console content lands in a later task.",
     },
     menu: {
       title: "CONTENTS",

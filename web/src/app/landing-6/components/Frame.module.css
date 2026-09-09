@@ -1,0 +1,109 @@
+/*
+ * CSS-module cho Frame.tsx — lệch khỏi quy ước inline-style của page.tsx (T06)
+ * có chủ đích: HUD cần :hover/:focus-visible cho nút bấm và trạng thái active
+ * của pill, thứ inline style không diễn tả được.
+ */
+
+.iconBtn {
+  pointer-events: auto;
+  background: transparent;
+  border: var(--l6-hair-w) solid var(--l6-hair);
+  color: var(--l6-text);
+  font-family: var(--l6-mono);
+  font-size: var(--l6-fs-hud);
+  letter-spacing: var(--l6-tracking-hud);
+  text-transform: uppercase;
+  padding: var(--l6-space-1) var(--l6-space-2);
+  cursor: pointer;
+  transition: border-color var(--l6-dur-fast) var(--l6-ease-out),
+    color var(--l6-dur-fast) var(--l6-ease-out);
+}
+
+.iconBtn:hover,
+.iconBtn:focus-visible {
+  border-color: var(--l6-hair-strong);
+  color: var(--l6-accent);
+}
+
+.railMarker {
+  position: absolute;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  transform: translate(-50%, -50%);
+  background: var(--l6-accent);
+  border-radius: 999px;
+  box-shadow: 0 0 8px var(--l6-accent-glow);
+  transition: top var(--l6-dur-fast) linear;
+}
+
+.railMarker.noAnim {
+  transition: none;
+}
+
+.pill {
+  pointer-events: auto;
+  background: transparent;
+  border: var(--l6-hair-w) solid var(--l6-hair);
+  color: var(--l6-text-faint);
+  font-family: var(--l6-mono);
+  font-size: var(--l6-fs-hud);
+  letter-spacing: var(--l6-tracking-hud);
+  text-transform: uppercase;
+  padding: var(--l6-space-1) var(--l6-space-2);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color var(--l6-dur-fast) var(--l6-ease-out),
+    color var(--l6-dur-fast) var(--l6-ease-out);
+}
+
+.pill:hover,
+.pill:focus-visible {
+  border-color: var(--l6-hair-strong);
+  color: var(--l6-text);
+}
+
+.pillActive {
+  border-color: var(--l6-accent);
+  color: var(--l6-accent);
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--l6-z-overlay);
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  flex-direction: column;
+  padding: var(--l6-gutter);
+  overflow-y: auto;
+}
+
+.overlayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: var(--l6-hair-w) solid var(--l6-hair);
+  padding-bottom: var(--l6-space-2);
+  margin-bottom: var(--l6-space-4);
+}
+
+.menuItem {
+  pointer-events: auto;
+  background: transparent;
+  border: none;
+  border-bottom: var(--l6-hair-w) solid var(--l6-hair);
+  color: var(--l6-text);
+  text-align: left;
+  padding: var(--l6-space-2) 0;
+  cursor: pointer;
+  display: flex;
+  gap: var(--l6-space-3);
+  align-items: baseline;
+  transition: color var(--l6-dur-fast) var(--l6-ease-out);
+}
+
+.menuItem:hover,
+.menuItem:focus-visible {
+  color: var(--l6-accent);
+}

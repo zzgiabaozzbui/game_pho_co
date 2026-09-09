@@ -17,6 +17,14 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
+// Đăng ký ở module scope, KHÔNG phải bên trong initScrollEngine(): Frame.tsx
+// (T07) gọi onGlobalProgress() qua hook riêng, độc lập với initScrollEngine().
+// React chạy effect của con trước effect của cha, nên nếu Frame là con của
+// page.tsx thì hook của Frame chạy trước effect gọi initScrollEngine() —
+// ScrollTrigger.create() khi đó crash vì plugin chưa registerPlugin. Đăng ký
+// ngay khi module này được import loại bỏ hoàn toàn phụ thuộc thứ tự đó.
+gsap.registerPlugin(ScrollTrigger);
+
 export function prefersReducedMotion(): boolean {
   if (typeof window === "undefined" || !window.matchMedia) return false;
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -29,20 +37,25 @@ export type ScrollEngine = {
   destroy: () => void;
 };
 
+// Instance đang chạy, để `scrollToChapter` (Frame.tsx bottom rail + menu, T07)
+// dùng chung. Lenis chiếm quyền cuộn native — gọi `el.scrollIntoView()` trong
+// khi Lenis đang chạy bị raf loop của Lenis ghi đè lại vị trí cũ ngay khung
+// hình sau, nên nút "nhảy chương" không chạy. Phải đi qua `lenis.scrollTo()`.
+let activeLenis: Lenis | null = null;
+
 /**
  * Call once, from a client component's effect. Returns a destroy function;
  * React 19 strict mode mounts effects twice, so leaking here means two Lenis
  * instances fighting over the same scroll position.
  */
 export function initScrollEngine(): ScrollEngine {
-  gsap.registerPlugin(ScrollTrigger);
-
   const reduced = prefersReducedMotion();
 
   if (reduced) {
     // No Lenis, no smoothing. ScrollTrigger still works off native scroll so
     // reveal-on-enter animations keep functioning; only scrub/pin are dropped
     // by the chapter helpers below.
+    activeLenis = null;
     return {
       lenis: null,
       reduced: true,
@@ -72,6 +85,8 @@ export function initScrollEngine(): ScrollEngine {
   gsap.ticker.add(tick);
   gsap.ticker.lagSmoothing(0);
 
+  activeLenis = lenis;
+
   return {
     lenis,
     reduced: false,
@@ -80,8 +95,26 @@ export function initScrollEngine(): ScrollEngine {
       gsap.ticker.lagSmoothing(500, 33);
       lenis.destroy();
       ScrollTrigger.getAll().forEach((t) => t.kill());
+      if (activeLenis === lenis) activeLenis = null;
     },
   };
+}
+
+/**
+ * Cuộn mượt tới một chương theo id. Dùng cho bottom rail + menu (Frame.tsx).
+ * Đi qua Lenis khi Lenis đang chạy — `el.scrollIntoView()` không ăn thua vì
+ * raf loop của Lenis ghi đè lại scroll position ngay khung hình kế tiếp. Khi
+ * không có Lenis (reduced motion, hoặc initScrollEngine() chưa chạy) thì rơi
+ * về scrollIntoView native.
+ */
+export function scrollToChapter(id: string): void {
+  if (activeLenis) {
+    activeLenis.scrollTo(`#${id}`, { immediate: prefersReducedMotion() });
+    return;
+  }
+  document
+    .getElementById(id)
+    ?.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth" });
 }
 
 export type ChapterOptions = {
