@@ -6,6 +6,7 @@ import { CollectionIntroChapter } from "./components/CollectionIntroChapter";
 import { Frame } from "./components/Frame";
 import { GalleryChapter } from "./components/GalleryChapter";
 import { HeroChapter } from "./components/HeroChapter";
+import { LaunchChapter } from "./components/LaunchChapter";
 import { Preloader } from "./components/Preloader";
 import { StoryIntroChapter } from "./components/StoryIntroChapter";
 import { StoryProjectChapter } from "./components/StoryProjectChapter";
@@ -168,12 +169,21 @@ export default function Landing6Page() {
 
           // T20: tableauWorld has real content, TableauWorldChapter owns its
           // own layout (pin/scrub multiplane parallax via createChapter,
-          // same shared keyframes module as T18/T19). 1 remaining chapter
-          // (launch) keeps the placeholder shell for T21.
+          // same shared keyframes module as T18/T19).
           if (id === "tableauWorld") {
             return (
               <section key={id} id={id}>
                 <TableauWorldChapter content={content.tableauWorld} />
+              </section>
+            );
+          }
+
+          // T21: launch has real content, LaunchChapter owns its own layout.
+          // Last content chapter — RevealFooter (T22) follows.
+          if (id === "launch") {
+            return (
+              <section key={id} id={id}>
+                <LaunchChapter content={content.launch} />
               </section>
             );
           }

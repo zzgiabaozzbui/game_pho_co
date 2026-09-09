@@ -1,0 +1,201 @@
+/*
+ * Launch chapter (T21). No pin/scrub — see LaunchChapter.tsx doc comment.
+ * 2-column grid (heading/CTAs/countdown left, fan deck right), tableau-jump
+ * row spans full width beneath both.
+ */
+
+.grid {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  grid-template-rows: 1fr auto;
+  gap: var(--l6-gutter);
+  padding: var(--l6-gutter);
+  align-items: center;
+}
+
+.left,
+.fan {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity var(--l6-dur-slow) var(--l6-ease-out),
+    transform var(--l6-dur-slow) var(--l6-ease-out);
+}
+.grid.revealed .left {
+  opacity: 1;
+  transform: none;
+}
+.grid.revealed .fan {
+  opacity: 1;
+  transform: none;
+  transition-delay: 120ms;
+}
+
+/* ---- Left: heading + CTAs + countdown -------------------------------------- */
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l6-space-3);
+  align-self: start;
+}
+
+.heading {
+  max-width: 20ch;
+}
+
+.ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--l6-space-2);
+}
+
+.ctaPrimary,
+.ctaSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--l6-mono);
+  font-size: var(--l6-fs-hud);
+  letter-spacing: var(--l6-tracking-hud);
+  text-transform: uppercase;
+  padding: var(--l6-space-2) var(--l6-space-3);
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    border-color var(--l6-dur-fast) var(--l6-ease-out),
+    background var(--l6-dur-fast) var(--l6-ease-out),
+    color var(--l6-dur-fast) var(--l6-ease-out);
+}
+
+.ctaPrimary {
+  background: var(--l6-accent);
+  border: var(--l6-hair-w) solid var(--l6-accent);
+  color: var(--l6-void);
+}
+.ctaPrimary:hover,
+.ctaPrimary:focus-visible {
+  background: var(--l6-text);
+  border-color: var(--l6-text);
+}
+
+.ctaSecondary {
+  background: transparent;
+  border: var(--l6-hair-w) solid var(--l6-hair);
+  color: var(--l6-text);
+}
+.ctaSecondary:hover,
+.ctaSecondary:focus-visible,
+.ctaSecondary[aria-expanded="true"] {
+  border-color: var(--l6-accent);
+  color: var(--l6-accent);
+}
+
+.qrPanel {
+  width: min(12rem, 40vw);
+  aspect-ratio: 1;
+}
+
+.countdown {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l6-space-1);
+}
+
+.digits {
+  display: flex;
+  gap: var(--l6-space-2);
+}
+
+.digit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  border: var(--l6-hair-w) solid var(--l6-hair);
+  padding: var(--l6-space-2) var(--l6-space-3);
+  min-width: 3.5rem;
+}
+.digit span:first-child {
+  font-size: var(--l6-fs-h2);
+  color: var(--l6-text-faint);
+}
+
+/* ---- Right: fan card deck --------------------------------------------------- */
+
+.fan {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 18rem;
+}
+
+.fanCard {
+  width: clamp(8rem, 14vw, 11rem);
+  aspect-ratio: 2 / 3;
+  margin-left: -3rem;
+  transform: perspective(1200px) rotate(var(--l6-fan-rot, 0deg)) translate(var(--l6-fan-x, 0px), var(--l6-fan-y, 0px));
+  transition: transform var(--l6-dur) var(--l6-ease-out);
+  z-index: var(--l6-fan-z, 0);
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.45);
+}
+.fanCard:first-child {
+  margin-left: 0;
+}
+
+.fan:hover .fanCard {
+  transform: perspective(1200px) rotate(var(--l6-fan-rot, 0deg))
+    translate(var(--l6-fan-x, 0px), calc(var(--l6-fan-y, 0px) - 0.75rem));
+}
+
+/* Reduced motion: tokens.css already zeroes transition-duration globally, but
+   the hover translate itself would still snap instantly — so drop the hover
+   lift outright rather than let it jump. */
+@media (prefers-reduced-motion: reduce) {
+  .fan:hover .fanCard {
+    transform: perspective(1200px) rotate(var(--l6-fan-rot, 0deg)) translate(var(--l6-fan-x, 0px), var(--l6-fan-y, 0px));
+  }
+}
+
+/* ---- Tableau revisit row ----------------------------------------------------- */
+
+.tableauLinks {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--l6-space-2);
+  padding-top: var(--l6-space-3);
+  border-top: var(--l6-hair-w) solid var(--l6-hair);
+}
+
+.tableauBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--l6-space-1);
+  background: transparent;
+  border: var(--l6-hair-w) solid var(--l6-hair);
+  color: var(--l6-text-muted);
+  font-family: var(--l6-sans);
+  font-size: var(--l6-fs-body);
+  padding: var(--l6-space-1) var(--l6-space-2);
+  cursor: pointer;
+  transition: border-color var(--l6-dur-fast) var(--l6-ease-out),
+    color var(--l6-dur-fast) var(--l6-ease-out);
+}
+.tableauBtn:hover,
+.tableauBtn:focus-visible {
+  border-color: var(--l6-accent);
+  color: var(--l6-text);
+}
+
+/* ---- Narrow viewport: stack, fan below heading ------------------------------ */
+@media (max-width: 47.9375rem) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .fan {
+    min-height: 12rem;
+  }
+}
