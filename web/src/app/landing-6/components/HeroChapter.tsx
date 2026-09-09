@@ -35,6 +35,7 @@ import { CHAPTER_IDS } from "../landing-6.data";
 import { prefersReducedMotion } from "../motion/timeline";
 import { useActiveChapter } from "../motion/useScrollProgress";
 import { setCardHidden } from "../webgl/CardMesh";
+import { setEmblemHidden } from "../webgl/EmblemShader";
 import { HackyText } from "./HackyText";
 import styles from "./HeroChapter.module.css";
 
@@ -49,8 +50,12 @@ export function HeroChapter({ content }: { content: Landing6Content["hero"] }) {
 
   useEffect(() => {
     setCardHidden(isHeroActive);
-    // Rời trang/unmount hẳn: đừng để card kẹt ở trạng thái ẩn.
-    return () => setCardHidden(false);
+    setEmblemHidden(!isHeroActive);
+    // Rời trang/unmount hẳn: đừng để card/emblem kẹt ở trạng thái ẩn.
+    return () => {
+      setCardHidden(false);
+      setEmblemHidden(false);
+    };
   }, [isHeroActive]);
 
   return (

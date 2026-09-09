@@ -84,6 +84,18 @@ const emblemFragmentShader = /* glsl */ `
   }
 `;
 
+let emblemHidden = false;
+/**
+ * Lets a later chapter hide the emblem outright — mirrors CardMesh.ts's
+ * `setCardHidden` exactly (module-level flag, no React prop/context: the
+ * mesh's factory runs once outside React, see that file's doc comment).
+ * The hero chapter calls `setEmblemHidden(!isHeroActive)` so the emblem
+ * shows only while hero is the active chapter.
+ */
+export function setEmblemHidden(hidden: boolean): void {
+  emblemHidden = hidden;
+}
+
 export function createEmblemMesh(): StageObject {
   const geometry = new THREE.PlaneGeometry(2.4, 1.2, 1, 1);
   let material: THREE.Material;
@@ -137,6 +149,8 @@ export function createEmblemMesh(): StageObject {
       tiltY = THREE.MathUtils.damp(tiltY, targetTiltY, EMBLEM_TILT_LAMBDA, dt);
       mesh.rotation.x = tiltX;
       mesh.rotation.y = tiltY;
+
+      mesh.visible = !emblemHidden;
     },
     dispose() {
       geometry.dispose();
