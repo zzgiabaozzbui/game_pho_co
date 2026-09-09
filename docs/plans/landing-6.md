@@ -112,8 +112,8 @@ Quy ước trạng thái: `TODO` / `DOING` / `DONE + <sha>`.
 
 | # | Task | Đầu ra | Trạng thái |
 | :--- | :--- | :--- | :--- |
-| T05 | `npm i lenis gsap`; wrapper Lenis + ScrollTrigger, tôn trọng `prefers-reduced-motion` | package.json + `motion/timeline.ts` | TODO |
-| T06 | Khung route `landing-6/page.tsx` + `landing-6.data.ts` (vi/en) + `assets.ts` local-only | route chạy được, trống | TODO |
+| T05 | `npm i lenis gsap`; wrapper Lenis + ScrollTrigger, tôn trọng `prefers-reduced-motion` | package.json + `motion/timeline.ts` | DONE bafd382 |
+| T06 | Khung route `landing-6/page.tsx` + `landing-6.data.ts` (vi/en) + `assets.ts` local-only | route chạy được, trống | DONE 62c8759 |
 | T07 | `Frame.tsx` HUD ngoài: top bar, left rail progress, bottom rail — bám fixed qua mọi chương | HUD hoạt động | TODO |
 | T08 | `Preloader.tsx`: đếm % tải thật (preload asset), telemetry, cổng audio 2 lựa chọn | preloader hoạt động | TODO |
 
@@ -169,3 +169,5 @@ Quy ước trạng thái: `TODO` / `DOING` / `DONE + <sha>`.
 | 2026-09-09 | Tạo kế hoạch. Chưa bắt đầu code. |
 | 2026-09-09 | Tách nhánh `feat/landing-6` từ `main` (working tree bẩn được giữ nguyên, không đụng vào). |
 | 2026-09-09 | T03 xong. Accent gold `#e8b64a` (nâng từ `--color-gold` của game cho nổi trên nền đen); nhị nguyên Bắc `#5da37a` / Nam `#d9583f`. Token scope trong `.l6` để không rò sang theme giấy sáng ở `globals.css`. **Nợ:** `tokens.css` tham chiếu `--font-jetbrains-mono` chưa tồn tại — T06 phải nạp font này qua `next/font`, trước đó rơi về fallback mono hệ thống. |
+| 2026-09-09 | T05 xong ở `bafd382` nhưng phiên đó quên cập nhật bảng — nay đã đánh dấu lại. |
+| 2026-09-09 | T06 xong. `layout.tsx` nạp JetBrains Mono qua `next/font` (subset `vietnamese` **có** thật, đã xác nhận dải U+1EA0 trong CSS build) → trả nợ `--font-jetbrains-mono` mà T03 để lại. `page.tsx` mới là vỏ: 9 `<section>` lấy tiêu đề từ `menu.items` của data — T13–T22 thay ruột, giữ nguyên `id`. Đã đo tại runtime: strict-mode double-mount **không** rò Lenis (bộ đếm instance = 1). `assets.ts` khai toàn bộ path `/landing-6/...`, 0 URL ngoài; chưa file nào tồn tại nên `READY` rỗng và `resolveAsset()` luôn trả `PLACEHOLDER` — T04 kiểm kê xong thì nhớ **thêm path vào `READY`**, không thì art có rồi vẫn hiện ô trống. |
