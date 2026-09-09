@@ -150,7 +150,7 @@ Quy ước trạng thái: `TODO` / `DOING` / `DONE + <sha>`.
 | T25 | Hiệu năng: lazy-load theo chương, `content-visibility`, giới hạn DPR canvas, mục tiêu LCP < 2.5s trên 4G | báo cáo Lighthouse | DONE bd3607b |
 | T26 | A11y: `prefers-reduced-motion` tắt scrub/parallax, focus order, alt text, tab được toàn bộ CTA | | DONE b329ad2 |
 | T27 | Kiểm tra bản quyền: grep toàn bộ landing-6 đảm bảo 0 URL `kprverse.com`, 0 asset của họ | script check | DONE (PASS) `2a2e8c9` |
-| T28 | So sánh cuối với ảnh tham chiếu T01, chỉnh sai lệch | | DONE (pending sha) |
+| T28 | So sánh cuối với ảnh tham chiếu T01, chỉnh sai lệch | | DONE 38d2cf5 |
 
 ---
 
