@@ -28,6 +28,7 @@ import { useLang } from "@/lib/i18n";
 import { ensureSession } from "@/lib/client";
 import { createChapter, initScrollEngine, scrollToChapter } from "@/lib/motion/timeline";
 import { CloudBackground } from "./components/CloudBackground";
+import { Reveal } from "./components/Reveal";
 
 interface Relic {
   id: string;
@@ -570,86 +571,94 @@ export default function LandingPage3() {
           id="y-nghia-du-an"
           className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto"
         >
-          <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#fedfe3] border border-[#e27b88]/40 text-[#96351f] text-xs font-semibold">
-              <HeartHandshake className="w-3.5 h-3.5 text-[#b4432f]" />
-              <span>{isEn ? "Cultural Purpose & Mission" : "Sứ Mệnh & Ý Nghĩa Văn Hóa"}</span>
+          <Reveal delayMs={0}>
+            <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#fedfe3] border border-[#e27b88]/40 text-[#96351f] text-xs font-semibold">
+                <HeartHandshake className="w-3.5 h-3.5 text-[#b4432f]" />
+                <span>{isEn ? "Cultural Purpose & Mission" : "Sứ Mệnh & Ý Nghĩa Văn Hóa"}</span>
+              </div>
+
+              <h2 className="font-[family-name:var(--font-fraunces),serif] text-2xl sm:text-4xl md:text-[2.6rem] font-bold text-[#1c1917] tracking-tight leading-tight">
+                {isEn
+                  ? "Turning Passive Sightseeing into Living Discovery"
+                  : "Từ Tham Quan Thụ Động Sang Hành Trình Sống Cùng Di Sản"}
+              </h2>
+
+              <p className="text-sm sm:text-base text-[#57534e] leading-relaxed">
+                {isEn
+                  ? "Hanoi Old Quarter is not a frozen relic inside museum glass. It is a living, breathing labyrinth of 36 ancient trade guilds that deserves to be explored with curiosity, respect, and wonder."
+                  : "Phố cổ Hà Nội không phải là hiện vật nằm yên sau tủ kính bảo tàng. Đó là một không gian sống nghìn năm tuổi, nơi mỗi con ngõ, mái đình và tiếng chạm đục kim hoàn vẫn đang kể câu chuyện văn hiến mỗi ngày."}
+              </p>
             </div>
-
-            <h2 className="font-[family-name:var(--font-fraunces),serif] text-2xl sm:text-4xl md:text-[2.6rem] font-bold text-[#1c1917] tracking-tight leading-tight">
-              {isEn
-                ? "Turning Passive Sightseeing into Living Discovery"
-                : "Từ Tham Quan Thụ Động Sang Hành Trình Sống Cùng Di Sản"}
-            </h2>
-
-            <p className="text-sm sm:text-base text-[#57534e] leading-relaxed">
-              {isEn
-                ? "Hanoi Old Quarter is not a frozen relic inside museum glass. It is a living, breathing labyrinth of 36 ancient trade guilds that deserves to be explored with curiosity, respect, and wonder."
-                : "Phố cổ Hà Nội không phải là hiện vật nằm yên sau tủ kính bảo tàng. Đó là một không gian sống nghìn năm tuổi, nơi mỗi con ngõ, mái đình và tiếng chạm đục kim hoàn vẫn đang kể câu chuyện văn hiến mỗi ngày."}
-            </p>
-          </div>
+          </Reveal>
 
           {/* 3 Core Meaning Pillars */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            <div className="p-6 sm:p-8 rounded-3xl bg-white/95 border border-[#e27b88]/25 shadow-sm hover:shadow-xl hover:shadow-[#e27b88]/10 transition-all duration-300 flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#fedfe3] text-[#96351f] flex items-center justify-center border border-[#e27b88]/30">
-                  <Lightbulb className="w-6 h-6 text-[#b4432f]" />
+            <Reveal delayMs={0} className="h-full">
+              <div className="p-6 sm:p-8 rounded-3xl bg-white/95 border border-[#e27b88]/25 shadow-sm hover:shadow-xl hover:shadow-[#e27b88]/10 transition-all duration-300 flex flex-col justify-between h-full">
+                <div className="space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-[#fedfe3] text-[#96351f] flex items-center justify-center border border-[#e27b88]/30">
+                    <Lightbulb className="w-6 h-6 text-[#b4432f]" />
+                  </div>
+                  <h3 className="font-[family-name:var(--font-fraunces),serif] text-xl font-bold text-[#1c1917]">
+                    {isEn ? "Active Gamified Learning" : "Học Qua Trải Nghiệm Thực Tế"}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
+                    {isEn
+                      ? "Replacing dry textboards with exciting visual riddles. Players become cultural investigators discovering architectural secrets hidden in plain sight."
+                      : "Thay thế các bảng thông tin khô khan bằng câu đố thị giác sinh động. Người chơi hóa thân thành nhà khảo cứu, tự mình tìm kiếm và giải mã những ẩn tích kiến trúc trên từng góc phố."}
+                  </p>
                 </div>
-                <h3 className="font-[family-name:var(--font-fraunces),serif] text-xl font-bold text-[#1c1917]">
-                  {isEn ? "Active Gamified Learning" : "Học Qua Trải Nghiệm Thực Tế"}
-                </h3>
-                <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
-                  {isEn
-                    ? "Replacing dry textboards with exciting visual riddles. Players become cultural investigators discovering architectural secrets hidden in plain sight."
-                    : "Thay thế các bảng thông tin khô khan bằng câu đố thị giác sinh động. Người chơi hóa thân thành nhà khảo cứu, tự mình tìm kiếm và giải mã những ẩn tích kiến trúc trên từng góc phố."}
-                </p>
+                <div className="mt-6 pt-4 border-t border-[#fbe8eb] text-xs font-semibold text-[#b4432f] flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>{isEn ? "Inspiring the younger generation" : "Đưa văn hóa chạm vào người trẻ"}</span>
+                </div>
               </div>
-              <div className="mt-6 pt-4 border-t border-[#fbe8eb] text-xs font-semibold text-[#b4432f] flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>{isEn ? "Inspiring the younger generation" : "Đưa văn hóa chạm vào người trẻ"}</span>
-              </div>
-            </div>
+            </Reveal>
 
-            <div className="p-6 sm:p-8 rounded-3xl bg-white/95 border border-[#c8ede5]/40 shadow-sm hover:shadow-xl hover:shadow-[#3f6c51]/10 transition-all duration-300 flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#c8ede5] text-[#2f5340] flex items-center justify-center border border-[#7ac0b2]/40">
-                  <Flame className="w-6 h-6 text-[#3f6c51]" />
+            <Reveal delayMs={100} className="h-full">
+              <div className="p-6 sm:p-8 rounded-3xl bg-white/95 border border-[#c8ede5]/40 shadow-sm hover:shadow-xl hover:shadow-[#3f6c51]/10 transition-all duration-300 flex flex-col justify-between h-full">
+                <div className="space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-[#c8ede5] text-[#2f5340] flex items-center justify-center border border-[#7ac0b2]/40">
+                    <Flame className="w-6 h-6 text-[#3f6c51]" />
+                  </div>
+                  <h3 className="font-[family-name:var(--font-fraunces),serif] text-xl font-bold text-[#1c1917]">
+                    {isEn ? "Preserving 36 Guild Memories" : "Tôn Vinh 36 Phố Nghề Cổ"}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
+                    {isEn
+                      ? "Rekindling the craft traditions of Hàng Bạc, Hàng Quạt, Hàng Mã, Hàng Đồng, honoring the ancestral guild founders and living master artisans."
+                      : "Gợi nhớ nguồn cội của từng phường hội Thăng Long — Hàng Bạc kim hoàn, Hàng Quạt quạt the, Hàng Đồng đúc chuông. Tôn vinh các vị tổ nghề và những nghệ nhân gạo cội đang miệt mài gìn giữ ngọn lửa di sản."}
+                  </p>
                 </div>
-                <h3 className="font-[family-name:var(--font-fraunces),serif] text-xl font-bold text-[#1c1917]">
-                  {isEn ? "Preserving 36 Guild Memories" : "Tôn Vinh 36 Phố Nghề Cổ"}
-                </h3>
-                <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
-                  {isEn
-                    ? "Rekindling the craft traditions of Hàng Bạc, Hàng Quạt, Hàng Mã, Hàng Đồng, honoring the ancestral guild founders and living master artisans."
-                    : "Gợi nhớ nguồn cội của từng phường hội Thăng Long — Hàng Bạc kim hoàn, Hàng Quạt quạt the, Hàng Đồng đúc chuông. Tôn vinh các vị tổ nghề và những nghệ nhân gạo cội đang miệt mài gìn giữ ngọn lửa di sản."}
-                </p>
+                <div className="mt-6 pt-4 border-t border-[#ebf7f4] text-xs font-semibold text-[#3f6c51] flex items-center gap-1.5">
+                  <Award className="w-3.5 h-3.5" />
+                  <span>{isEn ? "Honoring craft roots" : "Gìn giữ tinh hoa nghề truyền đời"}</span>
+                </div>
               </div>
-              <div className="mt-6 pt-4 border-t border-[#ebf7f4] text-xs font-semibold text-[#3f6c51] flex items-center gap-1.5">
-                <Award className="w-3.5 h-3.5" />
-                <span>{isEn ? "Honoring craft roots" : "Gìn giữ tinh hoa nghề truyền đời"}</span>
-              </div>
-            </div>
+            </Reveal>
 
-            <div className="p-6 sm:p-8 rounded-3xl bg-white/95 border border-[#c9962b]/30 shadow-sm hover:shadow-xl hover:shadow-[#c9962b]/10 transition-all duration-300 flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#fbf3e3] text-[#c9962b] flex items-center justify-center border border-[#c9962b]/40">
-                  <TrendingUp className="w-6 h-6 text-[#c9962b]" />
+            <Reveal delayMs={200} className="h-full">
+              <div className="p-6 sm:p-8 rounded-3xl bg-white/95 border border-[#c9962b]/30 shadow-sm hover:shadow-xl hover:shadow-[#c9962b]/10 transition-all duration-300 flex flex-col justify-between h-full">
+                <div className="space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-[#fbf3e3] text-[#c9962b] flex items-center justify-center border border-[#c9962b]/40">
+                    <TrendingUp className="w-6 h-6 text-[#c9962b]" />
+                  </div>
+                  <h3 className="font-[family-name:var(--font-fraunces),serif] text-xl font-bold text-[#1c1917]">
+                    {isEn ? "Sustainable Walking Tourism" : "Kinh Tế Di Sản & Du Lịch Bền Vững"}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
+                    {isEn
+                      ? "Encouraging low-carbon foot exploration, distributing travelers evenly across quiet artisan alleys and supporting local workshops with tangible patronage."
+                      : "Khuyến khích lối du lịch đi bộ (walking tour) xanh và lành mạnh. Lan tỏa dòng khách vào sâu trong các con ngõ nghề truyền thống, mang lại sinh kế và giá trị kinh tế trực tiếp cho cộng đồng dân cư bản địa."}
+                  </p>
                 </div>
-                <h3 className="font-[family-name:var(--font-fraunces),serif] text-xl font-bold text-[#1c1917]">
-                  {isEn ? "Sustainable Walking Tourism" : "Kinh Tế Di Sản & Du Lịch Bền Vững"}
-                </h3>
-                <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
-                  {isEn
-                    ? "Encouraging low-carbon foot exploration, distributing travelers evenly across quiet artisan alleys and supporting local workshops with tangible patronage."
-                    : "Khuyến khích lối du lịch đi bộ (walking tour) xanh và lành mạnh. Lan tỏa dòng khách vào sâu trong các con ngõ nghề truyền thống, mang lại sinh kế và giá trị kinh tế trực tiếp cho cộng đồng dân cư bản địa."}
-                </p>
+                <div className="mt-6 pt-4 border-t border-[#f8efe0] text-xs font-semibold text-[#c9962b] flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>{isEn ? "Community benefit" : "Hỗ trợ thiết thực cho cư dân phố cổ"}</span>
+                </div>
               </div>
-              <div className="mt-6 pt-4 border-t border-[#f8efe0] text-xs font-semibold text-[#c9962b] flex items-center gap-1.5">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>{isEn ? "Community benefit" : "Hỗ trợ thiết thực cho cư dân phố cổ"}</span>
-              </div>
-            </div>
+            </Reveal>
           </div>
         </section>
 
@@ -660,92 +669,102 @@ export default function LandingPage3() {
           id="dinh-huong-phat-trien"
           className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto"
         >
-          <div className="relative rounded-3xl bg-white/90 border border-[#e27b88]/30 p-6 sm:p-12 shadow-lg backdrop-blur-sm space-y-10 overflow-hidden">
-            {/* Parallax background decor (speed 0.10) */}
-            <div
-              className="pointer-events-none absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-gradient-to-br from-[#fedfe3]/50 to-[#c8ede5]/40 blur-2xl will-change-transform z-0"
-              style={{ transform: `translate3d(0, ${-roadmapProgress * 0.10 * 100}vh, 0)` }}
-            />
-            <div className="max-w-3xl space-y-2 relative z-10">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fedfe3] text-[#96351f] text-xs font-semibold">
-                <Milestone className="w-3.5 h-3.5 text-[#b4432f]" />
-                <span>{isEn ? "Strategic Vision & Roadmap" : "Định Hướng Chiến Lược & Lộ Trình"}</span>
+          <Reveal delayMs={0}>
+            <div className="relative rounded-3xl bg-white/90 border border-[#e27b88]/30 p-6 sm:p-12 shadow-lg backdrop-blur-sm space-y-10 overflow-hidden">
+              {/* Parallax background decor (speed 0.10) */}
+              <div
+                className="pointer-events-none absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-gradient-to-br from-[#fedfe3]/50 to-[#c8ede5]/40 blur-2xl will-change-transform z-0"
+                style={{ transform: `translate3d(0, ${-roadmapProgress * 0.10 * 100}vh, 0)` }}
+              />
+              <div className="max-w-3xl space-y-2 relative z-10">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fedfe3] text-[#96351f] text-xs font-semibold">
+                  <Milestone className="w-3.5 h-3.5 text-[#b4432f]" />
+                  <span>{isEn ? "Strategic Vision & Roadmap" : "Định Hướng Chiến Lược & Lộ Trình"}</span>
+                </div>
+                <h2 className="font-[family-name:var(--font-fraunces),serif] text-2xl sm:text-4xl font-bold text-[#1c1917] tracking-tight">
+                  {isEn
+                    ? "The Future of Hanoi Heritage Gamification"
+                    : "Tầm Nhìn Phát Triển: Cầu Nối Giữa Công Nghệ & Di Sản Sống"}
+                </h2>
+                <p className="text-sm sm:text-base text-[#57534e]">
+                  {isEn
+                    ? "Kho Báu Phố Cổ is developed as a long-term cultural ecosystem, bridging modern web technology with traditional craft villages."
+                    : "Dự án hướng đến việc xây dựng một hệ sinh thái du lịch văn hóa bền vững, nơi công nghệ Web/PWA hiện đại phụng sự việc bảo tồn và tôn vinh di sản dân tộc."}
+                </p>
               </div>
-              <h2 className="font-[family-name:var(--font-fraunces),serif] text-2xl sm:text-4xl font-bold text-[#1c1917] tracking-tight">
-                {isEn
-                  ? "The Future of Hanoi Heritage Gamification"
-                  : "Tầm Nhìn Phát Triển: Cầu Nối Giữa Công Nghệ & Di Sản Sống"}
-              </h2>
-              <p className="text-sm sm:text-base text-[#57534e]">
-                {isEn
-                  ? "Kho Báu Phố Cổ is developed as a long-term cultural ecosystem, bridging modern web technology with traditional craft villages."
-                  : "Dự án hướng đến việc xây dựng một hệ sinh thái du lịch văn hóa bền vững, nơi công nghệ Web/PWA hiện đại phụng sự việc bảo tồn và tôn vinh di sản dân tộc."}
-              </p>
+
+              {/* Roadmap Phase Timeline */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                <Reveal delayMs={0}>
+                  <div className="p-5 sm:p-6 rounded-2xl bg-[#fffafb] border border-[#f0d8dc] space-y-3 shadow-xs h-full">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2.5 py-1 rounded-full bg-[#fedfe3] text-[#96351f] text-xs font-bold">
+                        Giai Đoạn 1 • Đã Vận Hành
+                      </span>
+                      <span className="text-xs font-bold text-[#b4432f]">Web App / PWA</span>
+                    </div>
+                    <h4 className="font-[family-name:var(--font-fraunces),serif] text-lg font-bold text-[#1c1917]">
+                      {isEn ? "Open 36 Stations & Visual AI Check-in" : "Mở Toàn Diện 36 Trạm & Nhận Diện Ảnh"}
+                    </h4>
+                    <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
+                      Xây dựng hệ thống 36 phố phường mở không giới hạn thứ tự. Ứng dụng nhận diện ảnh thị giác thông minh mở khóa câu đố, hỗ trợ song ngữ Việt - Anh, chạy mượt mà trên trình duyệt không cần cài đặt.
+                    </p>
+                  </div>
+                </Reveal>
+
+                <Reveal delayMs={100}>
+                  <div className="p-5 sm:p-6 rounded-2xl bg-[#fffafb] border border-[#c8ede5]/60 space-y-3 shadow-xs h-full">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2.5 py-1 rounded-full bg-[#c8ede5] text-[#2f5340] text-xs font-bold">
+                        Giai Đoạn 2 • Đang Triển Khai
+                      </span>
+                      <span className="text-xs font-bold text-[#3f6c51]">AR & Làng Nghề</span>
+                    </div>
+                    <h4 className="font-[family-name:var(--font-fraunces),serif] text-lg font-bold text-[#1c1917]">
+                      {isEn ? "AR Chests & Partner Workshop Vouchers" : "Hệ Thống Rương AR & Voucher Workshop Thật"}
+                    </h4>
+                    <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
+                      Tích hợp rương báu AR tương tác 3D. Kết nối với các nghệ nhân và xưởng thủ công đối tác để trao voucher trải nghiệm thực tế: tự tay vót nan quạt lụa, học chạm bạc, nắn đèn lồng tại chỗ.
+                    </p>
+                  </div>
+                </Reveal>
+
+                <Reveal delayMs={200}>
+                  <div className="p-5 sm:p-6 rounded-2xl bg-[#fffafb] border border-[#fbf3e3] space-y-3 shadow-xs h-full">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2.5 py-1 rounded-full bg-[#fbf3e3] text-[#c9962b] text-xs font-bold">
+                        Giai Đoạn 3 • Mở Rộng Tuyến Tour
+                      </span>
+                      <span className="text-xs font-bold text-[#c9962b]">Chuyên Đề</span>
+                    </div>
+                    <h4 className="font-[family-name:var(--font-fraunces),serif] text-lg font-bold text-[#1c1917]">
+                      {isEn ? "Themed Night Tours & Culinary Paths" : "Tour Chuyên Đề: Đêm Thăng Long & Ẩm Thực"}
+                    </h4>
+                    <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
+                      Phát triển các tuyến tour văn hóa chuyên sâu: ‘Huyền Tích Đêm Phố Cổ’, ‘Hành Trình Hương Vị Mùa Thu’ (cốm, chả cá, ô mai), và tour dấu chân kiến trúc thuộc địa kết hợp di tích đình chùa cổ.
+                    </p>
+                  </div>
+                </Reveal>
+
+                <Reveal delayMs={300}>
+                  <div className="p-5 sm:p-6 rounded-2xl bg-[#fffafb] border border-[#f0d8dc] space-y-3 shadow-xs h-full">
+                    <div className="flex items-center justify-between">
+                      <span className="px-2.5 py-1 rounded-full bg-[#fedfe3] text-[#96351f] text-xs font-bold">
+                        Giai Đoạn 4 • Quốc Tế Hóa
+                      </span>
+                      <span className="text-xs font-bold text-[#b4432f]">Giáo Dục & Toàn Cầu</span>
+                    </div>
+                    <h4 className="font-[family-name:var(--font-fraunces),serif] text-lg font-bold text-[#1c1917]">
+                      {isEn ? "School Partnerships & International Reach" : "Liên Kết Giáo Dục & Du Lịch Quốc Tế"}
+                    </h4>
+                    <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
+                      Đưa tour game vào chương trình ngoại khóa ngoại khóa trải nghiệm lịch sử cho học sinh, sinh viên; hợp tác với Sở Du lịch Hà Nội và các công ty lữ hành quốc tế để quảng bá văn hóa Việt Nam ra thế giới.
+                    </p>
+                  </div>
+                </Reveal>
+              </div>
             </div>
-
-            {/* Roadmap Phase Timeline */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
-              <div className="p-5 sm:p-6 rounded-2xl bg-[#fffafb] border border-[#f0d8dc] space-y-3 shadow-xs">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-1 rounded-full bg-[#fedfe3] text-[#96351f] text-xs font-bold">
-                    Giai Đoạn 1 • Đã Vận Hành
-                  </span>
-                  <span className="text-xs font-bold text-[#b4432f]">Web App / PWA</span>
-                </div>
-                <h4 className="font-[family-name:var(--font-fraunces),serif] text-lg font-bold text-[#1c1917]">
-                  {isEn ? "Open 36 Stations & Visual AI Check-in" : "Mở Toàn Diện 36 Trạm & Nhận Diện Ảnh"}
-                </h4>
-                <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
-                  Xây dựng hệ thống 36 phố phường mở không giới hạn thứ tự. Ứng dụng nhận diện ảnh thị giác thông minh mở khóa câu đố, hỗ trợ song ngữ Việt - Anh, chạy mượt mà trên trình duyệt không cần cài đặt.
-                </p>
-              </div>
-
-              <div className="p-5 sm:p-6 rounded-2xl bg-[#fffafb] border border-[#c8ede5]/60 space-y-3 shadow-xs">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-1 rounded-full bg-[#c8ede5] text-[#2f5340] text-xs font-bold">
-                    Giai Đoạn 2 • Đang Triển Khai
-                  </span>
-                  <span className="text-xs font-bold text-[#3f6c51]">AR & Làng Nghề</span>
-                </div>
-                <h4 className="font-[family-name:var(--font-fraunces),serif] text-lg font-bold text-[#1c1917]">
-                  {isEn ? "AR Chests & Partner Workshop Vouchers" : "Hệ Thống Rương AR & Voucher Workshop Thật"}
-                </h4>
-                <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
-                  Tích hợp rương báu AR tương tác 3D. Kết nối với các nghệ nhân và xưởng thủ công đối tác để trao voucher trải nghiệm thực tế: tự tay vót nan quạt lụa, học chạm bạc, nắn đèn lồng tại chỗ.
-                </p>
-              </div>
-
-              <div className="p-5 sm:p-6 rounded-2xl bg-[#fffafb] border border-[#fbf3e3] space-y-3 shadow-xs">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-1 rounded-full bg-[#fbf3e3] text-[#c9962b] text-xs font-bold">
-                    Giai Đoạn 3 • Mở Rộng Tuyến Tour
-                  </span>
-                  <span className="text-xs font-bold text-[#c9962b]">Chuyên Đề</span>
-                </div>
-                <h4 className="font-[family-name:var(--font-fraunces),serif] text-lg font-bold text-[#1c1917]">
-                  {isEn ? "Themed Night Tours & Culinary Paths" : "Tour Chuyên Đề: Đêm Thăng Long & Ẩm Thực"}
-                </h4>
-                <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
-                  Phát triển các tuyến tour văn hóa chuyên sâu: ‘Huyền Tích Đêm Phố Cổ’, ‘Hành Trình Hương Vị Mùa Thu’ (cốm, chả cá, ô mai), và tour dấu chân kiến trúc thuộc địa kết hợp di tích đình chùa cổ.
-                </p>
-              </div>
-
-              <div className="p-5 sm:p-6 rounded-2xl bg-[#fffafb] border border-[#f0d8dc] space-y-3 shadow-xs">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-1 rounded-full bg-[#fedfe3] text-[#96351f] text-xs font-bold">
-                    Giai Đoạn 4 • Quốc Tế Hóa
-                  </span>
-                  <span className="text-xs font-bold text-[#b4432f]">Giáo Dục & Toàn Cầu</span>
-                </div>
-                <h4 className="font-[family-name:var(--font-fraunces),serif] text-lg font-bold text-[#1c1917]">
-                  {isEn ? "School Partnerships & International Reach" : "Liên Kết Giáo Dục & Du Lịch Quốc Tế"}
-                </h4>
-                <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
-                  Đưa tour game vào chương trình ngoại khóa ngoại khóa trải nghiệm lịch sử cho học sinh, sinh viên; hợp tác với Sở Du lịch Hà Nội và các công ty lữ hành quốc tế để quảng bá văn hóa Việt Nam ra thế giới.
-                </p>
-              </div>
-            </div>
-          </div>
+          </Reveal>
         </section>
 
         {/* ========================================================================= */}
@@ -758,89 +777,92 @@ export default function LandingPage3() {
             style={{ transform: `translate3d(-50%, ${-relicsProgress * 0.08 * 100}vh, 0)` }}
           />
 
-          <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fedfe3] border border-[#e27b88]/30 text-[#96351f] text-xs font-semibold">
-              <Sparkles className="w-3.5 h-3.5 text-[#b4432f]" />
-              <span>{isEn ? "Cultural Artefacts of the 36 Guilds" : "Báu Vật Văn Hóa 36 Phố Nghề"}</span>
+          <Reveal delayMs={0}>
+            <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fedfe3] border border-[#e27b88]/30 text-[#96351f] text-xs font-semibold">
+                <Sparkles className="w-3.5 h-3.5 text-[#b4432f]" />
+                <span>{isEn ? "Cultural Artefacts of the 36 Guilds" : "Báu Vật Văn Hóa 36 Phố Nghề"}</span>
+              </div>
+
+              <h2 className="font-[family-name:var(--font-fraunces),serif] text-3xl sm:text-4xl md:text-[2.6rem] font-bold text-[#1c1917] tracking-tight">
+                {isEn ? "Treasures of Master Craftsmen" : "Chiêm Ngưỡng Tinh Hoa Đôi Tay Nghệ Nhân"}
+              </h2>
+
+              <p className="text-sm sm:text-base text-[#57534e] leading-relaxed">
+                {isEn
+                  ? "Every artifact holds a cultural soul. Click any treasure to discover its street origins and in-game riddle hint."
+                  : "Mỗi báu vật đọng lại nét tài hoa kinh kỳ. Bấm vào từng sản vật để xem tích cổ phố nghề và manh mối câu đố mở trạm."}
+              </p>
+
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
+                {[
+                  { id: "all", labelVi: "Tất Cả Báu Vật", labelEn: "All Artefacts" },
+                  { id: "to-lua", labelVi: "Tơ Lụa & Thủ Công", labelEn: "Silk & Handcraft" },
+                  { id: "kim-hoan", labelVi: "Kim Hoàn & Đồng", labelEn: "Silver & Bronze" },
+                  { id: "am-thuc", labelVi: "Mùa Thu & Ẩm Thực", labelEn: "Autumn Flavors" },
+                  { id: "huyen-tich", labelVi: "Huyền Thoại Hồ Gươm", labelEn: "Lake Myths" },
+                ].map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setActiveCategory(cat.id)}
+                    className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                      activeCategory === cat.id
+                        ? "bg-[#b4432f] text-white shadow-sm shadow-[#b4432f]/20 scale-105"
+                        : "bg-white/90 text-[#57534e] border border-[#f0d8dc] hover:border-[#e27b88] hover:bg-[#fedfe3]/40"
+                    }`}
+                  >
+                    {isEn ? cat.labelEn : cat.labelVi}
+                  </button>
+                ))}
+              </div>
             </div>
-
-            <h2 className="font-[family-name:var(--font-fraunces),serif] text-3xl sm:text-4xl md:text-[2.6rem] font-bold text-[#1c1917] tracking-tight">
-              {isEn ? "Treasures of Master Craftsmen" : "Chiêm Ngưỡng Tinh Hoa Đôi Tay Nghệ Nhân"}
-            </h2>
-
-            <p className="text-sm sm:text-base text-[#57534e] leading-relaxed">
-              {isEn
-                ? "Every artifact holds a cultural soul. Click any treasure to discover its street origins and in-game riddle hint."
-                : "Mỗi báu vật đọng lại nét tài hoa kinh kỳ. Bấm vào từng sản vật để xem tích cổ phố nghề và manh mối câu đố mở trạm."}
-            </p>
-
-            <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
-              {[
-                { id: "all", labelVi: "Tất Cả Báu Vật", labelEn: "All Artefacts" },
-                { id: "to-lua", labelVi: "Tơ Lụa & Thủ Công", labelEn: "Silk & Handcraft" },
-                { id: "kim-hoan", labelVi: "Kim Hoàn & Đồng", labelEn: "Silver & Bronze" },
-                { id: "am-thuc", labelVi: "Mùa Thu & Ẩm Thực", labelEn: "Autumn Flavors" },
-                { id: "huyen-tich", labelVi: "Huyền Thoại Hồ Gươm", labelEn: "Lake Myths" },
-              ].map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
-                  className={`px-4 py-2 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                    activeCategory === cat.id
-                      ? "bg-[#b4432f] text-white shadow-sm shadow-[#b4432f]/20 scale-105"
-                      : "bg-white/90 text-[#57534e] border border-[#f0d8dc] hover:border-[#e27b88] hover:bg-[#fedfe3]/40"
-                  }`}
-                >
-                  {isEn ? cat.labelEn : cat.labelVi}
-                </button>
-              ))}
-            </div>
-          </div>
+          </Reveal>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {filteredRelics.map((relic) => (
-              <div
-                key={relic.id}
-                onClick={() => setSelectedRelic(relic)}
-                className="group relative rounded-3xl bg-white border border-[#f0d8dc] hover:border-[#b4432f]/60 shadow-sm hover:shadow-xl hover:shadow-[#b4432f]/10 transition-all duration-300 overflow-hidden flex flex-col cursor-pointer"
-              >
-                <div className="absolute top-4 left-4 z-20 px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-[#96351f] border border-[#e27b88]/30 text-[11px] font-semibold shadow-xs">
-                  {isEn ? relic.streetEn : relic.streetVi}
-                </div>
-
-                <div className="absolute top-4 right-4 z-20 px-2.5 py-1 rounded-full bg-[#fedfe3]/95 backdrop-blur-md text-[#b4432f] border border-[#e27b88]/30 text-[10px] font-bold">
-                  {isEn ? relic.tagEn : relic.tagVi}
-                </div>
-
-                <div className="relative aspect-square w-full overflow-hidden bg-[#fdf2f4] p-3">
-                  <div className="w-full h-full rounded-2xl overflow-hidden relative shadow-inner">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={relic.image}
-                      alt={isEn ? relic.titleEn : relic.titleVi}
-                      className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-500 ease-out"
-                    />
-                  </div>
-                </div>
-
-                <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
-                  <div>
-                    <h3 className="font-[family-name:var(--font-fraunces),serif] text-xl font-bold text-[#1c1917] group-hover:text-[#b4432f] transition-colors leading-snug">
-                      {isEn ? relic.titleEn : relic.titleVi}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-[#57534e] line-clamp-2 mt-1 leading-relaxed">
-                      {isEn ? relic.shortDescEn : relic.shortDescVi}
-                    </p>
+            {filteredRelics.map((relic, index) => (
+              <Reveal key={relic.id} delayMs={index * 80}>
+                <div
+                  onClick={() => setSelectedRelic(relic)}
+                  className="group relative rounded-3xl bg-white border border-[#f0d8dc] hover:border-[#b4432f]/60 shadow-sm hover:shadow-xl hover:shadow-[#b4432f]/10 transition-all duration-300 overflow-hidden flex flex-col cursor-pointer h-full"
+                >
+                  <div className="absolute top-4 left-4 z-20 px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-[#96351f] border border-[#e27b88]/30 text-[11px] font-semibold shadow-xs">
+                    {isEn ? relic.streetEn : relic.streetVi}
                   </div>
 
-                  <div className="pt-2 border-t border-[#fbe8eb] flex items-center justify-between text-xs font-semibold text-[#b4432f]">
-                    <span className="flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                      {isEn ? "View cultural story" : "Xem tích cổ & bí ẩn trạm"}
-                    </span>
-                    <ChevronRight className="w-4 h-4 text-[#b4432f] group-hover:translate-x-1 transition-transform" />
+                  <div className="absolute top-4 right-4 z-20 px-2.5 py-1 rounded-full bg-[#fedfe3]/95 backdrop-blur-md text-[#b4432f] border border-[#e27b88]/30 text-[10px] font-bold">
+                    {isEn ? relic.tagEn : relic.tagVi}
+                  </div>
+
+                  <div className="relative aspect-square w-full overflow-hidden bg-[#fdf2f4] p-3">
+                    <div className="w-full h-full rounded-2xl overflow-hidden relative shadow-inner">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={relic.image}
+                        alt={isEn ? relic.titleEn : relic.titleVi}
+                        className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-500 ease-out"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
+                    <div>
+                      <h3 className="font-[family-name:var(--font-fraunces),serif] text-xl font-bold text-[#1c1917] group-hover:text-[#b4432f] transition-colors leading-snug">
+                        {isEn ? relic.titleEn : relic.titleVi}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-[#57534e] line-clamp-2 mt-1 leading-relaxed">
+                        {isEn ? relic.shortDescEn : relic.shortDescVi}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-[#fbe8eb] flex items-center justify-between text-xs font-semibold text-[#b4432f]">
+                      <span className="flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                        {isEn ? "View cultural story" : "Xem tích cổ & bí ẩn trạm"}
+                      </span>
+                      <ChevronRight className="w-4 h-4 text-[#b4432f] group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </div>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </section>
@@ -849,77 +871,85 @@ export default function LandingPage3() {
         {/* 5. LỐI CHƠI DU KHẢO (CORE GAMEPLAY RITUAL)                               */}
         {/* ========================================================================= */}
         <section id="quy-trinh-choi" className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fedfe3] border border-[#e27b88]/30 text-[#b4432f] text-xs font-semibold">
-              <Compass className="w-3.5 h-3.5" />
-              <span>{isEn ? "Gameplay Mechanics" : "3 Bước Du Khảo Cốt Lõi"}</span>
+          <Reveal delayMs={0}>
+            <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fedfe3] border border-[#e27b88]/30 text-[#b4432f] text-xs font-semibold">
+                <Compass className="w-3.5 h-3.5" />
+                <span>{isEn ? "Gameplay Mechanics" : "3 Bước Du Khảo Cốt Lõi"}</span>
+              </div>
+
+              <h2 className="font-[family-name:var(--font-fraunces),serif] text-3xl sm:text-4xl md:text-[2.5rem] font-bold text-[#1c1917]">
+                {isEn ? "How the Cultural Quest Works" : "Hành Trình Chơi Tự Nhiên & Dễ Dàng"}
+              </h2>
+
+              <p className="text-sm sm:text-base text-[#57534e]">
+                {isEn
+                  ? "No complicated downloads. Open the browser, step onto the streets of Hanoi, and immerse yourself in history."
+                  : "Không rào cản ứng dụng. Mở trình duyệt, bước xuống phố và tận hưởng từng phút giây khám phá."}
+              </p>
             </div>
-
-            <h2 className="font-[family-name:var(--font-fraunces),serif] text-3xl sm:text-4xl md:text-[2.5rem] font-bold text-[#1c1917]">
-              {isEn ? "How the Cultural Quest Works" : "Hành Trình Chơi Tự Nhiên & Dễ Dàng"}
-            </h2>
-
-            <p className="text-sm sm:text-base text-[#57534e]">
-              {isEn
-                ? "No complicated downloads. Open the browser, step onto the streets of Hanoi, and immerse yourself in history."
-                : "Không rào cản ứng dụng. Mở trình duyệt, bước xuống phố và tận hưởng từng phút giây khám phá."}
-            </p>
-          </div>
+          </Reveal>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#f0d8dc] shadow-sm hover:shadow-lg transition-shadow flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#fedfe3] text-[#96351f] font-[family-name:var(--font-fraunces),serif] font-bold text-lg flex items-center justify-center border border-[#e27b88]/40">
-                  01
+            <Reveal delayMs={0} className="h-full">
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#f0d8dc] shadow-sm hover:shadow-lg transition-shadow flex flex-col justify-between h-full">
+                <div className="space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-[#fedfe3] text-[#96351f] font-[family-name:var(--font-fraunces),serif] font-bold text-lg flex items-center justify-center border border-[#e27b88]/40">
+                    01
+                  </div>
+                  <h3 className="font-[family-name:var(--font-fraunces),serif] text-xl font-bold text-[#1c1917]">
+                    {isEn ? "Explore Any Station" : "Dạo Bước Tầm Dấu"}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
+                    Tự do chọn trạm khởi đầu giữa 36 phố. Dạo quanh các con ngõ tìm cổng đình làng nghề, bia đá hoặc biển tên đường cổ truyền.
+                  </p>
                 </div>
-                <h3 className="font-[family-name:var(--font-fraunces),serif] text-xl font-bold text-[#1c1917]">
-                  {isEn ? "Explore Any Station" : "Dạo Bước Tầm Dấu"}
-                </h3>
-                <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
-                  Tự do chọn trạm khởi đầu giữa 36 phố. Dạo quanh các con ngõ tìm cổng đình làng nghề, bia đá hoặc biển tên đường cổ truyền.
-                </p>
+                <div className="mt-6 pt-4 border-t border-[#fbe8eb] flex items-center gap-2 text-xs font-semibold text-[#b4432f]">
+                  <Search className="w-4 h-4" />
+                  <span>{isEn ? "No sequence required" : "Không giới hạn thứ tự"}</span>
+                </div>
               </div>
-              <div className="mt-6 pt-4 border-t border-[#fbe8eb] flex items-center gap-2 text-xs font-semibold text-[#b4432f]">
-                <Search className="w-4 h-4" />
-                <span>{isEn ? "No sequence required" : "Không giới hạn thứ tự"}</span>
-              </div>
-            </div>
+            </Reveal>
 
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#c8ede5]/50 shadow-sm hover:shadow-lg transition-shadow flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#c8ede5] text-[#2f5340] font-[family-name:var(--font-fraunces),serif] font-bold text-lg flex items-center justify-center border border-[#7ac0b2]/40">
-                  02
+            <Reveal delayMs={100} className="h-full">
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#c8ede5]/50 shadow-sm hover:shadow-lg transition-shadow flex flex-col justify-between h-full">
+                <div className="space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-[#c8ede5] text-[#2f5340] font-[family-name:var(--font-fraunces),serif] font-bold text-lg flex items-center justify-center border border-[#7ac0b2]/40">
+                    02
+                  </div>
+                  <h3 className="font-[family-name:var(--font-fraunces),serif] text-xl font-bold text-[#1c1917]">
+                    {isEn ? "Photo AI Verification" : "Chụp Ảnh Mở Khóa"}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
+                    Chụp ảnh tòa nhà đặc trưng hoặc biển phố để hệ thống xác thực vị trí và mở ra câu đố thử thách văn hóa của trạm đó.
+                  </p>
                 </div>
-                <h3 className="font-[family-name:var(--font-fraunces),serif] text-xl font-bold text-[#1c1917]">
-                  {isEn ? "Photo AI Verification" : "Chụp Ảnh Mở Khóa"}
-                </h3>
-                <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
-                  Chụp ảnh tòa nhà đặc trưng hoặc biển phố để hệ thống xác thực vị trí và mở ra câu đố thử thách văn hóa của trạm đó.
-                </p>
+                <div className="mt-6 pt-4 border-t border-[#ebf7f4] flex items-center gap-2 text-xs font-semibold text-[#3f6c51]">
+                  <Camera className="w-4 h-4" />
+                  <span>{isEn ? "Smart visual verification" : "Nhận diện thị giác thông minh"}</span>
+                </div>
               </div>
-              <div className="mt-6 pt-4 border-t border-[#ebf7f4] flex items-center gap-2 text-xs font-semibold text-[#3f6c51]">
-                <Camera className="w-4 h-4" />
-                <span>{isEn ? "Smart visual verification" : "Nhận diện thị giác thông minh"}</span>
-              </div>
-            </div>
+            </Reveal>
 
-            <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#c9962b]/30 shadow-sm hover:shadow-lg transition-shadow flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#fbf3e3] text-[#c9962b] font-[family-name:var(--font-fraunces),serif] font-bold text-lg flex items-center justify-center border border-[#c9962b]/40">
-                  03
+            <Reveal delayMs={200} className="h-full">
+              <div className="p-6 sm:p-8 rounded-3xl bg-white border border-[#c9962b]/30 shadow-sm hover:shadow-lg transition-shadow flex flex-col justify-between h-full">
+                <div className="space-y-4">
+                  <div className="w-12 h-12 rounded-2xl bg-[#fbf3e3] text-[#c9962b] font-[family-name:var(--font-fraunces),serif] font-bold text-lg flex items-center justify-center border border-[#c9962b]/40">
+                    03
+                  </div>
+                  <h3 className="font-[family-name:var(--font-fraunces),serif] text-xl font-bold text-[#1c1917]">
+                    {isEn ? "Open AR Chests" : "Mở Rương Nhận Thưởng"}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
+                    Giải đố thu thập điểm và chìa khóa báu. Mở rương AR 3D sinh động để nhận voucher trải nghiệm thực tế tại các xưởng nghề đối tác.
+                  </p>
                 </div>
-                <h3 className="font-[family-name:var(--font-fraunces),serif] text-xl font-bold text-[#1c1917]">
-                  {isEn ? "Open AR Chests" : "Mở Rương Nhận Thưởng"}
-                </h3>
-                <p className="text-xs sm:text-sm text-[#57534e] leading-relaxed">
-                  Giải đố thu thập điểm và chìa khóa báu. Mở rương AR 3D sinh động để nhận voucher trải nghiệm thực tế tại các xưởng nghề đối tác.
-                </p>
+                <div className="mt-6 pt-4 border-t border-[#f8efe0] flex items-center gap-2 text-xs font-semibold text-[#c9962b]">
+                  <Gift className="w-4 h-4" />
+                  <span>{isEn ? "Real partner rewards" : "Quà tặng xưởng nghề thật"}</span>
+                </div>
               </div>
-              <div className="mt-6 pt-4 border-t border-[#f8efe0] flex items-center gap-2 text-xs font-semibold text-[#c9962b]">
-                <Gift className="w-4 h-4" />
-                <span>{isEn ? "Real partner rewards" : "Quà tặng xưởng nghề thật"}</span>
-              </div>
-            </div>
+            </Reveal>
           </div>
         </section>
 
@@ -927,35 +957,37 @@ export default function LandingPage3() {
         {/* 6. FINAL CALL TO ACTION                                                   */}
         {/* ========================================================================= */}
         <section id="cta-cuoi" className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
-          <div className="rounded-3xl bg-gradient-to-r from-[#96351f] via-[#b4432f] to-[#96351f] text-white p-8 sm:p-14 shadow-2xl space-y-6 relative overflow-hidden">
-            {/* Parallax ambient glow (speed 0.12) */}
-            <div
-              className="pointer-events-none absolute -left-16 -top-16 w-80 h-80 rounded-full bg-white/10 blur-3xl will-change-transform z-0"
-              style={{ transform: `translate3d(0, ${-ctaProgress * 0.12 * 100}vh, 0)` }}
-            />
-            <div className="relative z-10 space-y-3">
-              <h2 className="font-[family-name:var(--font-fraunces),serif] text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#fdf2f4]">
-                {isEn ? "Ready to Walk the 36 Streets?" : "Sẵn Sàng Du Khảo Thăng Long?"}
-              </h2>
-              <p className="text-sm sm:text-base text-[#fdeeed] max-w-xl mx-auto leading-relaxed">
-                {isEn
-                  ? "Every cobblestone holds a story, every shop sign whispers a legend. Start your quest right now from your browser."
-                  : "Mỗi con phố một huyền tích, mỗi mái ngói một sắc màu nghìn năm. Khởi động chuyến du khảo ngay hôm nay."}
-              </p>
-            </div>
+          <Reveal delayMs={0}>
+            <div className="rounded-3xl bg-gradient-to-r from-[#96351f] via-[#b4432f] to-[#96351f] text-white p-8 sm:p-14 shadow-2xl space-y-6 relative overflow-hidden">
+              {/* Parallax ambient glow (speed 0.12) */}
+              <div
+                className="pointer-events-none absolute -left-16 -top-16 w-80 h-80 rounded-full bg-white/10 blur-3xl will-change-transform z-0"
+                style={{ transform: `translate3d(0, ${-ctaProgress * 0.12 * 100}vh, 0)` }}
+              />
+              <div className="relative z-10 space-y-3">
+                <h2 className="font-[family-name:var(--font-fraunces),serif] text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#fdf2f4]">
+                  {isEn ? "Ready to Walk the 36 Streets?" : "Sẵn Sàng Du Khảo Thăng Long?"}
+                </h2>
+                <p className="text-sm sm:text-base text-[#fdeeed] max-w-xl mx-auto leading-relaxed">
+                  {isEn
+                    ? "Every cobblestone holds a story, every shop sign whispers a legend. Start your quest right now from your browser."
+                    : "Mỗi con phố một huyền tích, mỗi mái ngói một sắc màu nghìn năm. Khởi động chuyến du khảo ngay hôm nay."}
+                </p>
+              </div>
 
-            <div className="relative z-10 pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button
-                onClick={handleStartGame}
-                disabled={busy}
-                className="w-full sm:w-auto px-10 py-4 rounded-full bg-[#dfaf63] text-[#292524] font-[family-name:var(--font-fraunces),serif] font-bold text-lg shadow-xl hover:bg-[#ebd095] hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
-              >
-                <Compass className="w-5 h-5 text-[#292524]" />
-                <span>{isEn ? "Begin Journey" : "Bắt Đầu Chơi Ngay"}</span>
-                <ArrowRight className="w-4 h-4 text-[#292524]" />
-              </button>
+              <div className="relative z-10 pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button
+                  onClick={handleStartGame}
+                  disabled={busy}
+                  className="w-full sm:w-auto px-10 py-4 rounded-full bg-[#dfaf63] text-[#292524] font-[family-name:var(--font-fraunces),serif] font-bold text-lg shadow-xl hover:bg-[#ebd095] hover:scale-105 active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <Compass className="w-5 h-5 text-[#292524]" />
+                  <span>{isEn ? "Begin Journey" : "Bắt Đầu Chơi Ngay"}</span>
+                  <ArrowRight className="w-4 h-4 text-[#292524]" />
+                </button>
+              </div>
             </div>
-          </div>
+          </Reveal>
         </section>
       </div>
 
