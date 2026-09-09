@@ -26,7 +26,12 @@ import {
 } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { ensureSession } from "@/lib/client";
-import { createChapter, initScrollEngine, scrollToChapter } from "@/lib/motion/timeline";
+import {
+  createChapter,
+  initScrollEngine,
+  scrollToChapter,
+  prefersReducedMotion,
+} from "@/lib/motion/timeline";
 import { CloudBackground } from "./components/CloudBackground";
 import { Reveal } from "./components/Reveal";
 
@@ -257,10 +262,42 @@ export default function LandingPage3() {
   };
 
   const heroRef = useRef<HTMLElement | null>(null);
-  const [heroProgress, setHeroProgress] = useState(0);
-  const [roadmapProgress, setRoadmapProgress] = useState(0);
-  const [relicsProgress, setRelicsProgress] = useState(0);
-  const [ctaProgress, setCtaProgress] = useState(0);
+
+  // Mouse tilt / parallax nudge on hero (runs only when reduced-motion is off)
+  useEffect(() => {
+    const hero = heroRef.current;
+    if (!hero || prefersReducedMotion()) return;
+
+    let reqId: number;
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+
+    const onMouseMove = (e: MouseEvent) => {
+      const rect = hero.getBoundingClientRect();
+      if (e.clientY > rect.bottom) return;
+      // Normalize to -1 .. 1
+      targetX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      targetY = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+    };
+
+    const update = () => {
+      currentX += (targetX - currentX) * 0.08;
+      currentY += (targetY - currentY) * 0.08;
+      hero.style.setProperty("--mx", currentX.toFixed(4));
+      hero.style.setProperty("--my", currentY.toFixed(4));
+      reqId = requestAnimationFrame(update);
+    };
+
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    reqId = requestAnimationFrame(update);
+
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      cancelAnimationFrame(reqId);
+    };
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -277,7 +314,10 @@ export default function LandingPage3() {
       kills.push(
         createChapter(heroRef.current, {
           pin: false,
-          onProgress: setHeroProgress,
+          start: "top top",
+          onProgress: (p) => {
+            heroRef.current?.style.setProperty("--hero-p", p.toFixed(4));
+          },
         }),
       );
     }
@@ -286,7 +326,9 @@ export default function LandingPage3() {
       kills.push(
         createChapter(roadmapEl, {
           pin: false,
-          onProgress: setRoadmapProgress,
+          onProgress: (p) => {
+            roadmapEl.style.setProperty("--rm-p", p.toFixed(4));
+          },
         }),
       );
     }
@@ -295,7 +337,9 @@ export default function LandingPage3() {
       kills.push(
         createChapter(relicsEl, {
           pin: false,
-          onProgress: setRelicsProgress,
+          onProgress: (p) => {
+            relicsEl.style.setProperty("--rel-p", p.toFixed(4));
+          },
         }),
       );
     }
@@ -304,7 +348,9 @@ export default function LandingPage3() {
       kills.push(
         createChapter(ctaEl, {
           pin: false,
-          onProgress: setCtaProgress,
+          onProgress: (p) => {
+            ctaEl.style.setProperty("--cta-p", p.toFixed(4));
+          },
         }),
       );
     }
@@ -346,16 +392,19 @@ export default function LandingPage3() {
       >
         {/* Full-bleed Boomerang Video / Looping Motion Background */}
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-          {/* Parallax outer wrapper for hero image (speed 0.06) */}
+          {/* Parallax outer wrapper for hero image (speed 0.14) */}
           <div
-            className="w-full h-full will-change-transform"
-            style={{ transform: `translate3d(0, ${-heroProgress * 0.06 * 100}vh, 0)` }}
+            className="parallax-layer w-full h-full will-change-transform"
+            style={{
+              transform:
+                "translate3d(calc(var(--mx, 0) * -6px), calc(var(--my, 0) * -4px - var(--hero-p, 0) * 14vh), 0)",
+            }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/landing-3/pho-co-bg.jpg"
               alt="Thăng Long Phố Cổ Nghìn Năm"
-              className="w-full h-full object-cover object-center animate-boomerang transform-gpu scale-115"
+              className="w-full h-full object-cover object-center animate-boomerang transform-gpu scale-[1.30]"
             />
           </div>
 
@@ -364,29 +413,38 @@ export default function LandingPage3() {
           <div className="absolute inset-0 bg-gradient-to-tr from-[#c8ede5]/20 via-transparent to-[#fedfe3]/35 mix-blend-color" />
           <div className="absolute inset-0 bg-[radial-gradient(#c9962b_1px,transparent_1px)] [background-size:26px_26px] opacity-10" />
 
-          {/* 3 Decor icons under content (z-0), pointer-events-none, opacity 0.12-0.2 */}
-          {/* decor-horse.png: speed 0.35, góc dưới-trái */}
+          {/* 3 Decor icons under content (z-0), pointer-events-none */}
+          {/* decor-horse.png: speed 0.44, góc dưới-trái */}
           <div
-            className="absolute -bottom-6 -left-6 sm:bottom-4 sm:left-4 w-36 sm:w-52 md:w-64 opacity-[0.16] pointer-events-none z-0 will-change-transform"
-            style={{ transform: `translate3d(0, ${-heroProgress * 0.35 * 100}vh, 0)` }}
+            className="parallax-layer absolute -bottom-8 -left-8 sm:-bottom-4 sm:left-2 w-48 sm:w-64 md:w-80 lg:w-[350px] opacity-[0.38] md:opacity-[0.44] pointer-events-none z-0 will-change-transform drop-shadow-[0_12px_28px_rgba(180,67,47,0.16)] transition-opacity"
+            style={{
+              transform:
+                "translate3d(calc(var(--mx, 0) * -14px - var(--hero-p, 0) * 35px), calc(var(--my, 0) * -10px - var(--hero-p, 0) * 44vh), 0) rotate(calc(var(--hero-p, 0) * -6deg))",
+            }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/landing-3/decor-horse.png" alt="" className="w-full h-auto object-contain" />
           </div>
 
-          {/* decor-fan.png: speed 0.45, góc trên-phải */}
+          {/* decor-fan.png: speed 0.52, góc trên-phải */}
           <div
-            className="absolute top-16 -right-6 sm:top-20 sm:right-6 w-32 sm:w-48 md:w-60 opacity-[0.15] pointer-events-none z-0 will-change-transform"
-            style={{ transform: `translate3d(0, ${-heroProgress * 0.45 * 100}vh, 0)` }}
+            className="parallax-layer absolute top-12 -right-8 sm:top-16 sm:right-4 w-44 sm:w-56 md:w-72 lg:w-[320px] opacity-[0.34] md:opacity-[0.40] pointer-events-none z-0 will-change-transform drop-shadow-[0_10px_24px_rgba(201,150,43,0.16)] transition-opacity"
+            style={{
+              transform:
+                "translate3d(calc(var(--mx, 0) * 16px + var(--hero-p, 0) * 40px), calc(var(--my, 0) * -12px - var(--hero-p, 0) * 52vh), 0) rotate(calc(var(--hero-p, 0) * 10deg))",
+            }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/landing-3/decor-fan.png" alt="" className="w-full h-auto object-contain" />
           </div>
 
-          {/* decor-carp.png: speed 0.55, góc dưới-phải */}
+          {/* decor-carp.png: speed 0.65, góc dưới-phải */}
           <div
-            className="absolute -bottom-8 -right-8 sm:bottom-2 sm:right-4 w-40 sm:w-56 md:w-72 opacity-[0.18] pointer-events-none z-0 will-change-transform"
-            style={{ transform: `translate3d(0, ${-heroProgress * 0.55 * 100}vh, 0)` }}
+            className="parallax-layer absolute -bottom-10 -right-10 sm:-bottom-4 sm:right-2 w-52 sm:w-68 md:w-88 lg:w-[380px] opacity-[0.38] md:opacity-[0.45] pointer-events-none z-0 will-change-transform drop-shadow-[0_12px_30px_rgba(180,67,47,0.18)] transition-opacity"
+            style={{
+              transform:
+                "translate3d(calc(var(--mx, 0) * -22px + var(--hero-p, 0) * 45px), calc(var(--my, 0) * 16px - var(--hero-p, 0) * 65vh), 0) rotate(calc(var(--hero-p, 0) * -8deg))",
+            }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/landing-3/decor-carp.png" alt="" className="w-full h-auto object-contain" />
@@ -408,14 +466,14 @@ export default function LandingPage3() {
 
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
-                  <span className="font-[family-name:var(--font-fraunces),serif] text-lg sm:text-xl font-bold tracking-tight text-[#1c1917] group-hover:text-[#b4432f] transition-colors">
+                  <span className="font-[family-name:var(--font-fraunces),serif] text-base sm:text-xl font-bold tracking-tight text-[#1c1917] group-hover:text-[#b4432f] transition-colors whitespace-nowrap">
                     Kho Báu Phố Cổ
                   </span>
                   <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-medium rounded-full bg-[#fedfe3] text-[#96351f] border border-[#e27b88]/30">
                     Hà Nội 36 Phố
                   </span>
                 </div>
-                <span className="text-[10px] sm:text-[11px] tracking-wider text-[#78716c] uppercase">
+                <span className="hidden sm:inline-block text-[10px] sm:text-[11px] tracking-wider text-[#78716c] uppercase">
                   {isEn ? "Hanoi Heritage Quest" : "Du Khảo Thăng Long"}
                 </span>
               </div>
@@ -476,17 +534,26 @@ export default function LandingPage3() {
         </header>
 
         {/* Hero Center Body */}
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center my-auto space-y-5">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/85 backdrop-blur-md border border-[#e27b88]/35 text-[#96351f] text-xs font-semibold shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-[#b4432f] animate-spin duration-[7000ms]" />
-            <span>
+        <div
+          className="parallax-layer relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center my-auto space-y-5 will-change-transform"
+          style={{
+            transform:
+              "translate3d(calc(var(--mx, 0) * 6px), calc(var(--my, 0) * 6px - var(--hero-p, 0) * 5vh), 0)",
+          }}
+        >
+          <div className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-white/85 backdrop-blur-md border border-[#e27b88]/35 text-[#96351f] text-[11px] sm:text-xs font-semibold shadow-xs max-w-full">
+            <Sparkles className="w-3.5 h-3.5 text-[#b4432f] animate-spin duration-[7000ms] shrink-0" />
+            <span className="sm:hidden">
+              {isEn ? "Cultural Quest • 36 Streets" : "Du Khảo Văn Hóa • 36 Phố Phường"}
+            </span>
+            <span className="hidden sm:inline">
               {isEn
                 ? "Interactive Cultural Walking Tour Game • Hanoi Old Quarter"
                 : "Tour Game Du Khảo Văn Hóa Thực Địa • 36 Phố Phường Hà Nội"}
             </span>
           </div>
 
-          <h1 className="font-[family-name:var(--font-fraunces),serif] text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-[#1c1917] leading-[1.18] drop-shadow-xs">
+          <h1 className="font-[family-name:var(--font-fraunces),serif] text-2xl sm:text-5xl md:text-6xl font-bold tracking-tight text-[#1c1917] leading-[1.2] drop-shadow-xs">
             {isEn ? (
               <>
                 Awaken the Living Heritage
@@ -535,11 +602,11 @@ export default function LandingPage3() {
             <button
               onClick={handleStartGame}
               disabled={busy}
-              className="relative px-8 sm:px-12 py-4 sm:py-4.5 rounded-full bg-gradient-to-r from-[#b4432f] via-[#c44933] to-[#96351f] text-white font-[family-name:var(--font-fraunces),serif] text-lg sm:text-xl font-bold tracking-wide shadow-2xl hover:scale-105 active:scale-98 transition-all flex items-center justify-center gap-3 cursor-pointer border border-white/20"
+              className="relative px-5 sm:px-12 py-3.5 sm:py-4.5 rounded-full bg-gradient-to-r from-[#b4432f] via-[#c44933] to-[#96351f] text-white font-[family-name:var(--font-fraunces),serif] text-sm sm:text-xl font-bold tracking-wide shadow-2xl hover:scale-105 active:scale-98 transition-all flex items-center justify-center gap-2 sm:gap-3 cursor-pointer border border-white/20 max-w-[92vw] mx-auto"
             >
-              <Compass className="w-6 h-6 text-[#f6ecd7] animate-spin duration-[10000ms]" />
-              <span>{isEn ? "PLAY NOW — ENTER QUEST" : "CHƠI NGAY — KHỞI HÀNH DU KHẢO"}</span>
-              <ArrowRight className="w-5 h-5 text-[#f6ecd7] group-hover:translate-x-1 transition-transform" />
+              <Compass className="w-5 h-5 sm:w-6 sm:h-6 text-[#f6ecd7] animate-spin duration-[10000ms] shrink-0" />
+              <span className="truncate sm:overflow-visible">{isEn ? "PLAY NOW — ENTER QUEST" : "CHƠI NGAY — KHỞI HÀNH DU KHẢO"}</span>
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-[#f6ecd7] group-hover:translate-x-1 transition-transform shrink-0" />
             </button>
           </div>
 
@@ -671,10 +738,10 @@ export default function LandingPage3() {
         >
           <Reveal delayMs={0}>
             <div className="relative rounded-3xl bg-white/90 border border-[#e27b88]/30 p-6 sm:p-12 shadow-lg backdrop-blur-sm space-y-10 overflow-hidden">
-              {/* Parallax background decor (speed 0.10) */}
+              {/* Parallax background decor (speed 0.18) */}
               <div
-                className="pointer-events-none absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-gradient-to-br from-[#fedfe3]/50 to-[#c8ede5]/40 blur-2xl will-change-transform z-0"
-                style={{ transform: `translate3d(0, ${-roadmapProgress * 0.10 * 100}vh, 0)` }}
+                className="parallax-layer pointer-events-none absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-gradient-to-br from-[#fedfe3]/60 to-[#c8ede5]/50 blur-2xl will-change-transform z-0"
+                style={{ transform: "translate3d(0, calc(var(--rm-p, 0) * -18vh), 0)" }}
               />
               <div className="max-w-3xl space-y-2 relative z-10">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fedfe3] text-[#96351f] text-xs font-semibold">
@@ -771,10 +838,10 @@ export default function LandingPage3() {
         {/* 4. CULTURAL RELICS SHOWCASE (TINH HOA BÁU VẬT 36 PHỐ PHƯỜNG)              */}
         {/* ========================================================================= */}
         <section id="tinh-hoa" className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
-          {/* Parallax background watermark (speed 0.08) */}
+          {/* Parallax background watermark (speed 0.14) */}
           <div
-            className="pointer-events-none absolute left-1/2 -top-6 -translate-x-1/2 w-full max-w-4xl h-80 bg-[radial-gradient(#e27b88_1px,transparent_1px)] [background-size:28px_28px] opacity-[0.14] will-change-transform z-0"
-            style={{ transform: `translate3d(-50%, ${-relicsProgress * 0.08 * 100}vh, 0)` }}
+            className="parallax-layer pointer-events-none absolute left-1/2 -top-6 -translate-x-1/2 w-full max-w-4xl h-80 bg-[radial-gradient(#e27b88_1px,transparent_1px)] [background-size:28px_28px] opacity-[0.20] will-change-transform z-0"
+            style={{ transform: "translate3d(-50%, calc(var(--rel-p, 0) * -14vh), 0)" }}
           />
 
           <Reveal delayMs={0}>
@@ -959,10 +1026,10 @@ export default function LandingPage3() {
         <section id="cta-cuoi" className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
           <Reveal delayMs={0}>
             <div className="rounded-3xl bg-gradient-to-r from-[#96351f] via-[#b4432f] to-[#96351f] text-white p-8 sm:p-14 shadow-2xl space-y-6 relative overflow-hidden">
-              {/* Parallax ambient glow (speed 0.12) */}
+              {/* Parallax ambient glow (speed 0.18) */}
               <div
-                className="pointer-events-none absolute -left-16 -top-16 w-80 h-80 rounded-full bg-white/10 blur-3xl will-change-transform z-0"
-                style={{ transform: `translate3d(0, ${-ctaProgress * 0.12 * 100}vh, 0)` }}
+                className="parallax-layer pointer-events-none absolute -left-16 -top-16 w-80 h-80 rounded-full bg-white/15 blur-3xl will-change-transform z-0"
+                style={{ transform: "translate3d(0, calc(var(--cta-p, 0) * -18vh), 0)" }}
               />
               <div className="relative z-10 space-y-3">
                 <h2 className="font-[family-name:var(--font-fraunces),serif] text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#fdf2f4]">

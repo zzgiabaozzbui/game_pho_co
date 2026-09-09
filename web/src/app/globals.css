@@ -150,6 +150,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .treasure-hero-in { animation: none; }
   .animate-boomerang { animation: none; }
+  .parallax-layer { transform: none !important; }
   .chest-lid,
   .chest-box,
   .chest-coins {

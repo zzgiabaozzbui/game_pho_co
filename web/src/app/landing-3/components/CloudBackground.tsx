@@ -1,33 +1,63 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { createChapter } from "@/lib/motion/timeline";
 import { MayNhuY } from "./MayNhuY";
 
 export function CloudBackground() {
-  const [p1, setP1] = useState(0);
-  const [p2, setP2] = useState(0);
-  const [p3, setP3] = useState(0);
-  const [p4, setP4] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
     const kills: (() => void)[] = [];
     const s1 = document.getElementById("y-nghia-du-an");
     const s2 = document.getElementById("dinh-huong-phat-trien");
     const s3 = document.getElementById("tinh-hoa");
     const s4 = document.getElementById("quy-trinh-choi");
 
-    if (s1) kills.push(createChapter(s1, { pin: false, onProgress: setP1 }));
-    if (s2) kills.push(createChapter(s2, { pin: false, onProgress: setP2 }));
-    if (s3) kills.push(createChapter(s3, { pin: false, onProgress: setP3 }));
-    if (s4) kills.push(createChapter(s4, { pin: false, onProgress: setP4 }));
+    if (s1) {
+      kills.push(
+        createChapter(s1, {
+          pin: false,
+          onProgress: (p) => el.style.setProperty("--cp1", p.toFixed(4)),
+        }),
+      );
+    }
+    if (s2) {
+      kills.push(
+        createChapter(s2, {
+          pin: false,
+          onProgress: (p) => el.style.setProperty("--cp2", p.toFixed(4)),
+        }),
+      );
+    }
+    if (s3) {
+      kills.push(
+        createChapter(s3, {
+          pin: false,
+          onProgress: (p) => el.style.setProperty("--cp3", p.toFixed(4)),
+        }),
+      );
+    }
+    if (s4) {
+      kills.push(
+        createChapter(s4, {
+          pin: false,
+          onProgress: (p) => el.style.setProperty("--cp4", p.toFixed(4)),
+        }),
+      );
+    }
 
     return () => {
       kills.forEach((k) => k());
     };
   }, []);
+
   return (
     <div
+      ref={containerRef}
       className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
       aria-hidden="true"
     >
@@ -95,44 +125,56 @@ export function CloudBackground() {
         <rect width="100%" height="100%" fill="url(#may-nhu-y-pattern)" />
       </svg>
 
-      {/* 2. CÁC CỤM MÂY NHƯ Ý NÉT ĐƠN SẮC NỔI BẬT LƠ LỬNG Ở 2 BÊN MÉP NỀN */}
-      {/* Cụm mây bên trái trên - speed 0.10, bám y-nghia-du-an */}
+      {/* 2. CÁC CỤM MÂY NHƯ Ý NỔI BẬT LƠ LỬNG VỚI MULTIPLANE PARALLAX */}
+      {/* Cụm mây bên trái trên - speed 0.24, bám y-nghia-du-an */}
       <div
-        className="absolute top-[5%] -left-12 sm:left-4 will-change-transform"
-        style={{ transform: `translate3d(0, ${-p1 * 0.10 * 100}vh, 0)` }}
+        className="parallax-layer absolute top-[5%] -left-6 sm:left-4 md:left-8 will-change-transform"
+        style={{
+          transform:
+            "translate3d(calc(var(--cp1, 0) * 35px), calc(var(--cp1, 0) * -24vh), 0)",
+        }}
       >
-        <div className="w-60 sm:w-80 md:w-96 opacity-[0.22] text-[#b4432f] transform -rotate-6">
-          <MayNhuY stroke="#b4432f" strokeWidth={1.8} />
+        <div className="w-72 sm:w-96 md:w-[460px] opacity-[0.30] sm:opacity-[0.36] text-[#b4432f] transform -rotate-6 transition-opacity">
+          <MayNhuY stroke="#b4432f" strokeWidth={2.2} />
         </div>
       </div>
 
-      {/* Cụm mây bên phải giữa - speed 0.20, bám dinh-huong-phat-trien */}
+      {/* Cụm mây bên phải giữa - speed 0.32, bám dinh-huong-phat-trien */}
       <div
-        className="absolute top-[35%] -right-16 sm:right-6 will-change-transform"
-        style={{ transform: `translate3d(0, ${-p2 * 0.20 * 100}vh, 0)` }}
+        className="parallax-layer absolute top-[35%] -right-8 sm:right-6 md:right-10 will-change-transform"
+        style={{
+          transform:
+            "translate3d(calc(var(--cp2, 0) * -40px), calc(var(--cp2, 0) * -32vh), 0)",
+        }}
       >
-        <div className="w-64 sm:w-84 md:w-[420px] opacity-[0.20] text-[#b4432f] transform scale-x-[-1] rotate-3">
-          <MayNhuY stroke="#b4432f" strokeWidth={1.8} />
+        <div className="w-76 sm:w-[440px] md:w-[520px] opacity-[0.28] sm:opacity-[0.34] text-[#b4432f] transform scale-x-[-1] rotate-3 transition-opacity">
+          <MayNhuY stroke="#b4432f" strokeWidth={2.2} />
         </div>
       </div>
 
-      {/* Cụm mây bên trái dưới - speed 0.15, bám tinh-hoa */}
+      {/* Cụm mây bên trái dưới - speed 0.28, bám tinh-hoa */}
       <div
-        className="absolute top-[65%] -left-14 sm:left-8 will-change-transform"
-        style={{ transform: `translate3d(0, ${-p3 * 0.15 * 100}vh, 0)` }}
+        className="parallax-layer absolute top-[65%] -left-8 sm:left-6 md:left-12 will-change-transform"
+        style={{
+          transform:
+            "translate3d(calc(var(--cp3, 0) * 30px), calc(var(--cp3, 0) * -28vh), 0)",
+        }}
       >
-        <div className="w-56 sm:w-76 md:w-[380px] opacity-[0.20] text-[#b4432f] transform rotate-3">
-          <MayNhuY stroke="#b4432f" strokeWidth={1.8} />
+        <div className="w-72 sm:w-[420px] md:w-[480px] opacity-[0.28] sm:opacity-[0.34] text-[#b4432f] transform rotate-3 transition-opacity">
+          <MayNhuY stroke="#b4432f" strokeWidth={2.2} />
         </div>
       </div>
 
-      {/* Cụm mây bên phải đáy - speed 0.25, bám quy-trinh-choi */}
+      {/* Cụm mây bên phải đáy - speed 0.36, bám quy-trinh-choi */}
       <div
-        className="absolute bottom-[4%] -right-12 sm:right-10 will-change-transform"
-        style={{ transform: `translate3d(0, ${-p4 * 0.25 * 100}vh, 0)` }}
+        className="parallax-layer absolute bottom-[4%] -right-8 sm:right-8 md:right-12 will-change-transform"
+        style={{
+          transform:
+            "translate3d(calc(var(--cp4, 0) * -45px), calc(var(--cp4, 0) * -36vh), 0)",
+        }}
       >
-        <div className="w-64 sm:w-80 md:w-[400px] opacity-[0.18] text-[#b4432f] transform scale-x-[-1] -rotate-3">
-          <MayNhuY stroke="#b4432f" strokeWidth={1.8} />
+        <div className="w-76 sm:w-[440px] md:w-[520px] opacity-[0.26] sm:opacity-[0.32] text-[#b4432f] transform scale-x-[-1] -rotate-3 transition-opacity">
+          <MayNhuY stroke="#b4432f" strokeWidth={2.2} />
         </div>
       </div>
     </div>

@@ -126,6 +126,8 @@ export type ChapterOptions = {
   pin?: boolean;
   /** Extra element pinned alongside — e.g. the chapter's HUD readout. */
   pinSpacing?: boolean;
+  /** Optional custom start position (defaults to pin ? "top top" : "top bottom"). */
+  start?: string;
 };
 
 /**
@@ -138,12 +140,12 @@ export type ChapterOptions = {
  */
 export function createChapter(
   el: Element,
-  { scrubVh = 1, onProgress, pin = true, pinSpacing = true }: ChapterOptions,
+  { scrubVh = 1, onProgress, pin = true, pinSpacing = true, start }: ChapterOptions,
 ): () => void {
   if (prefersReducedMotion()) {
     const st = ScrollTrigger.create({
       trigger: el,
-      start: "top 80%",
+      start: start ?? "top 80%",
       once: true,
       onEnter: () => onProgress?.(1),
     });
@@ -152,7 +154,7 @@ export function createChapter(
 
   const st = ScrollTrigger.create({
     trigger: el,
-    start: pin ? "top top" : "top bottom",
+    start: start ?? (pin ? "top top" : "top bottom"),
     end: pin ? `+=${scrubVh * 100}%` : "bottom top",
     pin,
     pinSpacing: pin ? pinSpacing : false,
