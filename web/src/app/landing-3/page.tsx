@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { useLang } from "@/lib/i18n";
 import { ensureSession } from "@/lib/client";
-import { initScrollEngine, scrollToChapter } from "@/lib/motion/timeline";
+import { createChapter, initScrollEngine, scrollToChapter } from "@/lib/motion/timeline";
 import { CloudBackground } from "./components/CloudBackground";
 
 interface Relic {
@@ -255,6 +255,12 @@ export default function LandingPage3() {
     }
   };
 
+  const heroRef = useRef<HTMLElement | null>(null);
+  const [heroProgress, setHeroProgress] = useState(0);
+  const [roadmapProgress, setRoadmapProgress] = useState(0);
+  const [relicsProgress, setRelicsProgress] = useState(0);
+  const [ctaProgress, setCtaProgress] = useState(0);
+
   useEffect(() => {
     return () => {
       if (timerRef.current) window.clearTimeout(timerRef.current);
@@ -264,7 +270,46 @@ export default function LandingPage3() {
 
   useEffect(() => {
     const engine = initScrollEngine();
+    const kills: (() => void)[] = [];
+
+    if (heroRef.current) {
+      kills.push(
+        createChapter(heroRef.current, {
+          pin: false,
+          onProgress: setHeroProgress,
+        }),
+      );
+    }
+    const roadmapEl = document.getElementById("dinh-huong-phat-trien");
+    if (roadmapEl) {
+      kills.push(
+        createChapter(roadmapEl, {
+          pin: false,
+          onProgress: setRoadmapProgress,
+        }),
+      );
+    }
+    const relicsEl = document.getElementById("tinh-hoa");
+    if (relicsEl) {
+      kills.push(
+        createChapter(relicsEl, {
+          pin: false,
+          onProgress: setRelicsProgress,
+        }),
+      );
+    }
+    const ctaEl = document.getElementById("cta-cuoi");
+    if (ctaEl) {
+      kills.push(
+        createChapter(ctaEl, {
+          pin: false,
+          onProgress: setCtaProgress,
+        }),
+      );
+    }
+
     return () => {
+      kills.forEach((k) => k());
       engine.destroy();
     };
   }, []);
@@ -294,20 +339,57 @@ export default function LandingPage3() {
       {/* ========================================================================= */}
       {/* 1. HERO SCREEN (TRANG ĐẦU TIÊN): NỀN BOOMERANG + NÚT CHƠI NGAY Ở ĐÁY     */}
       {/* ========================================================================= */}
-      <section className="relative w-full h-[100dvh] min-h-[640px] flex flex-col justify-between overflow-hidden">
+      <section
+        ref={heroRef}
+        className="relative w-full h-[100dvh] min-h-[640px] flex flex-col justify-between overflow-hidden"
+      >
         {/* Full-bleed Boomerang Video / Looping Motion Background */}
         <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/landing-3/pho-co-bg.jpg"
-            alt="Thăng Long Phố Cổ Nghìn Năm"
-            className="w-full h-full object-cover object-center animate-boomerang transform-gpu scale-105"
-          />
+          {/* Parallax outer wrapper for hero image (speed 0.06) */}
+          <div
+            className="w-full h-full will-change-transform"
+            style={{ transform: `translate3d(0, ${-heroProgress * 0.06 * 100}vh, 0)` }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/landing-3/pho-co-bg.jpg"
+              alt="Thăng Long Phố Cổ Nghìn Năm"
+              className="w-full h-full object-cover object-center animate-boomerang transform-gpu scale-115"
+            />
+          </div>
 
           {/* Soft pastel blush pink overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-[#fdf2f4]/75 via-[#fdf2f4]/35 to-[#fdf2f4]/95" />
           <div className="absolute inset-0 bg-gradient-to-tr from-[#c8ede5]/20 via-transparent to-[#fedfe3]/35 mix-blend-color" />
           <div className="absolute inset-0 bg-[radial-gradient(#c9962b_1px,transparent_1px)] [background-size:26px_26px] opacity-10" />
+
+          {/* 3 Decor icons under content (z-0), pointer-events-none, opacity 0.12-0.2 */}
+          {/* decor-horse.png: speed 0.35, góc dưới-trái */}
+          <div
+            className="absolute -bottom-6 -left-6 sm:bottom-4 sm:left-4 w-36 sm:w-52 md:w-64 opacity-[0.16] pointer-events-none z-0 will-change-transform"
+            style={{ transform: `translate3d(0, ${-heroProgress * 0.35 * 100}vh, 0)` }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/landing-3/decor-horse.png" alt="" className="w-full h-auto object-contain" />
+          </div>
+
+          {/* decor-fan.png: speed 0.45, góc trên-phải */}
+          <div
+            className="absolute top-16 -right-6 sm:top-20 sm:right-6 w-32 sm:w-48 md:w-60 opacity-[0.15] pointer-events-none z-0 will-change-transform"
+            style={{ transform: `translate3d(0, ${-heroProgress * 0.45 * 100}vh, 0)` }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/landing-3/decor-fan.png" alt="" className="w-full h-auto object-contain" />
+          </div>
+
+          {/* decor-carp.png: speed 0.55, góc dưới-phải */}
+          <div
+            className="absolute -bottom-8 -right-8 sm:bottom-2 sm:right-4 w-40 sm:w-56 md:w-72 opacity-[0.18] pointer-events-none z-0 will-change-transform"
+            style={{ transform: `translate3d(0, ${-heroProgress * 0.55 * 100}vh, 0)` }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/landing-3/decor-carp.png" alt="" className="w-full h-auto object-contain" />
+          </div>
         </div>
 
         {/* Top Header inside Hero */}
@@ -579,6 +661,11 @@ export default function LandingPage3() {
           className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto"
         >
           <div className="relative rounded-3xl bg-white/90 border border-[#e27b88]/30 p-6 sm:p-12 shadow-lg backdrop-blur-sm space-y-10 overflow-hidden">
+            {/* Parallax background decor (speed 0.10) */}
+            <div
+              className="pointer-events-none absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-gradient-to-br from-[#fedfe3]/50 to-[#c8ede5]/40 blur-2xl will-change-transform z-0"
+              style={{ transform: `translate3d(0, ${-roadmapProgress * 0.10 * 100}vh, 0)` }}
+            />
             <div className="max-w-3xl space-y-2 relative z-10">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fedfe3] text-[#96351f] text-xs font-semibold">
                 <Milestone className="w-3.5 h-3.5 text-[#b4432f]" />
@@ -665,6 +752,12 @@ export default function LandingPage3() {
         {/* 4. CULTURAL RELICS SHOWCASE (TINH HOA BÁU VẬT 36 PHỐ PHƯỜNG)              */}
         {/* ========================================================================= */}
         <section id="tinh-hoa" className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+          {/* Parallax background watermark (speed 0.08) */}
+          <div
+            className="pointer-events-none absolute left-1/2 -top-6 -translate-x-1/2 w-full max-w-4xl h-80 bg-[radial-gradient(#e27b88_1px,transparent_1px)] [background-size:28px_28px] opacity-[0.14] will-change-transform z-0"
+            style={{ transform: `translate3d(-50%, ${-relicsProgress * 0.08 * 100}vh, 0)` }}
+          />
+
           <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fedfe3] border border-[#e27b88]/30 text-[#96351f] text-xs font-semibold">
               <Sparkles className="w-3.5 h-3.5 text-[#b4432f]" />
@@ -833,8 +926,13 @@ export default function LandingPage3() {
         {/* ========================================================================= */}
         {/* 6. FINAL CALL TO ACTION                                                   */}
         {/* ========================================================================= */}
-        <section className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
+        <section id="cta-cuoi" className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
           <div className="rounded-3xl bg-gradient-to-r from-[#96351f] via-[#b4432f] to-[#96351f] text-white p-8 sm:p-14 shadow-2xl space-y-6 relative overflow-hidden">
+            {/* Parallax ambient glow (speed 0.12) */}
+            <div
+              className="pointer-events-none absolute -left-16 -top-16 w-80 h-80 rounded-full bg-white/10 blur-3xl will-change-transform z-0"
+              style={{ transform: `translate3d(0, ${-ctaProgress * 0.12 * 100}vh, 0)` }}
+            />
             <div className="relative z-10 space-y-3">
               <h2 className="font-[family-name:var(--font-fraunces),serif] text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#fdf2f4]">
                 {isEn ? "Ready to Walk the 36 Streets?" : "Sẵn Sàng Du Khảo Thăng Long?"}
