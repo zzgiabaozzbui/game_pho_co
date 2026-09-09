@@ -46,6 +46,26 @@ const READY: ReadonlySet<string> = new Set<string>([
   "/landing-6/images/launch/card-01.webp",
   "/landing-6/images/launch/card-02.webp",
   "/landing-6/images/launch/card-03.webp",
+
+  // T-assets-3 — tableau multiplane layers (keep/factions/world) + story
+  // assets + real QR, hand-authored SVG rasterized with sharp (same
+  // technique as T04 above) + `qrcode` for the QR (xem
+  // docs/plans/landing-6-assets.md).
+  "/landing-6/images/tableau-keep/00-sky.webp",
+  "/landing-6/images/tableau-keep/01-facade.webp",
+  "/landing-6/images/tableau-keep/02-cart.webp",
+  "/landing-6/images/tableau-keep/03-stove.webp",
+  "/landing-6/images/tableau-keep/04-steam.webp",
+  "/landing-6/images/tableau-world/00-sky-night.webp",
+  "/landing-6/images/tableau-world/01-rooftops.webp",
+  "/landing-6/images/tableau-world/02-street.webp",
+  "/landing-6/images/tableau-world/03-neon.webp",
+  "/landing-6/images/tableau-factions/bac.webp",
+  "/landing-6/images/tableau-factions/nam.webp",
+  "/landing-6/images/story-intro/teaser-poster.webp",
+  "/landing-6/images/story-intro/side-media.webp",
+  "/landing-6/sprites/keeper-sheet.webp",
+  "/landing-6/images/launch/qr-chest.webp",
 ]);
 
 /** PLACEHOLDER nếu file chưa tồn tại, ngược lại trả chính path đó. */

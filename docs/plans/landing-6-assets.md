@@ -14,11 +14,11 @@ mới, ngoài phạm vi task này).
 | `images/hero/emblem-pho-diffuse.webp` | hero | Mặt nạ chữ "PHỞ" trắng/đen cho `EmblemShader` (T10) | webp 1024×1024 | procedural — **đã sản xuất** | P0 |
 | `images/hero/emblem-pho-gradient.webp` | hero | Dải gradient map (đen→nâu→vàng brass→trắng ấm) tra màu cho emblem shader | webp 256×16 | procedural — **đã sản xuất** | P0 |
 | `images/common/noise.webp` | hero (+ dùng chung) | Noise hạt mịn phủ lên emblem/HUD cho đỡ phẳng | webp 512×512 | procedural — **đã sản xuất** | P1 |
-| `images/story-intro/teaser-poster.webp` | storyIntro | Poster tĩnh cho video teaser game, cảnh gánh phở sáng sớm | webp 16:9 ~1600×900 | new-art | P0 |
-| `videos/teaser-1080.mp4` | storyIntro | Video trailer giới thiệu game, 01:48 (khớp `videoDuration`) | mp4 1920×1080 | new-art | P1 |
-| `images/story-intro/side-media.webp` | storyIntro | Ảnh/minh hoạ phụ cạnh khối trailer (lưới bất đối xứng 3 khối, T14) | webp dọc ~900×1200 | new-art | P1 |
-| `videos/topo-loop.mp4` | storyProject | Video loop hoạ tiết địa hình/toạ độ nền — hiệu ứng topographic | mp4 loop, vuông hoặc 16:9 | new-art | P2 |
-| `sprites/keeper-sheet.webp` | storyProject | Spritesheet nhân vật "người giữ lửa" cho khối tactical | webp spritesheet | new-art | P1 |
+| `images/story-intro/teaser-poster.webp` | storyIntro | Poster tĩnh cho video teaser game, cảnh gánh phở sáng sớm | webp 1600×900 | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `videos/teaser-1080.mp4` | storyIntro | Video trailer giới thiệu game, 01:48 (khớp `videoDuration`) | mp4 1920×1080 | new-art (video, ngoài phạm vi — không có công cụ quay/dựng) | P1 |
+| `images/story-intro/side-media.webp` | storyIntro | Ảnh/minh hoạ phụ cạnh khối trailer (lưới bất đối xứng 3 khối, T14) | webp 900×1200 | hand-drawn SVG → webp — **đã sản xuất** | P1 |
+| `videos/topo-loop.mp4` | storyProject | Video loop hoạ tiết địa hình/toạ độ nền — hiệu ứng topographic | mp4 loop, vuông hoặc 16:9 | new-art (video, ngoài phạm vi — không có công cụ quay/dựng) | P2 |
+| `sprites/keeper-sheet.webp` | storyProject | Nhân vật "người giữ lửa" — **thay thế bằng 1 ảnh tĩnh** (không phải spritesheet hoạt hình thật, xem ghi chú Nhật ký `landing-6.md`) | webp 1600×900 | hand-drawn SVG → webp — **đã sản xuất** (static, KHÔNG phải sprite động) | P1 |
 | `svg/old-quarter-map.svg` | storyProject | Bản đồ cách điệu phố cổ (lưới đường trừu tượng, chấm toạ độ `N 21°01.7 / E 105°51.2`) | svg 800×600 | procedural — **đã sản xuất** | P1 |
 | `images/collection/chest-front.webp` | collectionIntro | Mặt trước rương (card lật T16) | webp vuông ~800×800 | reuse:`web/public/models/chest-*.glb` — xem quyết định bên dưới | P1 |
 | `images/collection/chest-back.webp` | collectionIntro | Mặt sau rương (card lật, mặt thông số) | webp vuông ~800×800 | reuse:`web/public/models/chest-*.glb` — xem quyết định bên dưới | P1 |
@@ -34,22 +34,22 @@ mới, ngoài phạm vi task này).
 | `images/gallery/thao-qua.webp` | gallery | Card nguyên liệu: Thảo quả | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
 | `images/gallery/mam.webp` | gallery | Card nguyên liệu: Nước mắm | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
 | `images/gallery/chanh-ot.webp` | gallery | Card nguyên liệu: Chanh ớt | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
-| `images/tableau-keep/00-sky.webp` | tableauKeep | Lớp xa nhất: bầu trời/hậu cảnh Gánh Phở Cổ | webp multiplane, cùng khung hình các lớp khác | new-art | P0 |
-| `images/tableau-keep/01-facade.webp` | tableauKeep | Lớp mặt tiền phố | webp multiplane | new-art | P0 |
-| `images/tableau-keep/02-cart.webp` | tableauKeep | Lớp gánh phở (chủ thể chính) | webp multiplane | new-art | P0 |
-| `images/tableau-keep/03-stove.webp` | tableauKeep | Lớp bếp lò/nồi nước dùng, cận cảnh | webp multiplane | new-art | P0 |
-| `images/tableau-keep/04-steam.webp` | tableauKeep | Lớp khói/hơi nước, gần camera nhất | webp multiplane, có alpha | new-art | P1 |
-| `images/tableau-factions/bac.webp` | tableauFactions | Cảnh minh hoạ Phở Bắc (nước trong, vị thanh) | webp | new-art | P0 |
-| `images/tableau-factions/nam.webp` | tableauFactions | Cảnh minh hoạ Phở Nam (rau sống, tương đen) | webp | new-art | P0 |
-| `images/tableau-factions/scan.webp` | tableauFactions | Texture quét năng lượng ngăn giữa hai phe (đường quét ngang, fade 2 đầu) | webp tile 256×256 | procedural — **đã sản xuất** | P1 |
-| `images/tableau-world/00-sky-night.webp` | tableauWorld | Lớp bầu trời đêm | webp multiplane | new-art | P0 |
-| `images/tableau-world/01-rooftops.webp` | tableauWorld | Lớp mái nhà phố cổ | webp multiplane | new-art | P0 |
-| `images/tableau-world/02-street.webp` | tableauWorld | Lớp mặt phố | webp multiplane | new-art | P0 |
-| `images/tableau-world/03-neon.webp` | tableauWorld | Lớp biển hiệu/đèn neon, gần camera nhất | webp multiplane, có alpha | new-art | P1 |
+| `images/tableau-keep/00-sky.webp` | tableauKeep | Lớp xa nhất: bầu trời/hậu cảnh Gánh Phở Cổ | webp 1600×1600 | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/tableau-keep/01-facade.webp` | tableauKeep | Lớp mặt tiền phố | webp 1900×700 (khớp tỉ lệ `bandFacade`) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/tableau-keep/02-cart.webp` | tableauKeep | Lớp gánh phở (chủ thể chính) | webp 1600×760 (khớp tỉ lệ `bandCart`) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/tableau-keep/03-stove.webp` | tableauKeep | Lớp bếp lò/nồi nước dùng, cận cảnh | webp 1200×800 (khớp tỉ lệ `bandStove`) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/tableau-keep/04-steam.webp` | tableauKeep | Lớp khói/hơi nước, gần camera nhất | webp 1700×600, có alpha thật | hand-drawn SVG → webp — **đã sản xuất** | P1 |
+| `images/tableau-factions/bac.webp` | tableauFactions | Cảnh minh hoạ Phở Bắc (nước trong, vị thanh — bát tối giản, ít garnish) | webp 1000×1300 | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/tableau-factions/nam.webp` | tableauFactions | Cảnh minh hoạ Phở Nam (rau sống, tương đen — bát đậm, nhiều garnish) | webp 1000×1300 | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/tableau-factions/scan.webp` | tableauFactions | Texture quét năng lượng ngăn giữa hai phe (đường quét ngang, fade 2 đầu) | webp tile 256×256 | procedural — **đã sản xuất** (T04, KHÔNG động vào lần này) | P1 |
+| `images/tableau-world/00-sky-night.webp` | tableauWorld | Lớp bầu trời đêm | webp 1600×1600 | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/tableau-world/01-rooftops.webp` | tableauWorld | Lớp mái nhà phố cổ | webp 1900×560 (khớp tỉ lệ `bandRooftops`) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/tableau-world/02-street.webp` | tableauWorld | Lớp mặt phố | webp 1700×680 (khớp tỉ lệ `bandStreet`) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/tableau-world/03-neon.webp` | tableauWorld | Lớp biển hiệu/đèn neon, gần camera nhất | webp 1700×650 (khớp tỉ lệ `bandNeon`), có alpha thật | hand-drawn SVG → webp — **đã sản xuất** | P1 |
 | `images/launch/card-01.webp` | launch | Card rương xoè quạt #1 (rương đóng — "chưa mở") | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất**, xem ghi chú | P1 |
 | `images/launch/card-02.webp` | launch | Card rương xoè quạt #2 (rương mở, xu/đá quý tràn ra — "phần thưởng") | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất**, xem ghi chú | P1 |
 | `images/launch/card-03.webp` | launch | Card rương xoè quạt #3 (huy hiệu bát phở bốc khói — "chính trò chơi là phần thưởng") | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất**, xem ghi chú | P1 |
-| `images/launch/qr-chest.webp` | launch | QR code dẫn tới link chơi/nhận rương | webp | procedural (QR luôn sinh runtime từ URL thật) — **chưa sản xuất**, xem ghi chú | P1 |
+| `images/launch/qr-chest.webp` | launch | QR code dẫn tới link chơi/nhận rương | webp 640×640, module đen/trắng | procedural, sinh bằng lib `qrcode` (không phải SVG vẽ tay) — **đã sản xuất**, xem ghi chú | P1 |
 | `svg/wordmark-pho-co.svg` | footer | Wordmark "PHỞ CỔ" khổ lớn cho RevealFooter | svg 1200×220 | procedural — **đã sản xuất** | P1 |
 
 ## Tổng kết
@@ -72,16 +72,17 @@ mới, ngoài phạm vi task này).
   cho phương pháp (SVG vẽ tay → rasterize webp bằng `sharp`, không dùng
   render 3D/glb như phương án (a) ở "Quyết định không có trong spec" bên
   dưới đã gợi ý — xem cập nhật mục 1).
-- **New-art còn cần: 16** — đây là con số quan trọng nhất cho việc lên kế hoạch
-  các task tiếp theo (Giai đoạn D). Danh sách đầy đủ:
-  1. `images/story-intro/teaser-poster.webp` — poster video teaser
-  2. `videos/teaser-1080.mp4` — video trailer 01:48
-  3. `images/story-intro/side-media.webp` — ảnh phụ storyIntro
-  4. `videos/topo-loop.mp4` — video loop topographic
-  5. `sprites/keeper-sheet.webp` — spritesheet nhân vật người giữ lửa
-  6-10. 5 lớp `images/tableau-keep/00..04-*.webp` (sky/facade/cart/stove/steam)
-  11-12. 2 cảnh `images/tableau-factions/bac.webp`, `nam.webp`
-  13-16. 4 lớp `images/tableau-world/00..03-*.webp` (sky-night/rooftops/street/neon)
+- **New-art sản xuất xong (task T-assets-3, cùng ngày): 14** — 9 lớp tableau
+  (5 `tableauKeep` + 4 `tableauWorld`), 2 cảnh `tableauFactions`
+  (`bac`/`nam`), 2 ảnh `storyIntro` (`teaser-poster`/`side-media`), 1 ảnh
+  `storyProject.keeperSprite` (thay thế TĨNH, không phải spritesheet động —
+  xem ghi chú Nhật ký `landing-6.md`). Cùng phương pháp SVG vẽ tay → `sharp`.
+  Cộng thêm `images/launch/qr-chest.webp` sinh bằng lib `qrcode` (không phải
+  vẽ tay) → **15 file mới** trong đợt này.
+- **New-art còn cần: 2** — chỉ còn 2 file **video**, ngoài khả năng của agent
+  (không có công cụ quay/dựng phim, chỉ có SVG vẽ tay + `sharp`):
+  1. `videos/teaser-1080.mp4` — video trailer 01:48
+  2. `videos/topo-loop.mp4` — video loop topographic
 
 ## Quyết định không có trong spec
 
@@ -111,11 +112,21 @@ mới, ngoài phạm vi task này).
    Tạm đánh dấu `reuse` (không phải `new-art`) vì nguồn 3D đã có sẵn, chỉ thiếu
    bước bake — không phải một họa sĩ cần vẽ từ đầu.
 2. **QR `launch/qr-chest.webp`**: bản chất một QR code luôn được sinh ra từ
-   URL đích (không phải ảnh tĩnh có sẵn) — đúng nghĩa `procedural`. Nhưng
-   không sản xuất ngay trong T04 vì (a) chưa có URL thật để mã hoá, (b) viết
-   encoder QR tay không phải "một dòng" và dự án chưa có QR lib nào cài sẵn —
-   thêm dep mới ngoài phạm vi cho phép. Để T21 quyết định: hoặc thêm 1 lib QR
-   nhỏ (cần duyệt dep mới) hoặc sinh SVG QR thủ công lúc đó khi đã có URL.
+   URL đích (không phải ảnh tĩnh có sẵn) — đúng nghĩa `procedural`. T04/T21
+   để ngỏ vì (a) chưa có URL thật, (b) chưa muốn thêm dep mới. **Sản xuất
+   xong ở task T-assets-3** dùng `qrcode` (dep có sẵn trong `package.json`,
+   đã dùng ở `api/qr/[slug]/route.ts` và `admin/page.tsx` — không thêm dep
+   mới). **Target URL: `NEXT_PUBLIC_BASE_URL` + `/`** (đọc từ `web/.env`,
+   cùng convention `api/qr/[slug]/route.ts` dùng) — dev value hiện tại là
+   `http://localhost:3000/`, đây là **placeholder có chủ đích, cần người sở
+   hữu domain marketing thật cập nhật `NEXT_PUBLIC_BASE_URL` rồi chạy lại
+   script sinh trước khi lên production**; không có URL marketing riêng nào
+   khác trong repo để trỏ tới, và `/` là nơi "hành trình truy tìm kho báu"
+   thật sự bắt đầu (metadata `web/src/app/layout.tsx`). Render: module đen
+   trên nền trắng (KHÔNG theo dark theme của trang — QR cần độ tương phản
+   thật để quét được, ưu tiên quét được hơn đồng bộ màu), quiet-zone margin=3
+   modules, `errorCorrectionLevel: M`, lưu `.webp` bằng `sharp({lossless:true})`
+   để không mất độ nét module (không nén lossy làm rối các ô vuông nhỏ).
 3. **Icon Frame.tsx**: đã kiểm tra `components/Frame.tsx`, `Menu.tsx`,
    `Console.tsx` (T07) — toàn bộ nút dùng nhãn chữ (`content.frame.audioOn`,
    `.menu`, `.console`, `.close`...), không tham chiếu icon SVG nào. Không
