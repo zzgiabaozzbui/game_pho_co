@@ -33,6 +33,8 @@
   --font-sans:
     var(--font-be-vietnam-pro), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif:
+    var(--font-fraunces), Georgia, "Times New Roman", serif;
   --font-display:
     var(--font-fraunces), Georgia, "Times New Roman", serif;
 }
@@ -147,9 +149,47 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .treasure-hero-in { animation: none; }
+  .animate-boomerang { animation: none; }
   .chest-lid,
   .chest-box,
   .chest-coins {
     transition: none;
   }
 }
+
+@keyframes boomerang-bg {
+  0% {
+    transform: scale(1) translate3d(0%, 0%, 0);
+  }
+  50% {
+    transform: scale(1.09) translate3d(-1.5%, -1%, 0);
+  }
+  100% {
+    transform: scale(1.03) translate3d(1.2%, -0.6%, 0);
+  }
+}
+
+.animate-boomerang {
+  animation: boomerang-bg 20s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes relic-float-slow {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(2deg);
+  }
+}
+
+.animate-relic-float {
+  animation: relic-float-slow 7s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-relic-float-reverse {
+  animation: relic-float-slow 8.5s ease-in-out infinite reverse;
+  will-change: transform;
+}
+
