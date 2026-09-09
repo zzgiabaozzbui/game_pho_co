@@ -34,6 +34,7 @@
 
 import type { CSSProperties } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { audioEngine } from "../../landing-4/components/AudioSynthesizer";
 import { assets } from "../assets";
 import type { GalleryCard, Landing6Content } from "../landing-6.data";
 import { createChapter, prefersReducedMotion } from "../motion/timeline";
@@ -144,6 +145,7 @@ export function GalleryChapter({ content }: { content: Landing6Content["gallery"
   const openModal = (index: number, el: HTMLButtonElement) => {
     triggerRef.current = el;
     setActiveIndex(index);
+    audioEngine.triggerChime(); // T23: 1 trong vài điểm chạm chọn lọc, xem docs/plans/landing-6.md
   };
 
   const cards = content.cards;

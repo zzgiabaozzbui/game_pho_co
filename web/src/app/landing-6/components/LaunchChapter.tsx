@@ -49,6 +49,7 @@
 import type { CSSProperties } from "react";
 import { useState } from "react";
 import Link from "next/link";
+import { audioEngine } from "../../landing-4/components/AudioSynthesizer";
 import { assets } from "../assets";
 import type { Landing6Content } from "../landing-6.data";
 import { scrollToChapter } from "../motion/timeline";
@@ -84,7 +85,10 @@ export function LaunchChapter({ content }: { content: Landing6Content["launch"] 
             type="button"
             className={styles.ctaSecondary}
             aria-expanded={qrOpen}
-            onClick={() => setQrOpen((v) => !v)}
+            onClick={() => {
+              audioEngine.triggerChime(); // T23: CTA chạm chọn lọc, xem docs/plans/landing-6.md
+              setQrOpen((v) => !v);
+            }}
           >
             {content.ctaQr}
           </button>

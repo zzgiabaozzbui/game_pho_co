@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n";
+import { audioEngine } from "../landing-4/components/AudioSynthesizer";
 import { CollectionIntroChapter } from "./components/CollectionIntroChapter";
 import { Frame } from "./components/Frame";
 import { GalleryChapter } from "./components/GalleryChapter";
@@ -34,11 +35,38 @@ export default function Landing6Page() {
   const content = landing6Content[lang];
 
   // `entered` gate: nội dung + scroll engine chỉ sống sau khi qua preloader.
-  // `audioEnabled` là lựa chọn ban đầu của Preloader — T23 (audio engine
-  // thật) đọc giá trị này để quyết định có tự phát ambient ngay không; nó
-  // KHÔNG phải state của nút audio trong Frame, xem ghi chú dưới.
+  //
+  // `audioOn` (T23) là NGUỒN DUY NHẤT của trạng thái "audio đang phát" — seed
+  // từ lựa chọn của Preloader (`onEnter(withAudio)`), rồi được Frame's toggle
+  // đọc/ghi qua `handleToggleAudio` bên dưới. Trước T23, Preloader chỉ báo
+  // lựa chọn lên còn Frame giữ một `useState` cục bộ riêng — hai state có thể
+  // lệch nhau (T08's report đã gắn cờ đúng chỗ này). Giờ chỉ còn state này.
   const [entered, setEntered] = useState(false);
-  const [audioEnabled, setAudioEnabled] = useState(false);
+  const [audioOn, setAudioOn] = useState(false);
+
+  // audioEngine.start() trả Promise<boolean> vì trình duyệt có thể từ chối
+  // AudioContext không có user gesture — nút audioYes/audioNo của Preloader
+  // LÀ gesture đó, nên gọi start() ngay trong handler của nó thường sẽ được
+  // trình duyệt chấp nhận. Vẫn phản ánh đúng kết quả thật (`ok`) vào state
+  // thay vì lạc quan giả định true, để UI không bao giờ nói "đang phát" trong
+  // khi engine thực ra chưa chạy.
+  const handleToggleAudio = useCallback(() => {
+    if (audioOn) {
+      audioEngine.stop();
+      setAudioOn(false);
+      return;
+    }
+    audioEngine.start().then(setAudioOn);
+  }, [audioOn]);
+
+  // Dọn dẹp: nếu route bị unmount (điều hướng đi nơi khác) trong lúc đang
+  // phát, tắt engine theo — `stop()` tự return sớm nếu !isPlaying nên an toàn
+  // gọi cả khi audio chưa từng bật.
+  useEffect(() => {
+    return () => {
+      audioEngine.stop();
+    };
+  }, []);
 
   // T22 reveal footer: RevealFooter measures its own rendered height (i18n
   // copy differs in length between vi/en, so a fixed px guess would drift)
@@ -82,8 +110,10 @@ export default function Landing6Page() {
       <Preloader
         content={content.preloader}
         onEnter={(withAudio) => {
-          setAudioEnabled(withAudio);
           setEntered(true);
+          if (withAudio) {
+            audioEngine.start().then(setAudioOn);
+          }
         }}
       />
     );
@@ -91,15 +121,10 @@ export default function Landing6Page() {
 
   return (
     <>
-      {/* audioEnabled chỉ seed lựa chọn ban đầu; nút audio riêng của Frame
-          (state cục bộ trong Frame.tsx) vẫn là cái người dùng bấm để bật/tắt
-          sau đó — hai state độc lập. Khi T23 có engine thật, Frame nên khởi
-          tạo state audioOn của nó = audioEnabled thay vì luôn false; việc đó
-          để lại cho T23 vì hiện Frame chưa nhận prop này. */}
       <Stage />
-      <Frame content={content} />
+      <Frame content={content} audioOn={audioOn} onToggleAudio={handleToggleAudio} />
       <main
-        data-l6-audio-seed={audioEnabled}
+        data-l6-audio-on={audioOn}
         style={{
           position: "relative",
           zIndex: "var(--l6-z-content)",

@@ -11,33 +11,49 @@
  * "Chương đang active" lấy từ `useActiveChapter` (motion/useScrollProgress.ts)
  * — IntersectionObserver trên chính các <section>, KHÔNG suy từ % progress
  * toàn cục. Lý do nằm trong file đó. Mọi task sau cần biết "đang ở chương
- * nào" (T09-T22 chọn nội dung WebGL theo chương, T23 fade audio theo chương)
- * nên gọi lại đúng hook này để khỏi lệch tín hiệu với HUD.
+ * nào" (T09-T22 chọn nội dung WebGL theo chương) nên gọi lại đúng hook này
+ * để khỏi lệch tín hiệu với HUD.
+ *
+ * Audio (T23): `audioOn`/`onToggleAudio` được nâng lên `page.tsx` — đó là nơi
+ * duy nhất biết lựa chọn ban đầu của Preloader VÀ giữ nguồn trạng thái thật
+ * của `audioEngine`. Frame chỉ hiển thị + gọi callback, không giữ state audio
+ * riêng nữa (trước đây là `useState` cục bộ, dễ lệch với engine thật — xem
+ * T08's report).
  */
 
 import { useCallback, useState } from "react";
 import type { ChapterId, Landing6Content } from "../landing-6.data";
 import { CHAPTER_IDS } from "../landing-6.data";
+import { audioEngine } from "../../landing-4/components/AudioSynthesizer";
 import { prefersReducedMotion, scrollToChapter } from "../motion/timeline";
 import { useActiveChapter, useGlobalProgress } from "../motion/useScrollProgress";
 import { Console } from "./Console";
 import { Menu } from "./Menu";
 import styles from "./Frame.module.css";
 
-export function Frame({ content }: { content: Landing6Content }) {
+interface FrameProps {
+  content: Landing6Content;
+  audioOn: boolean;
+  onToggleAudio: () => void;
+}
+
+export function Frame({ content, audioOn, onToggleAudio }: FrameProps) {
   const progress = useGlobalProgress();
   const activeIndex = useActiveChapter(CHAPTER_IDS);
   const activeItem = content.menu.items[activeIndex] ?? content.menu.items[0];
 
-  // ponytail: chưa có AudioSynthesizer (T23) — cờ local để nút có tác dụng
-  // thấy được ngay bây giờ, T23 thay bằng state/engine thật.
-  const [audioOn, setAudioOn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [consoleOpen, setConsoleOpen] = useState(false);
 
   const reduced = prefersReducedMotion();
 
-  const handleJump = useCallback((id: ChapterId) => scrollToChapter(id), []);
+  // Chime nhỏ khi nhảy chương bằng pill — 1 trong 2-4 điểm chạm được chọn
+  // (xem docs/plans/landing-6.md, mục T23): nhảy chương là thao tác rời rạc,
+  // rõ chủ đích, chime cho phản hồi tức thời mà không cần chạm mọi click.
+  const handleJump = useCallback((id: ChapterId) => {
+    audioEngine.triggerChime();
+    scrollToChapter(id);
+  }, []);
 
   return (
     <div
@@ -76,7 +92,7 @@ export function Frame({ content }: { content: Landing6Content }) {
           <button
             type="button"
             className={styles.iconBtn}
-            onClick={() => setAudioOn((v) => !v)}
+            onClick={onToggleAudio}
             aria-pressed={audioOn}
           >
             {audioOn ? content.frame.audioOn : content.frame.audioOff}
