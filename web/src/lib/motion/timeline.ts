@@ -119,9 +119,11 @@ export function scrollToChapter(id: string): void {
 
 export type ChapterOptions = {
   /** How many viewport-heights of scroll the pin consumes. */
-  scrubVh: number;
+  scrubVh?: number;
   /** Receives 0..1 progress through the chapter on every scroll frame. */
   onProgress?: (progress: number) => void;
+  /** Whether to pin the element during scrub. Defaults to true. */
+  pin?: boolean;
   /** Extra element pinned alongside — e.g. the chapter's HUD readout. */
   pinSpacing?: boolean;
 };
@@ -136,7 +138,7 @@ export type ChapterOptions = {
  */
 export function createChapter(
   el: Element,
-  { scrubVh, onProgress, pinSpacing = true }: ChapterOptions,
+  { scrubVh = 1, onProgress, pin = true, pinSpacing = true }: ChapterOptions,
 ): () => void {
   if (prefersReducedMotion()) {
     const st = ScrollTrigger.create({
@@ -150,23 +152,12 @@ export function createChapter(
 
   const st = ScrollTrigger.create({
     trigger: el,
-    start: "top top",
-    end: `+=${scrubVh * 100}%`,
-    pin: true,
-    pinSpacing,
+    start: pin ? "top top" : "top bottom",
+    end: pin ? `+=${scrubVh * 100}%` : "bottom top",
+    pin,
+    pinSpacing: pin ? pinSpacing : false,
     scrub: true,
-    // T25: forces GSAP to hold the pin with a JS-driven transform instead of
-    // `position: fixed` on `el`. Needed because `content-visibility: auto`
-    // (tokens.css, T25) on the wrapping `<section>` applies `contain: layout`
-    // unconditionally (not just while its content is skipped) — and `contain:
-    // layout` makes that section a containing block for fixed/absolute
-    // descendants, same as `transform`/`filter` would. With the default
-    // `pinType: "fixed"`, `el` would then be "fixed" relative to its own
-    // section's box instead of the viewport, breaking the pin outright. This
-    // is GSAP's own documented escape hatch for exactly that ancestor
-    // combination, so switch to it instead of leaving content-visibility off
-    // the 4 pinned chapters.
-    pinType: "transform",
+    ...(pin ? { pinType: "transform" } : {}),
     onUpdate: (self) => onProgress?.(self.progress),
   });
 
