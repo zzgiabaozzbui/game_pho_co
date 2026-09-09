@@ -22,18 +22,18 @@ mới, ngoài phạm vi task này).
 | `svg/old-quarter-map.svg` | storyProject | Bản đồ cách điệu phố cổ (lưới đường trừu tượng, chấm toạ độ `N 21°01.7 / E 105°51.2`) | svg 800×600 | procedural — **đã sản xuất** | P1 |
 | `images/collection/chest-front.webp` | collectionIntro | Mặt trước rương (card lật T16) | webp vuông ~800×800 | reuse:`web/public/models/chest-*.glb` — xem quyết định bên dưới | P1 |
 | `images/collection/chest-back.webp` | collectionIntro | Mặt sau rương (card lật, mặt thông số) | webp vuông ~800×800 | reuse:`web/public/models/chest-*.glb` — xem quyết định bên dưới | P1 |
-| `images/gallery/banh-pho.webp` | gallery | Card nguyên liệu: Bánh phở | webp vuông ~800×800 | new-art | P0 |
-| `images/gallery/nuoc-dung.webp` | gallery | Card nguyên liệu: Nước dùng | webp vuông ~800×800 | new-art | P0 |
-| `images/gallery/que.webp` | gallery | Card nguyên liệu: Quế | webp vuông ~800×800 | new-art | P0 |
-| `images/gallery/hoi.webp` | gallery | Card nguyên liệu: Hoa hồi | webp vuông ~800×800 | new-art | P0 |
-| `images/gallery/gung-nuong.webp` | gallery | Card nguyên liệu: Gừng nướng | webp vuông ~800×800 | new-art | P0 |
-| `images/gallery/hanh.webp` | gallery | Card nguyên liệu: Hành | webp vuông ~800×800 | new-art | P0 |
-| `images/gallery/gau.webp` | gallery | Card nguyên liệu: Gầu | webp vuông ~800×800 | new-art | P0 |
-| `images/gallery/chin.webp` | gallery | Card nguyên liệu: Nạm chín | webp vuông ~800×800 | new-art | P0 |
-| `images/gallery/tai.webp` | gallery | Card nguyên liệu: Thịt tái | webp vuông ~800×800 | new-art | P0 |
-| `images/gallery/thao-qua.webp` | gallery | Card nguyên liệu: Thảo quả | webp vuông ~800×800 | new-art | P0 |
-| `images/gallery/mam.webp` | gallery | Card nguyên liệu: Nước mắm | webp vuông ~800×800 | new-art | P0 |
-| `images/gallery/chanh-ot.webp` | gallery | Card nguyên liệu: Chanh ớt | webp vuông ~800×800 | new-art | P0 |
+| `images/gallery/banh-pho.webp` | gallery | Card nguyên liệu: Bánh phở | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/gallery/nuoc-dung.webp` | gallery | Card nguyên liệu: Nước dùng | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/gallery/que.webp` | gallery | Card nguyên liệu: Quế | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/gallery/hoi.webp` | gallery | Card nguyên liệu: Hoa hồi | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/gallery/gung-nuong.webp` | gallery | Card nguyên liệu: Gừng nướng | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/gallery/hanh.webp` | gallery | Card nguyên liệu: Hành | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/gallery/gau.webp` | gallery | Card nguyên liệu: Gầu | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/gallery/chin.webp` | gallery | Card nguyên liệu: Nạm chín | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/gallery/tai.webp` | gallery | Card nguyên liệu: Thịt tái | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/gallery/thao-qua.webp` | gallery | Card nguyên liệu: Thảo quả | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/gallery/mam.webp` | gallery | Card nguyên liệu: Nước mắm | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
+| `images/gallery/chanh-ot.webp` | gallery | Card nguyên liệu: Chanh ớt | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất** | P0 |
 | `images/tableau-keep/00-sky.webp` | tableauKeep | Lớp xa nhất: bầu trời/hậu cảnh Gánh Phở Cổ | webp multiplane, cùng khung hình các lớp khác | new-art | P0 |
 | `images/tableau-keep/01-facade.webp` | tableauKeep | Lớp mặt tiền phố | webp multiplane | new-art | P0 |
 | `images/tableau-keep/02-cart.webp` | tableauKeep | Lớp gánh phở (chủ thể chính) | webp multiplane | new-art | P0 |
@@ -46,9 +46,9 @@ mới, ngoài phạm vi task này).
 | `images/tableau-world/01-rooftops.webp` | tableauWorld | Lớp mái nhà phố cổ | webp multiplane | new-art | P0 |
 | `images/tableau-world/02-street.webp` | tableauWorld | Lớp mặt phố | webp multiplane | new-art | P0 |
 | `images/tableau-world/03-neon.webp` | tableauWorld | Lớp biển hiệu/đèn neon, gần camera nhất | webp multiplane, có alpha | new-art | P1 |
-| `images/launch/card-01.webp` | launch | Card rương xoè quạt #1 | webp | new-art — có thể tái dùng render chest 3D làm nguồn, xem ghi chú | P1 |
-| `images/launch/card-02.webp` | launch | Card rương xoè quạt #2 | webp | new-art — như trên | P1 |
-| `images/launch/card-03.webp` | launch | Card rương xoè quạt #3 | webp | new-art — như trên | P1 |
+| `images/launch/card-01.webp` | launch | Card rương xoè quạt #1 (rương đóng — "chưa mở") | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất**, xem ghi chú | P1 |
+| `images/launch/card-02.webp` | launch | Card rương xoè quạt #2 (rương mở, xu/đá quý tràn ra — "phần thưởng") | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất**, xem ghi chú | P1 |
+| `images/launch/card-03.webp` | launch | Card rương xoè quạt #3 (huy hiệu bát phở bốc khói — "chính trò chơi là phần thưởng") | webp 480×720 (2:3) | hand-drawn SVG → webp — **đã sản xuất**, xem ghi chú | P1 |
 | `images/launch/qr-chest.webp` | launch | QR code dẫn tới link chơi/nhận rương | webp | procedural (QR luôn sinh runtime từ URL thật) — **chưa sản xuất**, xem ghi chú | P1 |
 | `svg/wordmark-pho-co.svg` | footer | Wordmark "PHỞ CỔ" khổ lớn cho RevealFooter | svg 1200×220 | procedural — **đã sản xuất** | P1 |
 
@@ -67,19 +67,21 @@ mới, ngoài phạm vi task này).
   `web/public/models/chest-*.glb` đã có trong repo (4 rương: common/epic/gold/grand).
   Không tái sản xuất ngay vì cần bake ảnh tĩnh từ model 3D (yêu cầu render
   headless, không có sẵn công cụ trong phiên này) — xem quyết định bên dưới.
-- **New-art còn cần: 31** — đây là con số quan trọng nhất cho việc lên kế hoạch
+- **New-art sản xuất xong (task T-assets-2): 15** — 12 card nguyên liệu
+  gallery + 3 card launch fan, xem log ngày 2026-09-09 trong `landing-6.md`
+  cho phương pháp (SVG vẽ tay → rasterize webp bằng `sharp`, không dùng
+  render 3D/glb như phương án (a) ở "Quyết định không có trong spec" bên
+  dưới đã gợi ý — xem cập nhật mục 1).
+- **New-art còn cần: 16** — đây là con số quan trọng nhất cho việc lên kế hoạch
   các task tiếp theo (Giai đoạn D). Danh sách đầy đủ:
   1. `images/story-intro/teaser-poster.webp` — poster video teaser
   2. `videos/teaser-1080.mp4` — video trailer 01:48
   3. `images/story-intro/side-media.webp` — ảnh phụ storyIntro
   4. `videos/topo-loop.mp4` — video loop topographic
   5. `sprites/keeper-sheet.webp` — spritesheet nhân vật người giữ lửa
-  6-17. 12 card nguyên liệu (`images/gallery/*.webp`): banh-pho, nuoc-dung,
-     que, hoi, gung-nuong, hanh, gau, chin, tai, thao-qua, mam, chanh-ot
-  18-22. 5 lớp `images/tableau-keep/00..04-*.webp` (sky/facade/cart/stove/steam)
-  23-24. 2 cảnh `images/tableau-factions/bac.webp`, `nam.webp`
-  25-28. 4 lớp `images/tableau-world/00..03-*.webp` (sky-night/rooftops/street/neon)
-  29-31. 3 card `images/launch/card-01..03.webp`
+  6-10. 5 lớp `images/tableau-keep/00..04-*.webp` (sky/facade/cart/stove/steam)
+  11-12. 2 cảnh `images/tableau-factions/bac.webp`, `nam.webp`
+  13-16. 4 lớp `images/tableau-world/00..03-*.webp` (sky-night/rooftops/street/neon)
 
 ## Quyết định không có trong spec
 
@@ -87,7 +89,17 @@ mới, ngoài phạm vi task này).
    3D rương thật (`web/public/models/chest-{common,epic,gold,grand}.glb`) dùng
    cho game chính. `assets.ts` của landing-6 lại xin ảnh 2D webp (chest lật
    mặt trước/sau, card xoè quạt). Có hai hướng hợp lý cho T16/T21 sau này —
-   **chưa chốt, để task thực thi chương đó quyết**:
+   **chưa chốt, để task thực thi chương đó quyết** (cập nhật: 3 `launch/
+   card-*.webp` đã sản xuất bằng phương án (c) dưới đây; `chestFront`/
+   `chestBack` của `collectionIntro` vẫn để ngỏ (a)/(b)):
+   - (c) **[Đã dùng cho 3 launch card]** Không bake glb (không có công cụ
+     render headless three.js sẵn sàng trong phiên T-assets-2, và việc thêm
+     một script bake mới ngoài phạm vi được giao — chỉ được phép vẽ SVG tay
+     + `sharp`), mà vẽ tay 3 motif rương/thưởng gốc bằng SVG cùng hệ thống
+     ngôn ngữ thị giác của `ChestVisual.tsx` (vàng brass, rương đóng/mở, xu
+     + đá quý) nhưng không sao chép hình học của glb — giữ nhất quán *chủ
+     đề* (rương kho báu) mà không nhất quán *hình khối chính xác* với model
+     3D. Nếu sau này cần khớp render 3D 100%, quay lại (a).
    - (a) Bake ảnh tĩnh từ chính glb có sẵn (three.js offscreen render, giống
      `scripts/build-chest-models.mjs` đã làm cho việc build model — không cần
      dep mới, ba.js đã có sẵn) → giữ đúng rương thật của game, nhất quán;

@@ -28,6 +28,24 @@ const READY: ReadonlySet<string> = new Set<string>([
   "/landing-6/images/tableau-factions/scan.webp",
   "/landing-6/svg/old-quarter-map.svg",
   "/landing-6/svg/wordmark-pho-co.svg",
+
+  // T-assets-2 — 12 gallery ingredient icons + 3 launch fan cards, hand-drawn
+  // SVG rasterized to webp (xem docs/plans/landing-6-assets.md).
+  "/landing-6/images/gallery/banh-pho.webp",
+  "/landing-6/images/gallery/nuoc-dung.webp",
+  "/landing-6/images/gallery/que.webp",
+  "/landing-6/images/gallery/hoi.webp",
+  "/landing-6/images/gallery/gung-nuong.webp",
+  "/landing-6/images/gallery/hanh.webp",
+  "/landing-6/images/gallery/gau.webp",
+  "/landing-6/images/gallery/chin.webp",
+  "/landing-6/images/gallery/tai.webp",
+  "/landing-6/images/gallery/thao-qua.webp",
+  "/landing-6/images/gallery/mam.webp",
+  "/landing-6/images/gallery/chanh-ot.webp",
+  "/landing-6/images/launch/card-01.webp",
+  "/landing-6/images/launch/card-02.webp",
+  "/landing-6/images/launch/card-03.webp",
 ]);
 
 /** PLACEHOLDER nếu file chưa tồn tại, ngược lại trả chính path đó. */
