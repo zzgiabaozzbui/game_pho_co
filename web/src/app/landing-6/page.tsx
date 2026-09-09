@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { audioEngine } from "../landing-4/components/AudioSynthesizer";
 import { CollectionIntroChapter } from "./components/CollectionIntroChapter";
@@ -17,6 +17,7 @@ import { TableauKeepChapter } from "./components/TableauKeepChapter";
 import { TableauWorldChapter } from "./components/TableauWorldChapter";
 import { landing6Content } from "./landing-6.data";
 import { initScrollEngine, refreshScroll } from "./motion/timeline";
+import { useGlobalProgress } from "./motion/useScrollProgress";
 import { Stage } from "./webgl/Stage";
 
 /**
@@ -67,6 +68,25 @@ export default function Landing6Page() {
       audioEngine.stop();
     };
   }, []);
+
+  // Post-plan enhancement: react the ambient drone to journey progress
+  // (mood arc — see AudioSynthesizer.ts's setMood() doc comment). Drives off
+  // the same 0..1 global progress Frame's HUD rail already reads, so no new
+  // scroll listener. `progress` re-renders at scroll-tick rate (GSAP already
+  // batches ScrollTrigger's onUpdate to one per rAF), which is too fine a
+  // grain for audio param scheduling — the ref below rounds to the nearest
+  // 0.01 and skips the call entirely unless that bucket changed, so a typical
+  // scroll only reaches the engine ~100 times over the whole page instead of
+  // every frame. `setMood()` itself is a no-op when audio isn't running.
+  const progress = useGlobalProgress();
+  const lastMoodBucket = useRef(-1);
+  useEffect(() => {
+    if (!audioOn) return;
+    const bucket = Math.round(progress * 100);
+    if (bucket === lastMoodBucket.current) return;
+    lastMoodBucket.current = bucket;
+    audioEngine.setMood(progress);
+  }, [progress, audioOn]);
 
   // T22 reveal footer: RevealFooter measures its own rendered height (i18n
   // copy differs in length between vi/en, so a fixed px guess would drift)
