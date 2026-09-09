@@ -11,6 +11,7 @@ import { StoryIntroChapter } from "./components/StoryIntroChapter";
 import { StoryProjectChapter } from "./components/StoryProjectChapter";
 import { TableauFactionsChapter } from "./components/TableauFactionsChapter";
 import { TableauKeepChapter } from "./components/TableauKeepChapter";
+import { TableauWorldChapter } from "./components/TableauWorldChapter";
 import { landing6Content } from "./landing-6.data";
 import { initScrollEngine, refreshScroll } from "./motion/timeline";
 import { Stage } from "./webgl/Stage";
@@ -156,12 +157,23 @@ export default function Landing6Page() {
 
           // T19: tableauFactions has real content, TableauFactionsChapter
           // owns its own layout (pin/scrub split parallax via createChapter,
-          // same shared keyframes module as T18). 2 remaining chapters keep
-          // the placeholder shell for T20-T21.
+          // same shared keyframes module as T18).
           if (id === "tableauFactions") {
             return (
               <section key={id} id={id}>
                 <TableauFactionsChapter content={content.tableauFactions} />
+              </section>
+            );
+          }
+
+          // T20: tableauWorld has real content, TableauWorldChapter owns its
+          // own layout (pin/scrub multiplane parallax via createChapter,
+          // same shared keyframes module as T18/T19). 1 remaining chapter
+          // (launch) keeps the placeholder shell for T21.
+          if (id === "tableauWorld") {
+            return (
+              <section key={id} id={id}>
+                <TableauWorldChapter content={content.tableauWorld} />
               </section>
             );
           }

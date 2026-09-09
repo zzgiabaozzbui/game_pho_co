@@ -1,0 +1,92 @@
+/*
+ * Tableau 003 "Phố cổ về đêm" (T20). Pinned multiplane parallax stage — see
+ * TableauWorldChapter.tsx doc comment for scrubVh / layer / glow reasoning.
+ */
+
+.stage {
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: var(--l6-void);
+}
+
+.layers {
+  position: absolute;
+  inset: 0;
+}
+
+/* Each layer wrapper is what `parallaxTransform()` moves — full-bleed so
+   translate/scale reads correctly regardless of which band its inner
+   MediaSlot occupies. Same pattern as TableauKeepChapter.module.css. */
+.layer {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+/* ---- Bands: per-layer framing, back to front ---------------------------- */
+
+.bandSkyNight {
+  position: absolute;
+  inset: 0;
+}
+
+.bandRooftops {
+  position: absolute;
+  inset: 0 4% 52% 4%;
+}
+
+.bandStreet {
+  position: absolute;
+  inset: 34% 8% 6% 8%;
+}
+
+/* Neon: narrower foreground band (street signage), given its own stacking
+   context (`isolation: isolate`) so the glow pseudo-element behind it can't
+   leak past this box into the other layers' z-index stack. */
+.bandNeon {
+  position: absolute;
+  inset: 48% 22% 14% 22%;
+  isolation: isolate;
+}
+
+/* Cheap "neon glow" treatment: a soft accent-tinted radial blur sitting
+   behind the neon placeholder, so the composition reads as lit signage even
+   before real art lands. CSS only, no new assets — negative inset makes the
+   glow bleed past the band's own edges like real light would. */
+.bandNeon::before {
+  content: "";
+  position: absolute;
+  inset: -30% -20%;
+  z-index: -1;
+  background: radial-gradient(ellipse at center, var(--l6-accent-glow) 0%, transparent 70%);
+  filter: blur(2.5rem);
+  pointer-events: none;
+}
+
+/* ---- Overlay copy: bottom-anchored, T18's convention (see file doc
+   comment for why this composition fits that over T19's centered-top). --- */
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background: linear-gradient(to top, var(--l6-void) 0%, rgba(0, 0, 0, 0.6) 30%, transparent 60%);
+}
+
+.copy {
+  position: relative;
+  z-index: 11;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--l6-space-1);
+  padding: var(--l6-gutter);
+  max-width: 40rem;
+}
+
+.paragraph {
+  max-width: 32rem;
+}

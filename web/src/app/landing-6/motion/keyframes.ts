@@ -133,3 +133,34 @@ export const tableauFactionsKeyframes: TableauKeyframes = {
     { id: "scan", speed: 0.4, opacityFrom: 0.35, opacityTo: 0.85 },
   ],
 };
+
+/**
+ * Tableau 003 "Phố cổ về đêm" (T20) — 4 layers, back to front, matching
+ * `assets.tableauWorld.layers` order exactly (index-for-index):
+ *   00-sky-night, 01-rooftops, 02-street, 03-neon
+ *
+ * Leans toward T18's full depth-stack treatment rather than T19's simpler
+ * split: the source assets themselves are a back-to-front night scene (sky,
+ * rooftops, street, neon signage), not a two-halves-plus-seam composition
+ * like T19's Bắc/Nam duality — there's real depth here to sell, so 4 layers
+ * with increasing speed back-to-front (same multiplane read as T18) is the
+ * honest choice, just one layer short of T18's 5 (no steam-equivalent
+ * foreground haze layer in this composition).
+ *
+ * `neon` (foreground, fastest) is the one layer that DIMS rather than
+ * builds in — opposite of T18's `steam` / T19's `scan`, which both fade IN
+ * as the camera "arrives". This chapter's own copy is about signs going
+ * dark one by one ("biển hiệu tắt dần"), and this is the last tableau
+ * before `launch` (whose heading is literally "relight the flame") — so the
+ * neon glow fading from 0.9 to 0.35 across the scrub is a one-line way to
+ * let the scene's own dimming foreshadow Launch's relighting beat, instead
+ * of ending the tableau chapters on the same "energy builds in" note twice.
+ */
+export const tableauWorldKeyframes: TableauKeyframes = {
+  layers: [
+    { id: "sky-night", speed: 0.05, scaleFrom: 1, scaleTo: 1.1 },
+    { id: "rooftops", speed: 0.15, driftX: -0.02 },
+    { id: "street", speed: 0.38, driftX: 0.03 },
+    { id: "neon", speed: 0.6, opacityFrom: 0.9, opacityTo: 0.35 },
+  ],
+};
