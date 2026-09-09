@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { CollectionIntroChapter } from "./components/CollectionIntroChapter";
 import { Frame } from "./components/Frame";
@@ -8,6 +8,7 @@ import { GalleryChapter } from "./components/GalleryChapter";
 import { HeroChapter } from "./components/HeroChapter";
 import { LaunchChapter } from "./components/LaunchChapter";
 import { Preloader } from "./components/Preloader";
+import { RevealFooter } from "./components/RevealFooter";
 import { StoryIntroChapter } from "./components/StoryIntroChapter";
 import { StoryProjectChapter } from "./components/StoryProjectChapter";
 import { TableauFactionsChapter } from "./components/TableauFactionsChapter";
@@ -38,6 +39,13 @@ export default function Landing6Page() {
   // KHÔNG phải state của nút audio trong Frame, xem ghi chú dưới.
   const [entered, setEntered] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(false);
+
+  // T22 reveal footer: RevealFooter measures its own rendered height (i18n
+  // copy differs in length between vi/en, so a fixed px guess would drift)
+  // and reports it here; <main>'s margin-bottom below mirrors it so the
+  // fixed footer only shows once the user scrolls past main's real content.
+  const [footerHeight, setFooterHeight] = useState(0);
+  const handleFooterHeight = useCallback((h: number) => setFooterHeight(h), []);
 
   useEffect(() => {
     // Chặn cuộn nền trong khi preloader còn che — Preloader không nằm trong
@@ -92,7 +100,15 @@ export default function Landing6Page() {
       <Frame content={content} />
       <main
         data-l6-audio-seed={audioEnabled}
-        style={{ position: "relative", zIndex: "var(--l6-z-content)" }}
+        style={{
+          position: "relative",
+          zIndex: "var(--l6-z-content)",
+          // Opaque so this box hides the fixed RevealFooter (z 0) parked
+          // underneath for as long as main's in-flow box still reaches this
+          // part of the screen — see RevealFooter.tsx's doc comment.
+          background: "var(--l6-void)",
+          marginBottom: footerHeight,
+        }}
       >
         {content.menu.items.map(({ id, index, label }) => {
           // T13: hero có ruột thật, HeroChapter tự lo layout/padding của nó.
@@ -217,6 +233,7 @@ export default function Landing6Page() {
           );
         })}
       </main>
+      <RevealFooter content={content.footer} onHeightChange={handleFooterHeight} />
     </>
   );
 }

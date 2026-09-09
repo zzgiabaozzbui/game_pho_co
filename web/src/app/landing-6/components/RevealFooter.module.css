@@ -1,0 +1,101 @@
+/*
+ * Reveal footer (T22). Fixed, parked under everything (`--l6-z-footer: 0`
+ * in tokens.css) — `page.tsx` gives `<main>` an opaque background + a
+ * `margin-bottom` equal to this footer's measured height so it only shows
+ * once the user scrolls past `<main>`'s real content.
+ */
+
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--l6-z-footer);
+  overflow: hidden;
+  background: var(--l6-surface);
+  border-top: var(--l6-hair-w) solid var(--l6-hair);
+  padding: var(--l6-space-4) var(--l6-gutter) var(--l6-space-2);
+}
+
+/* Giant brand wordmark, scaled to full width, sitting behind the columns —
+   dimmed so the HUD text on top of it stays readable. */
+.wordmark {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4%;
+  width: 100%;
+  height: auto;
+  opacity: 0.14;
+  pointer-events: none;
+  user-select: none;
+}
+
+.columns {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--l6-space-4);
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l6-space-2);
+}
+
+.log {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l6-space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.linkList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--l6-space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--l6-sans);
+  font-size: var(--l6-fs-body);
+  color: var(--l6-text-muted);
+  cursor: pointer;
+  text-align: left;
+  transition: color var(--l6-dur-fast) var(--l6-ease-out);
+}
+.link:hover,
+.link:focus-visible {
+  color: var(--l6-accent);
+}
+
+/* Honest-inert labels (social, brand book) — deliberately NOT a link, see
+   RevealFooter.tsx doc comment: no real destination exists yet. */
+.linkInert {
+  font-family: var(--l6-sans);
+  font-size: var(--l6-fs-body);
+  color: var(--l6-text-faint);
+}
+
+.copyright {
+  position: relative;
+  margin-top: var(--l6-space-4);
+  padding-top: var(--l6-space-2);
+  border-top: var(--l6-hair-w) solid var(--l6-hair);
+  color: var(--l6-text-faint);
+}
+
+@media (max-width: 47.9375rem) {
+  .columns {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
