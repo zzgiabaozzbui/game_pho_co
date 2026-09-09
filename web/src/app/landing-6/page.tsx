@@ -9,6 +9,7 @@ import { HeroChapter } from "./components/HeroChapter";
 import { Preloader } from "./components/Preloader";
 import { StoryIntroChapter } from "./components/StoryIntroChapter";
 import { StoryProjectChapter } from "./components/StoryProjectChapter";
+import { TableauKeepChapter } from "./components/TableauKeepChapter";
 import { landing6Content } from "./landing-6.data";
 import { initScrollEngine, refreshScroll } from "./motion/timeline";
 import { Stage } from "./webgl/Stage";
@@ -138,6 +139,17 @@ export default function Landing6Page() {
             return (
               <section key={id} id={id}>
                 <GalleryChapter content={content.gallery} />
+              </section>
+            );
+          }
+
+          // T18: tableauKeep has real content, TableauKeepChapter owns its
+          // own layout (pin/scrub multiplane parallax via createChapter).
+          // 3 remaining chapters keep the placeholder shell for T19-T21.
+          if (id === "tableauKeep") {
+            return (
+              <section key={id} id={id}>
+                <TableauKeepChapter content={content.tableauKeep} />
               </section>
             );
           }

@@ -1,0 +1,83 @@
+/*
+ * Tableau 001 "Gánh Phở Cổ" (T18). Pinned multiplane parallax stage — see
+ * TableauKeepChapter.tsx doc comment for scrubVh / mouse-parallax reasoning.
+ */
+
+.stage {
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: var(--l6-void);
+}
+
+.layers {
+  position: absolute;
+  inset: 0;
+}
+
+/* Each layer wrapper is the thing `parallaxTransform()` moves — full-bleed so
+   translate/scale reads correctly regardless of which band its inner
+   MediaSlot occupies. */
+.layer {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+/* ---- Bands: per-layer framing so placeholders read as distinct objects --
+   stacked in front of a backdrop, not one flat rectangle. Real art will
+   still respect these boxes (a multiplane cutout is framed like this
+   anyway) but can loosen them later if needed — this is this chapter's
+   composition call, not a MediaSlot concern. */
+
+.bandSky {
+  position: absolute;
+  inset: 0;
+}
+
+.bandFacade {
+  position: absolute;
+  inset: 0 6% 42% 6%;
+}
+
+.bandCart {
+  position: absolute;
+  inset: 36% 18% 10% 18%;
+}
+
+.bandStove {
+  position: absolute;
+  inset: 56% 34% 6% 34%;
+}
+
+.bandSteam {
+  position: absolute;
+  inset: 24% 26% 46% 26%;
+}
+
+/* ---- Overlay copy ---------------------------------------------------- */
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  /* --l6-void-based gradient per spec — no new color introduced. */
+  background: linear-gradient(to top, var(--l6-void) 0%, rgba(0, 0, 0, 0.55) 32%, transparent 62%);
+}
+
+.copy {
+  position: relative;
+  z-index: 11;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--l6-space-1);
+  padding: var(--l6-gutter);
+  max-width: 40rem;
+}
+
+.paragraph {
+  max-width: 32rem;
+}
