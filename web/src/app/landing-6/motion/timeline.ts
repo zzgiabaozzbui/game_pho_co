@@ -155,6 +155,18 @@ export function createChapter(
     pin: true,
     pinSpacing,
     scrub: true,
+    // T25: forces GSAP to hold the pin with a JS-driven transform instead of
+    // `position: fixed` on `el`. Needed because `content-visibility: auto`
+    // (tokens.css, T25) on the wrapping `<section>` applies `contain: layout`
+    // unconditionally (not just while its content is skipped) — and `contain:
+    // layout` makes that section a containing block for fixed/absolute
+    // descendants, same as `transform`/`filter` would. With the default
+    // `pinType: "fixed"`, `el` would then be "fixed" relative to its own
+    // section's box instead of the viewport, breaking the pin outright. This
+    // is GSAP's own documented escape hatch for exactly that ancestor
+    // combination, so switch to it instead of leaving content-visibility off
+    // the 4 pinned chapters.
+    pinType: "transform",
     onUpdate: (self) => onProgress?.(self.progress),
   });
 

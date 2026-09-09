@@ -177,7 +177,13 @@ export function TableauFactionsChapter({ content }: { content: Landing6Content["
         className={styles.scan}
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- static public asset, matches MediaSlot's own convention */}
-        <img src={assets.tableauFactions.scanline} alt="" className={styles.scanMedia} />
+        <img
+          src={assets.tableauFactions.scanline}
+          alt=""
+          className={styles.scanMedia}
+          loading="lazy"
+          decoding="async"
+        />
       </div>
 
       <div className={styles.scrim} />

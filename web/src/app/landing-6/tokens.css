@@ -151,3 +151,80 @@
     scroll-behavior: auto !important;
   }
 }
+
+/*
+ * T25 performance: `content-visibility: auto` skips layout/paint for whole
+ * chapters far from the viewport — this page will eventually carry ~31
+ * new-art images/videos across 9 chapters, so this matters more here than on
+ * a typical page. `contain-intrinsic-size` is the placeholder box size used
+ * while a chapter has never yet been "relevant to user" — and that includes
+ * the ONE moment this actually matters for correctness: `page.tsx` calls
+ * `refreshScroll()` (ScrollTrigger.refresh()) once, right after fonts settle,
+ * while every chapter below the first screen has never been visible yet. A
+ * wrong guess there makes ScrollTrigger cache the wrong start position for
+ * every chapter after it (see motion/timeline.ts's own doc comment on
+ * `refreshScroll()`). The values below match each chapter's REAL height:
+ * plain reveal chapters are one viewport tall; the 4 pin/scrub chapters are
+ * `(1 + scrubVh) viewports` tall (`scrubVh` per chapter, see each chapter's
+ * own file — GalleryChapter.tsx/TableauKeepChapter.tsx/
+ * TableauFactionsChapter.tsx/TableauWorldChapter.tsx — desktop vs. the same
+ * `MOBILE_QUERY` breakpoint (47.9375rem) every chapter already shares via
+ * `motion/useScrollProgress.ts`). The `auto` keyword means the browser
+ * forgets this guess and remembers the chapter's real rendered size instead,
+ * the first time it actually gets measured — this value only has to be right
+ * for that one early refresh, not forever.
+ *
+ * Pin/scrub compatibility: `content-visibility: auto` applies `contain:
+ * layout style paint` UNCONDITIONALLY (not just while skipped), and `contain:
+ * layout` makes the section a containing block for `position: fixed`
+ * descendants — the same conflict `transform`/`filter` on an ancestor would
+ * cause. GSAP's default pin technique sets the pinned element to `position:
+ * fixed`, which would then be "fixed" to its own section's box instead of the
+ * viewport, breaking the pin. `motion/timeline.ts`'s `createChapter()` now
+ * passes `pinType: "transform"` for exactly this reason — see its own doc
+ * comment. Don't add `content-visibility` to a pinned chapter's section
+ * without that in place.
+ */
+#hero,
+#storyIntro,
+#storyProject,
+#collectionIntro,
+#launch {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 100vh;
+}
+
+#gallery {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 400vh; /* 1 + scrubVh(3) desktop, GalleryChapter.tsx */
+}
+
+#tableauKeep {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500vh; /* 1 + scrubVh(4) desktop, TableauKeepChapter.tsx */
+}
+
+#tableauFactions {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 300vh; /* 1 + scrubVh(2) desktop, TableauFactionsChapter.tsx */
+}
+
+#tableauWorld {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600vh; /* 1 + scrubVh(5) desktop, TableauWorldChapter.tsx */
+}
+
+@media (max-width: 47.9375rem) {
+  #gallery {
+    contain-intrinsic-size: auto 300vh; /* 1 + scrubVh(2) mobile */
+  }
+  #tableauKeep {
+    contain-intrinsic-size: auto 300vh; /* 1 + scrubVh(2) mobile */
+  }
+  #tableauFactions {
+    contain-intrinsic-size: auto 200vh; /* 1 + scrubVh(1) mobile */
+  }
+  #tableauWorld {
+    contain-intrinsic-size: auto 300vh; /* 1 + scrubVh(2) mobile */
+  }
+}
