@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <!-- Bản đồ 36 phố phường, cách điệu — lưới đường trừu tượng, KHÔNG phải bản đồ
+       thật lấy từ nguồn nào; hoàn toàn tự vẽ, chỉ để gợi khối phố cổ cho HUD. -->
+  <rect width="800" height="600" fill="none"/>
+  <g stroke="#ffffff20" stroke-width="1">
+    <path d="M40 80 H760" />
+    <path d="M40 160 H620" />
+    <path d="M120 160 V520" />
+    <path d="M40 240 H700" />
+    <path d="M220 80 V560" />
+    <path d="M40 320 H760" />
+    <path d="M340 80 V560" />
+    <path d="M40 400 H680" />
+    <path d="M460 120 V560" />
+    <path d="M40 480 H760" />
+    <path d="M580 80 V560" />
+    <path d="M40 560 H700" />
+    <path d="M660 80 V520" />
+    <path d="M180 80 V560" stroke-dasharray="2 6" />
+    <path d="M40 120 H760" stroke-dasharray="2 6" />
+  </g>
+  <g stroke="#ffffff3d" stroke-width="1.5">
+    <path d="M120 160 L220 160 L220 240 L340 240 L340 320" />
+  </g>
+  <g fill="#e8b64a">
+    <circle cx="340" cy="320" r="5" />
+  </g>
+  <g stroke="#e8b64a" stroke-width="1">
+    <circle cx="340" cy="320" r="14" />
+    <path d="M340 296 V286 M340 344 V354 M316 320 H306 M364 320 H374" />
+  </g>
+  <g fill="none" stroke="#ffffff3d" stroke-width="1">
+    <path d="M30 70 H50 M30 70 V90" />
+    <path d="M770 70 H750 M770 70 V90" />
+    <path d="M30 570 H50 M30 570 V550" />
+    <path d="M770 570 H750 M770 570 V550" />
+  </g>
+</svg>

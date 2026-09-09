@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 220" fill="none">
+  <!-- Wordmark khổ lớn cho RevealFooter — chữ dựng bằng font hệ thống, không
+       sao chép logo/kiểu chữ của bất kỳ nguồn nào. -->
+  <text x="600" y="150" text-anchor="middle"
+    font-family="Arial, sans-serif" font-weight="900" font-size="150"
+    letter-spacing="-2" fill="#ffffff">PHỞ CỔ</text>
+</svg>

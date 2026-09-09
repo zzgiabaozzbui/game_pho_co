@@ -8,9 +8,10 @@
  * khuyết của `landing-5/assets.ts` mà bản này sinh ra để thay thế.
  * ═════════════════════════════════════════════════════════════════════════
  *
- * Hiện chưa có art nào tồn tại. T04 kiểm kê, các task sau sản xuất. Cho tới
- * lúc đó `resolveAsset()` trả về PLACEHOLDER để component vẽ ô hairline có
- * nhãn thay vì ảnh vỡ.
+ * T04 kiểm kê xong (`docs/plans/landing-6-assets.md`): 6 asset procedural đã
+ * sản xuất và thêm vào READY bên dưới; phần còn lại (new-art: ảnh/video minh
+ * hoạ, chest render 2D) chưa tồn tại — `resolveAsset()` trả PLACEHOLDER cho
+ * tới khi từng file được thêm và path được thêm vào READY.
  */
 
 export const PLACEHOLDER = "__placeholder__" as const;
@@ -19,7 +20,15 @@ export const PLACEHOLDER = "__placeholder__" as const;
  * Path của asset đã thực sự nằm trong `web/public`. Thêm path vào đây NGAY khi
  * file được commit — quên là component vẫn vẽ ô rỗng dù ảnh đã có.
  */
-const READY: ReadonlySet<string> = new Set<string>();
+const READY: ReadonlySet<string> = new Set<string>([
+  // T04 — procedural, sản xuất ngay (xem docs/plans/landing-6-assets.md).
+  "/landing-6/images/common/noise.webp",
+  "/landing-6/images/hero/emblem-pho-gradient.webp",
+  "/landing-6/images/hero/emblem-pho-diffuse.webp",
+  "/landing-6/images/tableau-factions/scan.webp",
+  "/landing-6/svg/old-quarter-map.svg",
+  "/landing-6/svg/wordmark-pho-co.svg",
+]);
 
 /** PLACEHOLDER nếu file chưa tồn tại, ngược lại trả chính path đó. */
 export function resolveAsset(path: string): string | typeof PLACEHOLDER {
