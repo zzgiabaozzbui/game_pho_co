@@ -1,0 +1,153 @@
+/*
+ * Landing-6 design tokens — "Phở Cổ" dark scrollytelling theme.
+ *
+ * Scoped to .l6 so nothing leaks into the game's light paper theme in globals.css.
+ * Dark ground + one warm accent + hairline HUD, derived from the game palette:
+ *   --color-gold #c9962b  -> accent (brightened for black ground)
+ *   --color-jade #3f6c51  -> faction "Bắc" (cool)
+ *   --color-son  #b4432f  -> faction "Nam" (warm)
+ */
+
+.l6 {
+  /* ---- Ground ---------------------------------------------------------- */
+  --l6-void: #000000; /* page ground, matches WebGL clear color */
+  --l6-surface: #0a0908; /* raised panels, a hair warm so it reads as soot not grey */
+  --l6-surface-2: #14110e;
+
+  /* ---- Accent ---------------------------------------------------------- */
+  /* Game gold #c9962b is too dim on black; lifted to keep AA on body text. */
+  --l6-accent: #e8b64a; /* broth / steam-lit brass */
+  --l6-accent-dim: #8a6c2a;
+  --l6-accent-glow: rgba(232, 182, 74, 0.18);
+
+  /* ---- Faction duality (Tableau 002) ----------------------------------- */
+  --l6-bac: #5da37a; /* Phở Bắc — jade, brightened */
+  --l6-nam: #d9583f; /* Phở Nam — sơn red, brightened */
+
+  /* ---- Text ------------------------------------------------------------ */
+  --l6-text: #ffffff;
+  --l6-text-muted: rgba(255, 255, 255, 0.72); /* body copy */
+  --l6-text-faint: rgba(255, 255, 255, 0.44); /* HUD labels, captions */
+
+  /* ---- HUD hairlines --------------------------------------------------- */
+  --l6-hair: rgba(255, 255, 255, 0.12); /* the 1px tactical grid */
+  --l6-hair-strong: rgba(255, 255, 255, 0.24);
+  --l6-hair-w: 1px;
+
+  /* ---- Type ------------------------------------------------------------ */
+  /* Mono carries every HUD/telemetry/heading surface. Sans carries body copy
+     only. Both must cover Vietnamese diacritics. */
+  --l6-mono: var(--font-jetbrains-mono), ui-monospace, "SFMono-Regular",
+    "Cascadia Mono", Consolas, monospace;
+  --l6-sans: var(--font-be-vietnam-pro), ui-sans-serif, system-ui, sans-serif;
+
+  --l6-fs-display: clamp(2.5rem, 6vw, 5.5rem); /* GIỮ GÌN / BẢO VỆ / TÁI HIỆN */
+  --l6-fs-h2: clamp(1.75rem, 3.2vw, 3rem);
+  --l6-fs-body: clamp(0.9375rem, 1.05vw, 1.0625rem);
+  --l6-fs-pretitle: 0.6875rem; /* 11px chapter pretitles */
+  --l6-fs-hud: 0.625rem; /* 10px telemetry */
+
+  --l6-tracking-display: -0.03em;
+  --l6-tracking-hud: 0.15em;
+  --l6-leading-body: 1.6;
+
+  /* ---- Spacing --------------------------------------------------------- */
+  /* 8px base. Frame gutter is what insets the HUD rails from the viewport. */
+  --l6-space-1: 0.5rem;
+  --l6-space-2: 1rem;
+  --l6-space-3: 1.5rem;
+  --l6-space-4: 2.5rem;
+  --l6-space-5: 4rem;
+  --l6-space-6: 6rem;
+  --l6-gutter: clamp(1rem, 3vw, 2.5rem);
+
+  /* ---- Layering -------------------------------------------------------- */
+  /* Footer sits UNDER the scrolling body and is revealed as it slides past,
+     so it must stay at 0 and the scroll wrapper must be opaque. */
+  --l6-z-footer: 0;
+  --l6-z-webgl: 1;
+  --l6-z-content: 10;
+  --l6-z-frame: 20;
+  --l6-z-overlay: 30; /* menu, console */
+  --l6-z-preloader: 40;
+
+  /* ---- Motion ---------------------------------------------------------- */
+  --l6-ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* expo.out — HUD reveals */
+  --l6-ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+  --l6-dur-fast: 180ms;
+  --l6-dur: 420ms;
+  --l6-dur-slow: 900ms;
+
+  color: var(--l6-text);
+  background: var(--l6-void);
+  font-family: var(--l6-sans);
+}
+
+/* Monospace surfaces share tabular numerals so telemetry digits do not jitter
+   while they tick. */
+.l6 .l6-mono {
+  font-family: var(--l6-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.l6 .l6-hud {
+  font-family: var(--l6-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--l6-fs-hud);
+  letter-spacing: var(--l6-tracking-hud);
+  text-transform: uppercase;
+  color: var(--l6-text-faint);
+}
+
+.l6 .l6-pretitle {
+  font-family: var(--l6-mono);
+  font-size: var(--l6-fs-pretitle);
+  letter-spacing: var(--l6-tracking-hud);
+  text-transform: uppercase;
+  color: var(--l6-accent);
+}
+
+.l6 .l6-display {
+  font-family: var(--l6-mono);
+  font-size: var(--l6-fs-display);
+  letter-spacing: var(--l6-tracking-display);
+  text-transform: uppercase;
+  line-height: 0.95;
+}
+
+.l6 .l6-body {
+  font-size: var(--l6-fs-body);
+  line-height: var(--l6-leading-body);
+  color: var(--l6-text-muted);
+  font-weight: 300;
+}
+
+/* ponytail: one shared rule instead of per-component borders. Every tactical
+   panel in the design is the same hairline box. */
+.l6 .l6-panel {
+  border: var(--l6-hair-w) solid var(--l6-hair);
+}
+
+/*
+ * Reduced motion is a hard gate, not a nicety: this page is built on scrub-
+ * driven parallax, which is exactly what triggers vestibular symptoms.
+ * The scroll timeline also checks this in JS (motion/timeline.ts) and skips
+ * pinning entirely — this block only covers CSS-driven transitions.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .l6 {
+    --l6-dur-fast: 0ms;
+    --l6-dur: 0ms;
+    --l6-dur-slow: 0ms;
+  }
+
+  .l6 *,
+  .l6 *::before,
+  .l6 *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
