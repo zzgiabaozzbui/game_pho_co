@@ -1,23 +1,45 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLang } from "@/lib/i18n";
 import { Frame } from "./components/Frame";
+import { Preloader } from "./components/Preloader";
 import { landing6Content } from "./landing-6.data";
 import { initScrollEngine, refreshScroll } from "./motion/timeline";
 
 /**
- * Khung route landing-6 (T06).
+ * Khung route landing-6 (T06, HUD T07, preloader T08).
  *
  * Đây mới là vỏ: 9 section trống đúng id/thứ tự, đủ để chứng minh scroll
  * engine + token + font mono + i18n chạy thông. T13–T22 thay ruột từng section,
- * T07 bọc HUD, T09 chèn canvas WebGL.
+ * T09 chèn canvas WebGL.
  */
 export default function Landing6Page() {
   const { lang } = useLang();
   const content = landing6Content[lang];
 
+  // `entered` gate: nội dung + scroll engine chỉ sống sau khi qua preloader.
+  // `audioEnabled` là lựa chọn ban đầu của Preloader — T23 (audio engine
+  // thật) đọc giá trị này để quyết định có tự phát ambient ngay không; nó
+  // KHÔNG phải state của nút audio trong Frame, xem ghi chú dưới.
+  const [entered, setEntered] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(false);
+
   useEffect(() => {
+    // Chặn cuộn nền trong khi preloader còn che — Preloader không nằm trong
+    // luồng document nên chỉ ẩn nó không đủ, phải khoá scroll ở body.
+    document.body.style.overflow = entered ? "" : "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [entered]);
+
+  useEffect(() => {
+    // Chỉ khởi động Lenis/ScrollTrigger SAU khi nội dung thật đã hiện —
+    // trước đó trang bị khoá scroll và pin mốc tính trên layout chưa chắc ổn
+    // định (ẩn sau preloader vẫn full-height nhưng an toàn hơn là đợi).
+    if (!entered) return;
+
     const engine = initScrollEngine();
 
     // Chiều cao trang chỉ đúng sau khi font ổn định; refresh sớm hơn thì mọi
@@ -31,12 +53,32 @@ export default function Landing6Page() {
       alive = false;
       engine.destroy();
     };
-  }, []);
+  }, [entered]);
+
+  if (!entered) {
+    return (
+      <Preloader
+        content={content.preloader}
+        onEnter={(withAudio) => {
+          setAudioEnabled(withAudio);
+          setEntered(true);
+        }}
+      />
+    );
+  }
 
   return (
     <>
+      {/* audioEnabled chỉ seed lựa chọn ban đầu; nút audio riêng của Frame
+          (state cục bộ trong Frame.tsx) vẫn là cái người dùng bấm để bật/tắt
+          sau đó — hai state độc lập. Khi T23 có engine thật, Frame nên khởi
+          tạo state audioOn của nó = audioEnabled thay vì luôn false; việc đó
+          để lại cho T23 vì hiện Frame chưa nhận prop này. */}
       <Frame content={content} />
-      <main style={{ position: "relative", zIndex: "var(--l6-z-content)" }}>
+      <main
+        data-l6-audio-seed={audioEnabled}
+        style={{ position: "relative", zIndex: "var(--l6-z-content)" }}
+      >
         {content.menu.items.map(({ id, index, label }) => (
           <section
             key={id}

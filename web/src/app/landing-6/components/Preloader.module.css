@@ -1,0 +1,95 @@
+/*
+ * Preloader.tsx (T08) — fullscreen overlay, highest z-layer (--l6-z-preloader).
+ * Mirrors Frame.module.css's convention: inline style for layout, module for
+ * anything needing pseudo-classes/keyframes (button hover, scanline anim).
+ */
+
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: var(--l6-z-preloader);
+  background: var(--l6-void);
+  color: var(--l6-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--l6-space-4);
+  padding: var(--l6-gutter);
+  opacity: 1;
+  transition: opacity var(--l6-dur-slow) var(--l6-ease-out);
+}
+
+.root.exiting {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bar {
+  position: relative;
+  width: min(70vw, 32rem);
+  height: 1px;
+  background: var(--l6-hair);
+  overflow: hidden;
+}
+
+.barFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0%;
+  background: var(--l6-accent);
+  box-shadow: 0 0 8px var(--l6-accent-glow);
+  transition: width 120ms linear;
+}
+
+.root.noAnim .barFill {
+  transition: none;
+}
+
+.line {
+  min-height: 1.2em;
+}
+
+/* Decorative-only flicker on the pretitle label — skipped under reduced
+   motion by not applying this class at all (see component). */
+.flicker {
+  animation: l6-preloader-flicker 2.4s steps(1) infinite;
+}
+
+@keyframes l6-preloader-flicker {
+  0%, 92%, 100% { opacity: 1; }
+  94% { opacity: 0.4; }
+  96% { opacity: 1; }
+}
+
+.gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--l6-space-3);
+}
+
+.gateButtons {
+  display: flex;
+  gap: var(--l6-space-2);
+}
+
+.gateBtn {
+  background: transparent;
+  border: var(--l6-hair-w) solid var(--l6-hair);
+  color: var(--l6-text);
+  font-family: var(--l6-mono);
+  font-size: var(--l6-fs-hud);
+  letter-spacing: var(--l6-tracking-hud);
+  text-transform: uppercase;
+  padding: var(--l6-space-2) var(--l6-space-3);
+  cursor: pointer;
+  transition: border-color var(--l6-dur-fast) var(--l6-ease-out),
+    color var(--l6-dur-fast) var(--l6-ease-out);
+}
+
+.gateBtn:hover,
+.gateBtn:focus-visible {
+  border-color: var(--l6-accent);
+  color: var(--l6-accent);
+}
