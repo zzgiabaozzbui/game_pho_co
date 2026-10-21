@@ -120,23 +120,40 @@ export const chestOpenSchema = z.object({
 });
 
 export const partnerCreateSchema = z.object({
-  name: z.string().min(1).max(120),
-  phone: z.string().max(30).optional(),
-  address: z.string().max(200).optional(),
-  description: z.string().max(2000).optional(),
-  googleMapsUrl: z.preprocess(
-    (v) => (v === "" || v === null ? undefined : v),
-    z.string().url().max(500).optional()
+  name: z.string().trim().min(1, "Tên đối tác không được để trống").max(120),
+  phone: z.preprocess(
+    (v) => (v === "" || v === null ? undefined : typeof v === "string" ? v.trim() : v),
+    z.string().max(30).optional()
   ),
+  address: z.preprocess(
+    (v) => (v === "" || v === null ? undefined : typeof v === "string" ? v.trim() : v),
+    z.string().max(200).optional()
+  ),
+  description: z.preprocess(
+    (v) => (v === "" || v === null ? undefined : typeof v === "string" ? v.trim() : v),
+    z.string().max(2000).optional()
+  ),
+  googleMapsUrl: z.preprocess((v) => {
+    if (!v || v === "" || v === null) return undefined;
+    if (typeof v === "string") {
+      const s = v.trim();
+      if (!s) return undefined;
+      return /^https?:\/\//i.test(s) ? s : `https://${s}`;
+    }
+    return v;
+  }, z.string().url("Link Google Maps không hợp lệ").max(500).optional()),
   lat: z.preprocess(
-    (v) => (v === "" || v === null || v === undefined ? undefined : Number(v)),
+    (v) => (v === "" || v === null || v === undefined || Number.isNaN(Number(v)) ? undefined : Number(v)),
     z.number().min(-90).max(90).optional()
   ),
   lng: z.preprocess(
-    (v) => (v === "" || v === null || v === undefined ? undefined : Number(v)),
+    (v) => (v === "" || v === null || v === undefined || Number.isNaN(Number(v)) ? undefined : Number(v)),
     z.number().min(-180).max(180).optional()
   ),
-  imageUrl: z.string().max(500).optional(),
+  imageUrl: z.preprocess(
+    (v) => (v === "" || v === null ? undefined : typeof v === "string" ? v.trim() : v),
+    z.string().max(500).optional()
+  ),
   isActive: z.boolean().default(true),
 });
 

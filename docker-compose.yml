@@ -17,7 +17,7 @@ x-app-env: &app-env
   UPLOADS_DIR: ${UPLOADS_DIR:-/data/uploads}
   ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
   SESSION_SECRET: ${SESSION_SECRET:-doi-lai-it-nhat-32-ky-tu-ngau-nhien-khi-deploy}
-  NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:3000}
+  NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-https://test.democloud.xyz}
 
 x-mysql-env: &mysql-env
   MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_change_me}
@@ -27,14 +27,14 @@ x-mysql-env: &mysql-env
 
 services:
   app:
+    image: baodevone/h2q_solution:phoco-web.v.1.1
     build: ./web
-    image: phoco-web:latest
     restart: unless-stopped
     networks:
       - phoco-internal
     ports:
       - target: 3000
-        published: ${APP_PORT:-3000}
+        published: ${APP_PORT:-7888}
         protocol: tcp
         mode: host
     environment:

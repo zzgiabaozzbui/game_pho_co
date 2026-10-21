@@ -55,7 +55,6 @@ export default function RewardCard({ item }: { item: RevealLoot }) {
                 {t("chest.watch_video")}
               </span>
               <div className="aspect-video w-full overflow-hidden rounded-lg ring-1 ring-line">
-                {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
                 <iframe
                   src={`https://www.youtube-nocookie.com/embed/${id}`}
                   title={t("chest.watch_video")}

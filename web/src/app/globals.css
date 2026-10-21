@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 @theme {
   --color-paper: #faf7f2;
@@ -77,6 +78,13 @@ body {
   );
   opacity: 0.55;
   border-radius: 999px;
+}
+
+/* Leaflet map fix */
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1;
 }
 
 /* Leaflet popup gọn trên mobile */

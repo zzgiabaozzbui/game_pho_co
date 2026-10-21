@@ -1184,6 +1184,19 @@ async function main() {
     }
   }
 
+  // --- SiteConfig: paywall defaults ---
+  const configDefaults: { key: string; value: string }[] = [
+    { key: "paywall_enabled", value: "false" },
+    { key: "paywall_price_vnd", value: "50000" },
+    { key: "paywall_title_vi", value: "Tramm yêu cầu thanh toán" },
+    { key: "paywall_title_en", value: "Premium station" },
+    { key: "paywall_desc_vi", value: "Trả phí một lần để mở khóa tramm này và tất cả tramm trả phí khác." },
+    { key: "paywall_desc_en", value: "Pay once to unlock this station and all other premium stations." },
+  ];
+  for (const c of configDefaults) {
+    await db.siteConfig.upsert({ where: { key: c.key }, create: c, update: {} });
+  }
+
   await db.$disconnect();
 }
 

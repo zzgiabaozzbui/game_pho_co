@@ -134,6 +134,7 @@ const vi = {
   "lang.switch": "EN",
 
   "guide.entry": "Hướng dẫn sử dụng",
+  "landing.entry": "Giới thiệu game",
   "guide.title": "Hướng dẫn sử dụng",
   "guide.subtitle":
     "Tất cả những gì bạn cần cho hành trình 36 phố phường.",
@@ -353,6 +354,7 @@ const en: Record<DictKey, string> = {
   "lang.switch": "VI",
 
   "guide.entry": "How to play",
+  "landing.entry": "Game Overview",
   "guide.title": "How to play",
   "guide.subtitle":
     "Everything you need for your 36-street journey.",

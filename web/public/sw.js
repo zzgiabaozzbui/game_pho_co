@@ -1,4 +1,4 @@
-const CACHE = "pc36-v2";
+const CACHE = "pc36-v3";
 const OFFLINE_URL = "/offline.html";
 
 self.addEventListener("install", (event) => {
@@ -28,7 +28,10 @@ self.addEventListener("fetch", (event) => {
 
   if (
     url.pathname.startsWith("/api/") ||
-    url.pathname.startsWith("/station/")
+    url.pathname.startsWith("/station/") ||
+    url.pathname.startsWith("/_next/static/development/") ||
+    url.pathname.includes("turbopack") ||
+    url.searchParams.has("turbopack")
   ) {
     return;
   }

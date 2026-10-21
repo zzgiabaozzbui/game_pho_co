@@ -167,7 +167,9 @@ function PartnerPicker({ linkedPartnerIds, onChange }: { linkedPartnerIds: numbe
   const [allPartners, setAllPartners] = useState<{ id: number; name: string }[]>([]);
 
   useEffect(() => {
-    fetch("/api/admin/partners").then((r) => r.json()).then(setAllPartners);
+    fetch("/api/admin/partners")
+      .then((r) => r.json())
+      .then((d) => Array.isArray(d) ? setAllPartners(d) : setAllPartners([]));
   }, []);
 
   const toggle = (partnerId: number) => {
@@ -1219,109 +1221,409 @@ interface PartnerData {
   googleMapsUrl: string;
   lat: string | number | null;
   lng: string | number | null;
-}
-
-function PartnerForm({ initial, onSave, onCancel }: { initial: PartnerData | null; onSave: (d: PartnerData) => void; onCancel: () => void }) {
-  const [form, setForm] = useState<PartnerData>(initial ?? { name: "", phone: "", address: "", description: "", googleMapsUrl: "", lat: "", lng: "" });
-  return (
-    <div className="rounded-xl border border-line/40 bg-white p-4 space-y-3">
-      <input placeholder="Tên đối tác *" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full rounded-lg border px-3 py-2" />
-      <input placeholder="Số điện thoại" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="w-full rounded-lg border px-3 py-2" />
-      <input placeholder="Địa chỉ" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} className="w-full rounded-lg border px-3 py-2" />
-      <textarea placeholder="Mô tả" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="w-full rounded-lg border px-3 py-2" />
-      <input placeholder="Link Google Maps" value={form.googleMapsUrl} onChange={e => setForm({ ...form, googleMapsUrl: e.target.value })} className="w-full rounded-lg border px-3 py-2" />
-      <div className="flex gap-2">
-        <input placeholder="Vĩ độ" value={form.lat ?? ""} onChange={e => setForm({ ...form, lat: e.target.value })} className="flex-1 rounded-lg border px-3 py-2" />
-        <input placeholder="Kinh độ" value={form.lng ?? ""} onChange={e => setForm({ ...form, lng: e.target.value })} className="flex-1 rounded-lg border px-3 py-2" />
-      </div>
-      <div className="flex gap-2">
-        <button onClick={() => onSave({ ...form, lat: form.lat !== "" && form.lat !== null ? Number(form.lat) : null, lng: form.lng !== "" && form.lng !== null ? Number(form.lng) : null })}
-          className="rounded-lg bg-son px-4 py-2 text-sm font-semibold text-cream">Lưu</button>
-        <button onClick={onCancel} className="rounded-lg border px-4 py-2 text-sm">Hủy</button>
-      </div>
-    </div>
-  );
+  isActive?: boolean;
 }
 
 interface PartnerRow {
   id: number;
   name: string;
-  phone: string;
-  address: string;
-  description: string;
-  googleMapsUrl: string;
+  phone: string | null;
+  address: string | null;
+  description: string | null;
+  googleMapsUrl: string | null;
   lat: number | null;
   lng: number | null;
+  isActive: boolean;
+}
+
+function PartnerForm({
+  initial,
+  onSave,
+  onCancel,
+}: {
+  initial: PartnerRow | null;
+  onSave: (d: PartnerData) => Promise<{ ok: boolean; error?: string }>;
+  onCancel: () => void;
+}) {
+  const [form, setForm] = useState<PartnerData>(
+    initial
+      ? {
+          name: initial.name,
+          phone: initial.phone ?? "",
+          address: initial.address ?? "",
+          description: initial.description ?? "",
+          googleMapsUrl: initial.googleMapsUrl ?? "",
+          lat: initial.lat ?? "",
+          lng: initial.lng ?? "",
+          isActive: initial.isActive ?? true,
+        }
+      : {
+          name: "",
+          phone: "",
+          address: "",
+          description: "",
+          googleMapsUrl: "",
+          lat: "",
+          lng: "",
+          isActive: true,
+        }
+  );
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const handleSubmit = async () => {
+    if (!form.name.trim()) {
+      setErr("Vui lòng nhập tên đối tác");
+      return;
+    }
+    setSaving(true);
+    setErr(null);
+    try {
+      const latVal = form.lat !== "" && form.lat !== null && !isNaN(Number(form.lat)) ? Number(form.lat) : null;
+      const lngVal = form.lng !== "" && form.lng !== null && !isNaN(Number(form.lng)) ? Number(form.lng) : null;
+      const res = await onSave({
+        ...form,
+        name: form.name.trim(),
+        phone: form.phone.trim(),
+        address: form.address.trim(),
+        description: form.description.trim(),
+        googleMapsUrl: form.googleMapsUrl.trim(),
+        lat: latVal,
+        lng: lngVal,
+      });
+      if (!res.ok) {
+        setErr(res.error || "Không thể lưu đối tác");
+      }
+    } catch {
+      setErr("Đã xảy ra lỗi kết nối");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="rounded-xl border border-line/40 bg-white p-4 space-y-3 shadow-sm">
+      <h4 className="font-semibold text-sm text-ink-strong">
+        {initial ? "Chỉnh sửa đối tác" : "Thêm đối tác mới"}
+      </h4>
+      {err && (
+        <div className="rounded-lg bg-red-50 border border-red-200 p-2.5 text-xs text-red-700 font-medium">
+          {err}
+        </div>
+      )}
+      <div>
+        <label className="block text-xs font-semibold text-ink-soft mb-1">Tên đối tác *</label>
+        <input
+          placeholder="Ví dụ: Xưởng Gốm Bát Tràng Phố Cổ"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+          className="w-full rounded-lg border border-line/60 px-3 py-2 text-sm focus:outline-none focus:border-son"
+        />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs font-semibold text-ink-soft mb-1">Số điện thoại</label>
+          <input
+            placeholder="Ví dụ: 0912 345 678"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            className="w-full rounded-lg border border-line/60 px-3 py-2 text-sm focus:outline-none focus:border-son"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-ink-soft mb-1">Địa chỉ</label>
+          <input
+            placeholder="Ví dụ: 42 Hàng Mã, Hoàn Kiếm"
+            value={form.address}
+            onChange={(e) => setForm({ ...form, address: e.target.value })}
+            className="w-full rounded-lg border border-line/60 px-3 py-2 text-sm focus:outline-none focus:border-son"
+          />
+        </div>
+      </div>
+      <div>
+        <label className="block text-xs font-semibold text-ink-soft mb-1">Mô tả hoạt động / workshop</label>
+        <textarea
+          placeholder="Trải nghiệm làm đồ thủ công truyền thống..."
+          rows={2}
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          className="w-full rounded-lg border border-line/60 px-3 py-2 text-sm focus:outline-none focus:border-son"
+        />
+      </div>
+      <div>
+        <label className="block text-xs font-semibold text-ink-soft mb-1">Link Google Maps</label>
+        <input
+          placeholder="https://maps.app.goo.gl/... hoặc google.com/maps/..."
+          value={form.googleMapsUrl}
+          onChange={(e) => setForm({ ...form, googleMapsUrl: e.target.value })}
+          className="w-full rounded-lg border border-line/60 px-3 py-2 text-sm focus:outline-none focus:border-son"
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs font-semibold text-ink-soft mb-1">Vĩ độ (Lat)</label>
+          <input
+            placeholder="21.0345"
+            value={form.lat ?? ""}
+            onChange={(e) => setForm({ ...form, lat: e.target.value })}
+            className="w-full rounded-lg border border-line/60 px-3 py-2 text-sm focus:outline-none focus:border-son"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-ink-soft mb-1">Kinh độ (Lng)</label>
+          <input
+            placeholder="105.8522"
+            value={form.lng ?? ""}
+            onChange={(e) => setForm({ ...form, lng: e.target.value })}
+            className="w-full rounded-lg border border-line/60 px-3 py-2 text-sm focus:outline-none focus:border-son"
+          />
+        </div>
+      </div>
+      <div className="flex items-center gap-2 pt-1">
+        <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
+          <input
+            type="checkbox"
+            checked={form.isActive !== false}
+            onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
+            className="rounded border-line"
+          />
+          Đang hoạt động (Hiển thị cho du khách)
+        </label>
+      </div>
+      <div className="flex gap-2 pt-2">
+        <button
+          onClick={handleSubmit}
+          disabled={saving}
+          className="rounded-lg bg-son px-4 py-2 text-sm font-semibold text-cream hover:opacity-90 disabled:opacity-50"
+        >
+          {saving ? "Đang lưu..." : "Lưu đối tác"}
+        </button>
+        <button
+          onClick={onCancel}
+          disabled={saving}
+          className="rounded-lg border border-line px-4 py-2 text-sm hover:bg-line/20"
+        >
+          Hủy
+        </button>
+      </div>
+    </div>
+  );
 }
 
 function PartnersTab() {
   const [partners, setPartners] = useState<PartnerRow[]>([]);
   const [editing, setEditing] = useState<PartnerRow | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [feedback, setFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  useEffect(() => {
-    fetch("/api/admin/partners").then(r => r.json()).then(setPartners);
-  }, []);
-
-  const handleSave = async (data: PartnerData) => {
-    if (editing) {
-      await fetch(`/api/admin/partners/${editing.id}`, {
-        method: "PUT", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-    } else {
-      await fetch("/api/admin/partners", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+  const loadPartners = async () => {
+    try {
+      const res = await fetch("/api/admin/partners");
+      const data = await res.json().catch(() => null);
+      if (Array.isArray(data)) {
+        setPartners(data);
+      } else {
+        setPartners([]);
+        if (data?.error) setFeedback({ type: "error", text: "Lỗi tải danh sách: " + data.error });
+      }
+    } catch {
+      setPartners([]);
+      setFeedback({ type: "error", text: "Không thể kết nối đến máy chủ" });
+    } finally {
+      setLoading(false);
     }
-    setShowForm(false);
-    setEditing(null);
-    fetch("/api/admin/partners").then(r => r.json()).then(setPartners);
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Xóa đối tác này?")) return;
-    await fetch(`/api/admin/partners/${id}`, { method: "DELETE" });
-    fetch("/api/admin/partners").then(r => r.json()).then(setPartners);
+  useEffect(() => {
+    loadPartners();
+  }, []);
+
+  const handleSave = async (data: PartnerData): Promise<{ ok: boolean; error?: string }> => {
+    try {
+      const isEdit = !!editing;
+      const url = isEdit ? `/api/admin/partners/${editing.id}` : "/api/admin/partners";
+      const method = isEdit ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const json = await res.json().catch(() => null);
+      if (!res.ok) {
+        let msg = "Lỗi khi lưu đối tác";
+        if (json?.error?.fieldErrors) {
+          const firstField = Object.values(json.error.fieldErrors)[0];
+          if (Array.isArray(firstField) && firstField[0]) msg = firstField[0] as string;
+        } else if (typeof json?.error === "string") {
+          msg = json.error;
+        }
+        return { ok: false, error: msg };
+      }
+      setShowForm(false);
+      setEditing(null);
+      setFeedback({
+        type: "success",
+        text: isEdit ? "Đã cập nhật đối tác thành công!" : "Đã thêm đối tác mới thành công!",
+      });
+      await loadPartners();
+      return { ok: true };
+    } catch {
+      return { ok: false, error: "Lỗi kết nối máy chủ" };
+    }
+  };
+
+  const handleDelete = async (id: number, name: string) => {
+    if (!confirm(`Bạn có chắc chắn muốn xóa đối tác "${name}"?`)) return;
+    try {
+      const res = await fetch(`/api/admin/partners/${id}`, { method: "DELETE" });
+      const json = await res.json().catch(() => null);
+      if (!res.ok) {
+        alert(json?.error || "Lỗi khi xóa đối tác");
+        return;
+      }
+      setFeedback({
+        type: "success",
+        text: json?.deactivated
+          ? `Đối tác "${name}" đã được chuyển sang trạng thái ngưng hoạt động vì đang liên kết với trạm/nhiệm vụ.`
+          : `Đã xóa đối tác "${name}".`,
+      });
+      await loadPartners();
+    } catch {
+      alert("Lỗi kết nối khi xóa");
+    }
   };
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Đối tác</h3>
-        <button onClick={() => { setEditing(null); setShowForm(true); }}
-          className="rounded-lg bg-son px-3 py-1.5 text-sm font-semibold text-cream">
+        <div>
+          <h3 className="text-lg font-semibold">Quản lý Đối tác Trải nghiệm</h3>
+          <p className="text-xs text-ink-soft">
+            Danh sách các xưởng, làng nghề và điểm trải nghiệm văn hóa kết nối với 36 phố phường
+          </p>
+        </div>
+        <button
+          onClick={() => {
+            setEditing(null);
+            setShowForm(true);
+            setFeedback(null);
+          }}
+          className="rounded-lg bg-son px-3.5 py-1.5 text-sm font-semibold text-cream shadow-sm hover:opacity-90 active:scale-95"
+        >
           + Thêm đối tác
         </button>
       </div>
+
+      {feedback && (
+        <div
+          className={`rounded-xl p-3 text-sm flex items-center justify-between ${
+            feedback.type === "success"
+              ? "bg-jade/10 border border-jade/30 text-jade-deep font-medium"
+              : "bg-red-50 border border-red-200 text-red-700"
+          }`}
+        >
+          <span>{feedback.text}</span>
+          <button
+            onClick={() => setFeedback(null)}
+            className="text-xs opacity-70 hover:opacity-100 font-bold ml-2"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       {showForm && (
         <PartnerForm
           initial={editing}
           onSave={handleSave}
-          onCancel={() => { setShowForm(false); setEditing(null); }}
+          onCancel={() => {
+            setShowForm(false);
+            setEditing(null);
+          }}
         />
       )}
 
-      <div className="space-y-2">
-        {partners.map(p => (
-          <div key={p.id} className="flex items-center justify-between rounded-xl border border-line/40 bg-white/60 p-3">
-            <div>
-              <div className="font-semibold">{p.name}</div>
-              <div className="text-sm text-ink-soft">{p.address}</div>
-              <div className="text-sm text-ink-soft">{p.phone}</div>
+      {loading ? (
+        <div className="rounded-xl border border-line/40 bg-white/40 p-8 text-center text-ink-soft">
+          Đang tải danh sách đối tác...
+        </div>
+      ) : (
+        <div className="space-y-2.5">
+          {partners.map((p) => (
+            <div
+              key={p.id}
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-line/40 bg-white/70 p-4 shadow-sm"
+            >
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-ink-strong">{p.name}</span>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                      p.isActive
+                        ? "bg-jade/15 text-jade-deep"
+                        : "bg-ink-soft/15 text-ink-soft"
+                    }`}
+                  >
+                    {p.isActive ? "Hoạt động" : "Tạm ngưng"}
+                  </span>
+                </div>
+                {p.address && (
+                  <p className="text-xs text-ink-soft flex items-center gap-1">
+                    <span>📍</span> {p.address}
+                  </p>
+                )}
+                {p.phone && (
+                  <p className="text-xs text-ink-soft flex items-center gap-1">
+                    <span>📞</span> <a href={`tel:${p.phone}`} className="hover:underline">{p.phone}</a>
+                  </p>
+                )}
+                {p.description && (
+                  <p className="text-xs text-ink/80 italic mt-0.5 line-clamp-2">
+                    {p.description}
+                  </p>
+                )}
+                {p.googleMapsUrl && (
+                  <div className="pt-1">
+                    <a
+                      href={p.googleMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-semibold text-son underline flex items-center gap-1"
+                    >
+                      <span>🗺️</span> Xem trên Google Maps ↗
+                    </a>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-2 shrink-0 self-end sm:self-center pt-2 sm:pt-0">
+                <button
+                  onClick={() => {
+                    setEditing(p);
+                    setShowForm(true);
+                    setFeedback(null);
+                  }}
+                  className="rounded-lg border border-line/60 bg-white px-3 py-1 text-xs font-semibold text-son hover:bg-son hover:text-white transition-colors"
+                >
+                  Sửa
+                </button>
+                <button
+                  onClick={() => handleDelete(p.id, p.name)}
+                  className="rounded-lg border border-line/60 bg-white px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-600 hover:text-white transition-colors"
+                >
+                  Xóa
+                </button>
+              </div>
             </div>
-            <div className="flex gap-2">
-              <button onClick={() => { setEditing(p); setShowForm(true); }}
-                className="text-sm text-son underline">Sửa</button>
-              <button onClick={() => handleDelete(p.id)}
-                className="text-sm text-red-600 underline">Xóa</button>
+          ))}
+          {partners.length === 0 && (
+            <div className="rounded-xl border border-line/40 bg-white/40 p-8 text-center text-ink-soft">
+              <p className="text-base font-semibold text-ink-strong">Chưa có đối tác nào</p>
+              <p className="text-xs mt-1">Bấm nút &quot;+ Thêm đối tác&quot; ở trên để bắt đầu thêm đối tác mới.</p>
             </div>
-          </div>
-        ))}
-        {partners.length === 0 && <p className="text-ink-soft">Chưa có đối tác nào</p>}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -1337,7 +1639,9 @@ function ChallengesTab() {
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
-    fetch("/api/admin/partners").then(r => r.json()).then(setPartners);
+    fetch("/api/admin/partners")
+      .then((r) => r.json())
+      .then((d) => Array.isArray(d) ? setPartners(d) : setPartners([]));
   }, []);
 
   useEffect(() => {

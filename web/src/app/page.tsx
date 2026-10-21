@@ -359,13 +359,22 @@ export default function Home() {
         )}
       </div>
 
-      <Link
-        href="/huong-dan"
-        className="mt-5 inline-flex items-center gap-1.5 self-center rounded-full border border-line bg-cream px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-gold-soft"
-      >
-        <BookOpen className="h-4 w-4 text-clay-deep" strokeWidth={2} aria-hidden="true" />
-        {t("guide.entry")}
-      </Link>
+      <div className="mt-5 flex flex-wrap items-center justify-center gap-2 self-center">
+        <Link
+          href="/landing"
+          className="inline-flex items-center gap-1.5 rounded-full border border-line bg-cream px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-gold-soft"
+        >
+          <Compass className="h-4 w-4 text-son" strokeWidth={2} aria-hidden="true" />
+          {t("landing.entry")}
+        </Link>
+        <Link
+          href="/huong-dan"
+          className="inline-flex items-center gap-1.5 rounded-full border border-line bg-cream px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-gold-soft"
+        >
+          <BookOpen className="h-4 w-4 text-clay-deep" strokeWidth={2} aria-hidden="true" />
+          {t("guide.entry")}
+        </Link>
+      </div>
     </main>
   );
 }

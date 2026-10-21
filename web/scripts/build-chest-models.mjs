@@ -7,8 +7,6 @@ import { mergeGeometries, mergeVertices } from "three/examples/jsm/utils/BufferG
 import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter.js";
 import { USDZExporter } from "three/examples/jsm/exporters/USDZExporter.js";
 
-// Exporter viết cho browser; Node 24 đã có Blob/atob toàn cục.
-// Nếu bản three mới đòi thêm global browser nào, bổ sung shim tại đây.
 globalThis.self ??= globalThis;
 globalThis.FileReader ??= class FileReader {
   readAsArrayBuffer(blob) {
@@ -46,30 +44,26 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = join(root, "public", "models");
 
 const TIERS = [
-  { key: "common", colorHex: "#9a3b2b" },
-  { key: "gold", colorHex: "#c9962b" },
-  { key: "epic", colorHex: "#b3122e" },
-  { key: "grand", colorHex: "#1f5c46" },
+  { key: "common", colorHex: "#a60e29" }, // Royal Crimson Red
+  { key: "gold", colorHex: "#bd1432" },   // Imperial Ruby Crimson
+  { key: "epic", colorHex: "#7a0c3b" },   // Royal Velvet Wine
+  { key: "grand", colorHex: "#1a5e43" },  // Imperial Jade Green
 ];
 
 const BUDGET_GLB_KB = 150;
 const BUDGET_USDZ_KB = 200;
 const BUDGET_TOTAL_KB = 1024;
 
-const GOLD_HEX = 0xf0c33c;
-const VELVET_HEX = 0x7e1220;
-const GEM_COLORS = [
-  { color: 0xd81b4a }, // ruby
-  { color: 0x1fae55 }, // emerald
-  { color: 0x2b5fb8 }, // sapphire
-];
+const GOLD_COLOR = 0xf5b800;
+const VELVET_COLOR = 0x820618;
+const STEEL_COLOR = 0xdde6f0;
+const RUBY_COLOR = 0xd91438;
+const SAPPHIRE_COLOR = 0x1b55c8;
+const EMERALD_COLOR = 0x16a34a;
+const PEARL_COLOR = 0xfdfaf2;
+const DARK_COLOR = 0x22140a;
 
-// Toàn bộ hình học đi qua put(): bake transform vào geometry rồi gom theo
-// (group, material). Merge cuối làm số mesh xuất ra đếm bằng ngón tay — USDZ
-// tính overhead theo prim nên ~90 mesh rời đã đẩy file vượt ngân sách 3 lần.
-// USDZ viết điểm/pháp tuyến dạng văn bản nên số lẻ dài ("0.46499999999999997")
-// đốt ngân sách vô ích — làm tròn 3 số thập phân (độ chính xác dưới milimet).
-function quantize(g, digits = 3) {
+function quantize(g, digits = 2) {
   const f = Math.pow(10, digits);
   const attr = g.attributes.normal;
   if (attr) {
@@ -89,14 +83,13 @@ function quantize(g, digits = 3) {
   return g;
 }
 
-// OctahedronGeometry không có index — hàn vertex để merge được với phần còn lại.
 const weldedOctahedron = (r) => quantize(mergeVertices(new THREE.OctahedronGeometry(r, 0)));
 
-function buildChest(colorHex) {
+function buildChest(panelColorHex) {
   const parts = [];
   const put = (groupName, mat, geo, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0) => {
     const g = geo.clone();
-    g.deleteAttribute("uv"); // không dùng texture — bỏ uv để nhẹ và hàn vertex tốt hơn
+    g.deleteAttribute("uv");
     g.applyMatrix4(
       new THREE.Matrix4().compose(
         new THREE.Vector3(x, y, z),
@@ -107,244 +100,364 @@ function buildChest(colorHex) {
     parts.push({ groupName, mat, geo: quantize(g) });
   };
 
-  const wood = new THREE.MeshStandardMaterial({
-    color: new THREE.Color(colorHex),
-    roughness: 0.55,
-    metalness: 0.1,
-    flatShading: true,
+  // ---- Materials --------------------------------------------------------
+  const goldMat = new THREE.MeshStandardMaterial({
+    color: GOLD_COLOR,
+    roughness: 0.22,
+    metalness: 0.88,
+    emissive: 0x221704,
   });
-  const shellWood = wood.clone();
-  shellWood.side = THREE.DoubleSide;
-  const gold = new THREE.MeshStandardMaterial({
-    color: GOLD_HEX,
-    roughness: 0.28,
-    metalness: 0.85,
-    flatShading: true,
-    emissive: 0x1a1206,
+
+  const panelMat = new THREE.MeshStandardMaterial({
+    color: new THREE.Color(panelColorHex),
+    roughness: 0.45,
+    metalness: 0.08,
   });
-  const velvet = new THREE.MeshStandardMaterial({
-    color: VELVET_HEX,
-    roughness: 0.9,
-    metalness: 0,
+
+  const velvetMat = new THREE.MeshStandardMaterial({
+    color: VELVET_COLOR,
+    roughness: 0.85,
+    metalness: 0.0,
   });
-  const velvetDouble = velvet.clone();
+  const velvetDouble = velvetMat.clone();
   velvetDouble.side = THREE.DoubleSide;
-  const dark = new THREE.MeshStandardMaterial({
-    color: 0x2a1a10,
-    roughness: 0.6,
-    metalness: 0.2,
-    flatShading: true,
+
+  const steelMat = new THREE.MeshStandardMaterial({
+    color: STEEL_COLOR,
+    roughness: 0.18,
+    metalness: 0.95,
   });
 
-  // ---- base -------------------------------------------------------------
-  // Thân là box thường + nan góc vàng có sẵn: RoundedBox(seg2) tốn ~900 vertex,
-  // đẩy USDZ (ASCII) vượt ngân sách — phương án chamfer bằng khung góc được
-  // spec chấp nhận thay thế.
-  put("base", wood, new THREE.BoxGeometry(1.0, 0.55, 0.68), 0, 0.275, 0);
-
-  const postGeo = new THREE.BoxGeometry(0.07, 0.56, 0.07);
-  for (const x of [-0.465, 0.465]) {
-    for (const z of [-0.305, 0.305]) {
-      put("base", gold, postGeo, x, 0.275, z);
-    }
-  }
-
-  const edgeGeo = new THREE.BoxGeometry(1.04, 0.05, 0.03);
-  put("base", gold, edgeGeo, 0, 0.525, 0.34);
-  put("base", gold, edgeGeo, 0, 0.045, 0.34);
-
-  const rivetGeo = new THREE.SphereGeometry(0.02, 5, 4);
-  for (const y of [0.525, 0.045]) {
-    for (const x of [-0.33, -0.11, 0.11, 0.33]) {
-      put("base", gold, rivetGeo, x, y, 0.355);
-    }
-  }
-
-  // Ổ khóa then: tấm lớn + then đứng + lỗ tròn + 2 đinh tán nhỏ
-  put("base", gold, new THREE.BoxGeometry(0.2, 0.24, 0.05), 0, 0.4, 0.352);
-  put("base", dark, new THREE.BoxGeometry(0.04, 0.06, 0.02), 0, 0.395, 0.379);
-  put(
-    "base",
-    dark,
-    new THREE.CylinderGeometry(0.026, 0.026, 0.012, 12),
-    0, 0.442, 0.379,
-    Math.PI / 2, 0, 0
-  );
-  const lockStudGeo = new THREE.SphereGeometry(0.014, 5, 4);
-  for (const x of [-0.07, 0.07]) {
-    put("base", gold, lockStudGeo, x, 0.485, 0.379);
-  }
-
-  const footGeo = new THREE.BoxGeometry(0.09, 0.06, 0.09);
-  for (const x of [-0.42, 0.42]) {
-    for (const z of [-0.28, 0.28]) {
-      put("base", gold, footGeo, x, -0.03, z);
-    }
-  }
-
-  // Xu tràn ra miệng trước (giữ nguyên từ pass redesign)
-  const coinGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.015, 12);
-  const coins = [
-    [-0.3, 0.56, 0.4, 1.35, 0.2, 0.15],
-    [-0.12, 0.58, 0.42, 1.5, -0.3, -0.2],
-    [0.08, 0.57, 0.41, 1.4, 0.5, 0.3],
-    [0.26, 0.555, 0.4, 1.55, -0.15, 0.4],
-    [0.4, 0.53, 0.38, 1.3, 0.1, -0.5],
-    [-0.44, 0.52, 0.36, 1.45, -0.4, 0.2],
-  ];
-  for (const [x, y, z, rx, ry, rz] of coins) {
-    put("base", gold, coinGeo, x, y, z, rx, ry, rz);
-  }
-
-  const gemGeo = weldedOctahedron(0.045);
-  const gems = [
-    [-0.02, 0.565, 0.44, 0.3, 0.4],
-    [0.17, 0.55, 0.445, -0.2, 0.8],
-    [-0.2, 0.555, 0.445, 0.5, -0.6],
-  ];
-  gems.forEach(([x, y, z, rx, rz], i) => {
-    const gemMat = new THREE.MeshStandardMaterial({
-      color: GEM_COLORS[i % GEM_COLORS.length].color,
-      roughness: 0.25,
-      metalness: 0.3,
-      flatShading: true,
-    });
-    put("base", gemMat, gemGeo, x, y, z, rx, 0, rz);
+  const rubyMat = new THREE.MeshStandardMaterial({
+    color: RUBY_COLOR,
+    roughness: 0.15,
+    metalness: 0.25,
+    emissive: 0x4a000a,
+    emissiveIntensity: 0.35,
   });
 
-  // Kho báu đắp trong rương: thân nhô vừa phải trên miệng rương (y=0.55,
-  // đáy thân gỗ đặc — chôn xuống dưới sẽ vô hình), đỉnh ≤ ~0.67 « đỉnh vòm
-  // 0.91 nên lúc đóng nắp vẫn kín hoàn toàn bên trong vòm.
-  const pileRadii = [0.06, 0.052, 0.045];
-  const coinPileGeos = pileRadii.map(
-    (r) => new THREE.CylinderGeometry(r, r, 0.012, 12)
-  );
-  const coinPile = [
-    [-0.3, 0.545, 0.1, 0.1, -0.08, 0],
-    [-0.14, 0.552, 0.02, -0.06, 0.09, 1],
-    [0.02, 0.548, 0.12, 0.08, 0.05, 2],
-    [0.15, 0.558, 0.04, -0.05, -0.07, 0],
-    [0.3, 0.545, 0.14, 0.07, 0.06, 1],
-    [-0.22, 0.585, 0.18, 0.12, -0.1, 1],
-    [-0.04, 0.592, 0.2, -0.09, 0.08, 0],
-    [0.1, 0.588, 0.15, 0.06, -0.06, 2],
-    [0.24, 0.575, 0.22, -0.08, 0.1, 0],
-    [-0.38, 0.535, 0.02, 0.05, -0.05, 1],
-    [0.38, 0.54, 0.04, -0.06, 0.07, 2],
-    [0.03, 0.615, 0.08, 0.1, 0.12, 0],
-    [-0.12, 0.528, -0.08, 0.04, 0.06, 0],
-    [0.2, 0.524, -0.1, -0.05, -0.04, 1],
-  ];
-  for (const [x, y, z, rx, rz, gi] of coinPile) {
-    put("base", gold, coinPileGeos[gi], x, y, z, rx, 0, rz);
-  }
+  const sapphireMat = new THREE.MeshStandardMaterial({
+    color: SAPPHIRE_COLOR,
+    roughness: 0.12,
+    metalness: 0.3,
+    emissive: 0x081e66,
+    emissiveIntensity: 0.4,
+  });
 
-  const barGeo = new THREE.BoxGeometry(0.16, 0.045, 0.07);
-  put("base", gold, barGeo, -0.26, 0.575, -0.1, 0, 0.35, 0.26);
-  put("base", gold, barGeo, -0.245, 0.622, -0.09, 0, 0.28, 0.26);
+  const emeraldMat = new THREE.MeshStandardMaterial({
+    color: EMERALD_COLOR,
+    roughness: 0.15,
+    metalness: 0.25,
+    emissive: 0x043810,
+    emissiveIntensity: 0.35,
+  });
 
-  const clusterGemGeo = weldedOctahedron(0.035);
-  const clusters = [
-    {
-      mat: GEM_COLORS[0],
-      at: [-0.33, 0.56, 0.18],
-      offsets: [
-        [0, 0, 0],
-        [0.05, 0.02, 0.03],
-        [0.015, -0.005, -0.05],
-      ],
-    },
-    {
-      mat: GEM_COLORS[1],
-      at: [0.07, 0.59, 0.22],
-      offsets: [
-        [0, 0, 0],
-        [0.045, 0.015, -0.03],
-        [-0.04, 0.01, 0.02],
-      ],
-    },
-    {
-      mat: GEM_COLORS[2],
-      at: [0.32, 0.56, 0.08],
-      offsets: [
-        [0, 0, 0],
-        [0.04, 0.02, 0.04],
-      ],
-    },
-  ];
-  for (const { mat, at, offsets } of clusters) {
-    const clusterMat = new THREE.MeshStandardMaterial({
-      color: mat.color,
-      roughness: 0.15,
-      metalness: 0.3,
-      flatShading: true,
-      emissive: mat.color,
-      emissiveIntensity: 0.25,
-    });
-    offsets.forEach(([dx, dy, dz], i) => {
-      put(
-        "base",
-        clusterMat,
-        clusterGemGeo,
-        at[0] + dx, at[1] + dy, at[2] + dz,
-        i * 0.9, i * 0.7, i * 0.5
-      );
-    });
-  }
-
-  // Chuỗi ngọc trai vắt qua mép trước đống xu
-  const pearlGeo = new THREE.SphereGeometry(0.018, 5, 3);
   const pearlMat = new THREE.MeshStandardMaterial({
-    color: 0xf5efe6,
-    roughness: 0.25,
-    metalness: 0,
+    color: PEARL_COLOR,
+    roughness: 0.22,
+    metalness: 0.06,
   });
-  for (let i = 0; i < 7; i++) {
-    const t = i / 6;
-    const dip = Math.sin(Math.PI * t);
-    put("base", pearlMat, pearlGeo, -0.15 + 0.3 * t, 0.605 - 0.055 * dip, 0.225 + 0.1 * dip);
+
+  const darkMat = new THREE.MeshStandardMaterial({
+    color: DARK_COLOR,
+    roughness: 0.5,
+    metalness: 0.3,
+  });
+
+  // =========================================================================
+  // 1. BASE STRUCTURE (Hollow Chest Box with Outer Trims & Inset Panels)
+  // =========================================================================
+
+  // Inner cavity bottom
+  put("base", velvetMat, new THREE.BoxGeometry(0.92, 0.04, 0.58), 0, 0.12, 0);
+
+  // Outer Crimson Panels (Recessed)
+  const frontPanelGeo = new THREE.BoxGeometry(0.40, 0.40, 0.015);
+  put("base", panelMat, frontPanelGeo, -0.24, 0.29, 0.345);
+  put("base", panelMat, frontPanelGeo, 0.24, 0.29, 0.345);
+  put("base", panelMat, new THREE.BoxGeometry(0.88, 0.40, 0.015), 0, 0.29, -0.345);
+
+  const sidePanelGeo = new THREE.BoxGeometry(0.015, 0.40, 0.24);
+  put("base", panelMat, sidePanelGeo, -0.495, 0.29, -0.14);
+  put("base", panelMat, sidePanelGeo, -0.495, 0.29, 0.14);
+  put("base", panelMat, sidePanelGeo, 0.495, 0.29, -0.14);
+  put("base", panelMat, sidePanelGeo, 0.495, 0.29, 0.14);
+
+  // Gold Heavy Corner Pillars (4 corners)
+  const cornerPostGeo = new THREE.BoxGeometry(0.08, 0.48, 0.08);
+  for (const x of [-0.47, 0.47]) {
+    for (const z of [-0.32, 0.32]) {
+      put("base", goldMat, cornerPostGeo, x, 0.29, z);
+    }
   }
 
-  // ---- lid --------------------------------------------------------------
-  const vaultGeo = new THREE.CylinderGeometry(
-    0.36, 0.36, 1.02, 24, 1, false, Math.PI / 2, Math.PI
-  );
-  vaultGeo.rotateX(Math.PI / 2);
-  vaultGeo.rotateY(Math.PI / 2);
-  put("lid", shellWood, vaultGeo, 0, 0, 0.34);
+  // Top Rim Gold Lip (at y = 0.52)
+  put("base", goldMat, new THREE.BoxGeometry(1.04, 0.05, 0.06), 0, 0.52, 0.33);
+  put("base", goldMat, new THREE.BoxGeometry(1.04, 0.05, 0.06), 0, 0.52, -0.33);
+  put("base", goldMat, new THREE.BoxGeometry(0.06, 0.05, 0.64), -0.48, 0.52, 0);
+  put("base", goldMat, new THREE.BoxGeometry(0.06, 0.05, 0.64), 0.48, 0.52, 0);
 
-  // Lòng nhung đỏ: vòm lót sát mặt trong + tấm đáy nắp (thấy khi mở nắp)
+  // Bottom Base Gold Skirting (at y = 0.065)
+  put("base", goldMat, new THREE.BoxGeometry(1.04, 0.05, 0.05), 0, 0.065, 0.34);
+  put("base", goldMat, new THREE.BoxGeometry(1.04, 0.05, 0.05), 0, 0.065, -0.34);
+  put("base", goldMat, new THREE.BoxGeometry(0.05, 0.05, 0.66), -0.485, 0.065, 0);
+  put("base", goldMat, new THREE.BoxGeometry(0.05, 0.05, 0.66), 0.485, 0.065, 0);
+
+  // Center Vertical Gold Dividers
+  put("base", goldMat, new THREE.BoxGeometry(0.06, 0.42, 0.04), 0, 0.29, 0.345);
+  put("base", goldMat, new THREE.BoxGeometry(0.04, 0.42, 0.06), -0.49, 0.29, 0);
+  put("base", goldMat, new THREE.BoxGeometry(0.04, 0.42, 0.06), 0.49, 0.29, 0);
+
+  // Royal Scalloped/Curved Gold Feet
+  const footBaseGeo = new THREE.BoxGeometry(0.12, 0.06, 0.12);
+  for (const x of [-0.45, 0.45]) {
+    for (const z of [-0.30, 0.30]) {
+      put("base", goldMat, footBaseGeo, x, 0.02, z);
+    }
+  }
+
+  // Ruby Gem Studs along the Gold Frame
+  const rubyStudGeo = weldedOctahedron(0.016);
+  const frontStudX = [-0.47, -0.47, -0.47, 0, 0, 0, 0.47, 0.47, 0.47];
+  const frontStudY = [0.44, 0.29, 0.14, 0.44, 0.29, 0.14, 0.44, 0.29, 0.14];
+  for (let i = 0; i < frontStudX.length; i++) {
+    put("base", rubyMat, rubyStudGeo, frontStudX[i], frontStudY[i], 0.365);
+  }
+  for (const x of [-0.24, 0.24]) {
+    put("base", rubyMat, rubyStudGeo, x, 0.52, 0.358);
+  }
+
+  // Ornate Gold Lock Escutcheon Plate
+  put("base", goldMat, new THREE.BoxGeometry(0.16, 0.18, 0.03), 0, 0.38, 0.365);
+  put("base", darkMat, new THREE.BoxGeometry(0.02, 0.06, 0.015), 0, 0.38, 0.38);
+
+  // =========================================================================
+  // 2. TREASURE INSIDE THE CHEST (Mound, Coins, Crown, Sword, Cross, Gems)
+  // =========================================================================
+
+  // Mounded Base of Gold Treasure
+  put("base", goldMat, new THREE.CylinderGeometry(0.44, 0.46, 0.26, 6), 0, 0.38, 0);
+
+  // 3D Gold Coins
+  const coinGeo = new THREE.CylinderGeometry(0.052, 0.052, 0.015, 6);
+  const coinPlacements = [
+    [0.0, 0.53, 0.06, 0.15, 0.2, 0.1],
+    [-0.12, 0.54, 0.12, -0.2, 0.4, -0.15],
+    [0.14, 0.535, 0.08, 0.1, -0.3, 0.25],
+    [-0.24, 0.525, 0.15, 0.3, 0.2, -0.1],
+    [0.26, 0.52, 0.14, -0.25, -0.4, 0.18],
+    [0.05, 0.56, -0.05, -0.1, 0.15, 0.05],
+    [-0.18, 0.55, -0.02, 0.2, -0.2, 0.1],
+    [0.20, 0.545, -0.04, -0.15, 0.3, -0.2],
+
+    // Front Rim Overflow
+    [-0.38, 0.525, 0.31, 0.6, 0.2, -0.3],
+    [-0.22, 0.535, 0.33, 0.7, -0.15, 0.2],
+    [-0.08, 0.545, 0.35, 0.5, 0.3, -0.1],
+    [0.08, 0.54, 0.36, 0.55, -0.25, 0.15],
+    [0.22, 0.53, 0.34, 0.65, 0.2, -0.25],
+    [0.36, 0.515, 0.30, 0.8, -0.3, 0.3],
+
+    // Floor Spilled Coins
+    [-0.22, 0.015, 0.46, 0.05, 0.5, 0.0],
+    [-0.05, 0.015, 0.48, 0.1, -0.3, 0.05],
+    [0.15, 0.015, 0.47, 0.08, 0.2, 0.02],
+    [0.30, 0.015, 0.44, -0.1, -0.6, 0.05],
+  ];
+
+  for (const [x, y, z, rx, ry, rz] of coinPlacements) {
+    put("base", goldMat, coinGeo, x, y, z, rx, ry, rz);
+  }
+
+  // Gold Bullion Bars
+  const barGeo = new THREE.BoxGeometry(0.18, 0.05, 0.08);
+  put("base", goldMat, barGeo, -0.28, 0.54, 0.02, 0.1, 0.4, 0.15);
+  put("base", goldMat, barGeo, -0.25, 0.58, 0.04, 0.05, 0.25, 0.1);
+  put("base", goldMat, barGeo, -0.42, 0.025, 0.42, 0, 0.6, 0);
+  put("base", goldMat, barGeo, 0.15, 0.025, 0.52, 0, -0.45, 0);
+
+  // --- Royal Crown ---
+  const crownRingGeo = new THREE.CylinderGeometry(0.11, 0.13, 0.06, 6, 1, true);
+  const crownBaseX = 0.02, crownBaseY = 0.62, crownBaseZ = 0.10;
+  const crownRotX = 0.25, crownRotY = -0.3, crownRotZ = 0.15;
+  put("base", goldMat, crownRingGeo, crownBaseX, crownBaseY, crownBaseZ, crownRotX, crownRotY, crownRotZ);
+
+  const crownPeakGeo = new THREE.ConeGeometry(0.025, 0.07, 4);
+  const crownGemGeo = weldedOctahedron(0.015);
+  for (let i = 0; i < 5; i++) {
+    const angle = (i / 5) * Math.PI * 2;
+    const px = Math.cos(angle) * 0.12;
+    const pz = Math.sin(angle) * 0.12;
+    const peakVec = new THREE.Vector3(px, 0.05, pz).applyEuler(
+      new THREE.Euler(crownRotX, crownRotY, crownRotZ)
+    );
+    put(
+      "base",
+      goldMat,
+      crownPeakGeo,
+      crownBaseX + peakVec.x,
+      crownBaseY + peakVec.y,
+      crownBaseZ + peakVec.z,
+      crownRotX,
+      crownRotY + angle,
+      crownRotZ
+    );
+    const gemM = i % 2 === 0 ? rubyMat : sapphireMat;
+    put(
+      "base",
+      gemM,
+      crownGemGeo,
+      crownBaseX + peakVec.x * 0.9,
+      crownBaseY + peakVec.y * 0.9,
+      crownBaseZ + peakVec.z * 0.9
+    );
+  }
+
+  // --- Jeweled Sword / Dagger ---
+  const bladeGeo = new THREE.BoxGeometry(0.035, 0.36, 0.01);
+  const swordX = 0.28, swordY = 0.68, swordZ = 0.04;
+  const swordRotX = -0.35, swordRotY = 0.2, swordRotZ = -0.55;
+  put("base", steelMat, bladeGeo, swordX - 0.06, swordY - 0.08, swordZ, swordRotX, swordRotY, swordRotZ);
+
+  const guardGeo = new THREE.BoxGeometry(0.12, 0.025, 0.035);
+  put("base", goldMat, guardGeo, swordX, swordY + 0.06, swordZ, swordRotX, swordRotY, swordRotZ);
+
+  const gripGeo = new THREE.CylinderGeometry(0.016, 0.016, 0.10, 4);
+  put("base", sapphireMat, gripGeo, swordX + 0.04, swordY + 0.11, swordZ, swordRotX, swordRotY, swordRotZ);
+
+  const pommelGeo = weldedOctahedron(0.024);
+  put("base", rubyMat, pommelGeo, swordX + 0.08, swordY + 0.17, swordZ, swordRotX, swordRotY, swordRotZ);
+
+  // --- Ornate Golden Cross ---
+  const crossVerticalGeo = new THREE.BoxGeometry(0.04, 0.28, 0.03);
+  const crossHorizontalGeo = new THREE.BoxGeometry(0.18, 0.04, 0.03);
+  const crossX = -0.30, crossY = 0.66, crossZ = 0.08;
+  const crossRotX = 0.15, crossRotY = 0.35, crossRotZ = 0.25;
+  put("base", goldMat, crossVerticalGeo, crossX, crossY, crossZ, crossRotX, crossRotY, crossRotZ);
+  put("base", goldMat, crossHorizontalGeo, crossX, crossY + 0.04, crossZ, crossRotX, crossRotY, crossRotZ);
+  put("base", rubyMat, weldedOctahedron(0.026), crossX, crossY + 0.04, crossZ + 0.02, crossRotX, crossRotY, crossRotZ);
+
+  // --- Sapphire Crystal Cluster ---
+  const crystalPrismGeo = new THREE.ConeGeometry(0.032, 0.18, 4);
+  const crystalPrismGeo2 = new THREE.ConeGeometry(0.026, 0.14, 4);
+  const sClustX = 0.14, sClustY = 0.58, sClustZ = 0.16;
+  put("base", sapphireMat, crystalPrismGeo, sClustX, sClustY + 0.06, sClustZ, 0.15, 0.2, -0.1);
+  put("base", sapphireMat, crystalPrismGeo2, sClustX + 0.035, sClustY + 0.04, sClustZ - 0.02, -0.2, 0.6, 0.3);
+
+  // --- Ruby Crystal Cluster ---
+  const rClustX = -0.38, rClustY = 0.54, rClustZ = 0.18;
+  put("base", rubyMat, crystalPrismGeo, rClustX, rClustY + 0.05, rClustZ, -0.2, -0.3, 0.4);
+  put("base", rubyMat, crystalPrismGeo2, rClustX + 0.03, rClustY + 0.03, rClustZ + 0.03, 0.1, 0.5, 0.2);
+
+  // Loose Cut Gemstones
+  put("base", rubyMat, weldedOctahedron(0.032), -0.08, 0.55, 0.25, 0.3, 0.5, 0.1);
+  put("base", sapphireMat, weldedOctahedron(0.03), 0.06, 0.56, 0.22, 0.2, -0.4, 0.5);
+  put("base", emeraldMat, weldedOctahedron(0.034), -0.18, 0.54, 0.22, -0.3, 0.2, 0.4);
+  put("base", emeraldMat, weldedOctahedron(0.028), 0.32, 0.53, 0.20, 0.5, -0.3, 0.2);
+
+  // --- Royal Pearl Necklaces ---
+  const pearlSphereGeo = weldedOctahedron(0.016);
+  for (let i = 0; i <= 9; i++) {
+    const t = i / 9;
+    let px, py, pz;
+    if (t < 0.35) {
+      const subT = t / 0.35;
+      px = -0.05 + 0.05 * subT;
+      py = 0.56 - 0.04 * subT;
+      pz = 0.28 + 0.08 * subT;
+    } else {
+      const subT = (t - 0.35) / 0.65;
+      const angle = subT * Math.PI;
+      px = 0.0 + 0.10 * Math.cos(angle);
+      py = 0.52 - 0.24 * Math.sin(angle);
+      pz = 0.365;
+    }
+    put("base", pearlMat, pearlSphereGeo, px, py, pz);
+  }
+
+  for (let i = 0; i < 7; i++) {
+    const angle = (i / 7) * Math.PI * 2;
+    const px = -0.35 + 0.12 * Math.cos(angle);
+    const pz = 0.50 + 0.08 * Math.sin(angle);
+    put("base", pearlMat, pearlSphereGeo, px, 0.012, pz);
+  }
+
+  // --- Ornate Golden Key ---
+  const keyStemGeo = new THREE.CylinderGeometry(0.01, 0.01, 0.20, 4);
+  const keyX = -0.22, keyY = 0.015, keyZ = 0.52;
+  put("base", goldMat, keyStemGeo, keyX, keyY, keyZ, Math.PI / 2, 0, 0.45);
+  put("base", sapphireMat, weldedOctahedron(0.024), keyX - 0.07, keyY, keyZ - 0.07);
+  put("base", goldMat, new THREE.BoxGeometry(0.03, 0.04, 0.015), keyX + 0.07, keyY, keyZ + 0.07, 0, 0.45, 0);
+
+  // =========================================================================
+  // 3. LID STRUCTURE (Arched Vault with Royal Velvet Lining & Gold Ribs)
+  // =========================================================================
+
+  const vaultOuterGeo = new THREE.CylinderGeometry(
+    0.35, 0.35, 1.04, 8, 1, false, Math.PI / 2, Math.PI
+  );
+  vaultOuterGeo.rotateX(Math.PI / 2);
+  vaultOuterGeo.rotateY(Math.PI / 2);
+  put("lid", panelMat, vaultOuterGeo, 0, 0, 0.33);
+
   const vaultInnerGeo = new THREE.CylinderGeometry(
-    0.345, 0.345, 0.98, 24, 1, false, Math.PI / 2, Math.PI
+    0.335, 0.335, 1.00, 8, 1, false, Math.PI / 2, Math.PI
   );
   vaultInnerGeo.rotateX(Math.PI / 2);
   vaultInnerGeo.rotateY(Math.PI / 2);
-  put("lid", velvetDouble, vaultInnerGeo, 0, 0, 0.34);
+  put("lid", velvetDouble, vaultInnerGeo, 0, 0, 0.33);
 
-  put("lid", wood, new THREE.BoxGeometry(1.02, 0.06, 0.72), 0, -0.01, 0.34);
-  put("lid", velvet, new THREE.BoxGeometry(0.94, 0.02, 0.62), 0, -0.045, 0.34);
+  const endCapGeo = new THREE.CircleGeometry(0.35, 6, 0, Math.PI);
+  endCapGeo.rotateY(-Math.PI / 2);
+  put("lid", panelMat, endCapGeo, -0.52, 0, 0.33);
+  const endCapRightGeo = new THREE.CircleGeometry(0.35, 6, 0, Math.PI);
+  endCapRightGeo.rotateY(Math.PI / 2);
+  put("lid", panelMat, endCapRightGeo, 0.52, 0, 0.33);
 
-  const hoopGeo = new THREE.TorusGeometry(0.365, 0.02, 4, 8, Math.PI);
+  put("lid", velvetMat, endCapGeo, -0.505, 0, 0.33);
+  put("lid", velvetMat, endCapRightGeo, 0.505, 0, 0.33);
+
+  put("lid", goldMat, new THREE.BoxGeometry(1.06, 0.05, 0.05), 0, 0.015, 0.67);
+  put("lid", goldMat, new THREE.BoxGeometry(1.06, 0.05, 0.05), 0, 0.015, -0.01);
+  put("lid", goldMat, new THREE.BoxGeometry(0.05, 0.05, 0.68), -0.52, 0.015, 0.33);
+  put("lid", goldMat, new THREE.BoxGeometry(0.05, 0.05, 0.68), 0.52, 0.015, 0.33);
+
+  const hoopGeo = new THREE.TorusGeometry(0.355, 0.02, 3, 6, Math.PI);
   hoopGeo.rotateY(Math.PI / 2);
-  const hoopStudGeo = new THREE.SphereGeometry(0.022, 5, 3);
-  for (const x of [-0.32, 0, 0.32]) {
-    put("lid", gold, hoopGeo, x, 0, 0.34);
-    for (const deg of [45, 75, 105, 135]) {
-      const a = (deg * Math.PI) / 180;
-      put("lid", gold, hoopStudGeo, x, 0.365 * Math.sin(a), 0.34 - 0.365 * Math.cos(a));
+
+  for (const x of [-0.42, 0, 0.42]) {
+    put("lid", goldMat, hoopGeo, x, 0, 0.33);
+
+    for (const deg of [45, 90, 135]) {
+      const rad = (deg * Math.PI) / 180;
+      const sy = 0.355 * Math.sin(rad);
+      const sz = 0.33 - 0.355 * Math.cos(rad);
+      put("lid", rubyMat, rubyStudGeo, x, sy, sz);
     }
   }
 
-  put("lid", gold, new THREE.BoxGeometry(1.06, 0.06, 0.05), 0, 0, 0.7);
+  for (let i = 0; i <= 7; i++) {
+    const t = i / 7;
+    const angle = t * Math.PI;
+    const px = 0.22 + 0.12 * Math.cos(angle);
+    const py = 0.18 - 0.22 * Math.sin(angle);
+    const pz = 0.30;
+    put("lid", pearlMat, pearlSphereGeo, px, py, pz);
+  }
 
-  // ---- merge theo (group, material) --------------------------------------
+  put("lid", goldMat, new THREE.BoxGeometry(0.12, 0.08, 0.04), 0, 0.01, 0.685);
+  put("lid", rubyMat, weldedOctahedron(0.022), 0, 0.01, 0.71);
+
+  // =========================================================================
+  // 4. MERGE BY (GROUP, MATERIAL)
+  // =========================================================================
   const groups = {
     base: new THREE.Group(),
     lid: new THREE.Group(),
   };
   groups.base.name = "base";
   groups.lid.name = "lid";
-  groups.lid.position.set(0, 0.55, -0.34);
+  groups.lid.position.set(0, 0.52, -0.33);
 
   const buckets = new Map();
   for (const p of parts) {
@@ -375,16 +488,12 @@ async function exportGLB(object) {
 }
 
 async function exportUSDZ(object) {
-  // USDZExporter viết số qua toPrecision(7) mà không cắt số 0 đuôi
-  // ("0.545" thành "0.5450000") — đội size ASCII ~40%. Bọc tạm bản ghi
-  // trim-zero quanh lúc xuất (giá trị giữ nguyên, chỉ rút gọn chuỗi).
   const orig = Number.prototype.toPrecision;
   Number.prototype.toPrecision = function (precision) {
     const s = orig.call(this, precision);
     return s.includes("e") || s.includes("E") ? s : String(Number(s));
   };
   try {
-    // USDZExporter.parseAsync trả Promise<Uint8Array> (parse là bản callback)
     return Buffer.from(await new USDZExporter().parseAsync(object));
   } finally {
     Number.prototype.toPrecision = orig;
@@ -400,10 +509,6 @@ for (const t of TIERS) {
   const obj = buildChest(t.colorHex);
   const glb = await exportGLB(obj);
 
-  // USDZ không diễn đạt được DoubleSide — ép FrontSide SAU khi export GLB
-  // (GLB giữ DoubleSide cho lòng vòm nắp; thứ tự này không được đổi).
-  // USDZ cũng viết pháp tuyến dạng văn bản (đắt nhất file) — bỏ trước khi
-  // xuất: viewer AR sẽ shade phẳng, trùng đúng thẩm mỹ flatShading của model.
   obj.traverse((o) => {
     if (!o.isMesh || !o.material) return;
     if (o.material.side !== THREE.FrontSide) o.material.side = THREE.FrontSide;

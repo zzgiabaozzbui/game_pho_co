@@ -9,6 +9,7 @@ import {
   Polyline,
   Popup,
   TileLayer,
+  useMap,
 } from "react-leaflet";
 import { Compass, Navigation, X } from "lucide-react";
 import { useLang } from "@/lib/i18n";
@@ -25,6 +26,20 @@ interface Fix {
   lat: number;
   lng: number;
   accuracyM: number;
+}
+
+function MapResizer() {
+  const map = useMap();
+  useEffect(() => {
+    map.invalidateSize();
+    const t1 = setTimeout(() => map.invalidateSize(), 150);
+    const t2 = setTimeout(() => map.invalidateSize(), 600);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [map]);
+  return null;
 }
 
 export default function GameMap({
@@ -92,10 +107,12 @@ export default function GameMap({
         className="h-full w-full"
         zoomControl={false}
       >
+        <MapResizer />
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maxZoom={19}
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          subdomains={["a", "b", "c", "d"]}
+          maxZoom={20}
         />
         {visible.map((s) => {
           const color = COLOR[s.status];

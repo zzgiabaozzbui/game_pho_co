@@ -9,10 +9,9 @@ import QuickLookLauncher from "./renderers/QuickLookLauncher";
 import WebXRRenderer from "./renderers/WebXRRenderer";
 
 const GOLD = "#f0c33c";
-const GOLD_DEEP = "#7a5c10";
-const GOLD_LIGHT = "#e8bf4d";
 const OUTLINE = "#2a1a10";
 const VELVET = "#7e1220";
+const STEEL_COLOR = "#dde6f0";
 const GEM_RUBY = "#d81b4a";
 const GEM_SAPPHIRE = "#2b5fb8";
 const RIVET_X = [45, 78, 122, 155];
@@ -52,7 +51,7 @@ function LegacyChest({
       style={
         opened
           ? { marginTop: "-2.5rem" }
-          : { marginTop: "-8rem", filter: `drop-shadow(0 8px 20px ${colorHex}66)` }
+          : { marginTop: "-8rem", filter: `drop-shadow(0 8px 25px ${colorHex}88)` }
       }
       onClick={onTapChest}
       role="button"
@@ -60,24 +59,47 @@ function LegacyChest({
       onKeyDown={(e) => e.key === "Enter" && onTapChest()}
     >
       <svg className="chest-svg" viewBox="0 0 200 150" aria-hidden="true">
+        {/* Chest Base & Crimson Panels */}
         <g>
+          {/* Main Body */}
           <rect x={22} y={76} width={156} height={64} rx={6} fill={colorHex} stroke={OUTLINE} strokeWidth={3} />
-          <rect x={22} y={76} width={9} height={64} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
-          <rect x={169} y={76} width={9} height={64} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
-          <rect x={22} y={79} width={156} height={8} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
-          <rect x={22} y={129} width={156} height={8} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
+          {/* Inset Left & Right Crimson Panels */}
+          <rect x={34} y={82} width={58} height={50} rx={3} fill="#a60e29" />
+          <rect x={108} y={82} width={58} height={50} rx={3} fill="#a60e29" />
+          {/* Gold Framing: Corner Posts & Center Rib */}
+          <rect x={22} y={76} width={10} height={64} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
+          <rect x={168} y={76} width={10} height={64} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
+          <rect x={95} y={76} width={10} height={64} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
+          {/* Top & Bottom Gold Horizontal Trims */}
+          <rect x={22} y={77} width={156} height={7} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
+          <rect x={22} y={131} width={156} height={9} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
+          {/* Ruby Studs along Gold Trims */}
           {RIVET_X.map((x) => (
             <g key={`rivet-${x}`}>
-              <circle cx={x} cy={83} r={2.2} fill={GOLD_DEEP} />
-              <circle cx={x} cy={133} r={2.2} fill={GOLD_DEEP} />
+              <circle cx={x} cy={80.5} r={2.5} fill={GEM_RUBY} />
+              <circle cx={x} cy={135.5} r={2.5} fill={GEM_RUBY} />
             </g>
           ))}
-          <rect x={88} y={90} width={24} height={26} rx={4} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
-          <circle cx={100} cy={99} r={3.5} fill={OUTLINE} />
-          <rect x={98.6} y={101} width={2.8} height={7} fill={OUTLINE} />
-          <rect x={32} y={140} width={18} height={8} rx={3} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
-          <rect x={150} y={140} width={18} height={8} rx={3} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
+          <circle cx={100} cy={90} r={2.5} fill={GEM_RUBY} />
+          <circle cx={100} cy={122} r={2.5} fill={GEM_RUBY} />
+          {/* Ornate Gold Lock Escutcheon Plate */}
+          <rect x={88} y={96} width={24} height={24} rx={4} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
+          <circle cx={100} cy={105} r={3.2} fill={OUTLINE} />
+          <rect x={98.6} y={107} width={2.8} height={6} fill={OUTLINE} />
+          {/* Ornate Golden Feet */}
+          <rect x={30} y={141} width={22} height={7} rx={3} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
+          <rect x={148} y={141} width={22} height={7} rx={3} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
+          {/* Pearl Necklace draped across the front */}
+          <path
+            d="M 90 84 Q 100 120 110 84"
+            fill="none"
+            stroke="#fdfaf2"
+            strokeWidth="3.5"
+            strokeDasharray="1 3.8"
+            strokeLinecap="round"
+          />
         </g>
+        {/* Overflowing Gold Coins */}
         <g className="chest-coins">
           {COIN_SPILL.map(({ cx, cy, r }) => (
             <circle
@@ -85,24 +107,33 @@ function LegacyChest({
               cx={cx}
               cy={cy}
               r={r}
-              fill={GOLD_LIGHT}
+              fill={GOLD}
               stroke={OUTLINE}
-              strokeWidth={2}
+              strokeWidth={1.5}
             />
           ))}
         </g>
+        {/* Inside Treasure Pile when Opened */}
         {opened && (
           <g className="chest-pile">
-            <rect x={26} y={64} width={148} height={14} fill={VELVET} opacity={0.85} />
+            <rect x={26} y={64} width={148} height={14} fill={VELVET} opacity={0.9} />
+            {/* Crown Peak in 2D */}
+            <polygon points="90,62 95,50 100,56 105,50 110,62" fill={GOLD} stroke={OUTLINE} strokeWidth={1.5} />
+            <circle cx={95} cy={50} r={1.5} fill={GEM_RUBY} />
+            <circle cx={105} cy={50} r={1.5} fill={GEM_SAPPHIRE} />
+            {/* Jeweled Sword hilt */}
+            <line x1={130} y1={65} x2={145} y2={45} stroke={STEEL_COLOR} strokeWidth={2.5} />
+            <line x1={138} y1={56} x2={146} y2={62} stroke={GOLD} strokeWidth={2} />
+            {/* Golden Coins & Jewels */}
             {PILE_COINS.map(({ cx, cy, r }) => (
               <circle
                 key={`pile-coin-${cx}`}
                 cx={cx}
                 cy={cy}
                 r={r}
-                fill={GOLD_LIGHT}
+                fill={GOLD}
                 stroke={OUTLINE}
-                strokeWidth={2}
+                strokeWidth={1.5}
               />
             ))}
             {PILE_GEMS.map(({ cx, cy, size, fill }) => (
@@ -114,12 +145,13 @@ function LegacyChest({
                 height={size}
                 fill={fill}
                 stroke={OUTLINE}
-                strokeWidth={1.5}
+                strokeWidth={1.2}
                 transform={`rotate(45 ${cx} ${cy})`}
               />
             ))}
           </g>
         )}
+        {/* Arched Vault Lid */}
         <g className="chest-lid">
           <path
             d="M 18 78 A 82 54 0 0 1 182 78 Z"
@@ -128,8 +160,14 @@ function LegacyChest({
             strokeWidth={3}
             strokeLinejoin="round"
           />
-          <rect x={51} y={31} width={9} height={44} rx={2} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
-          <rect x={141} y={31} width={9} height={44} rx={2} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
+          {/* Gold Rib Bands with Ruby Studs */}
+          <rect x={48} y={30} width={10} height={46} rx={2} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
+          <circle cx={53} cy={45} r={2} fill={GEM_RUBY} />
+          <rect x={142} y={30} width={10} height={46} rx={2} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
+          <circle cx={147} cy={45} r={2} fill={GEM_RUBY} />
+          <rect x={95} y={24} width={10} height={52} rx={2} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
+          <circle cx={100} cy={38} r={2} fill={GEM_RUBY} />
+          {/* Bottom Lid Lip Rim */}
           <rect x={16} y={72} width={168} height={9} rx={3} fill={GOLD} stroke={OUTLINE} strokeWidth={2} />
         </g>
       </svg>
