@@ -3,7 +3,8 @@
 # Production-minded layout (tham khảo Plane):
 #   - YAML anchors (x-*-env) gom env chung, override qua .env khi deploy server
 #   - network đặt tên (phoco-internal) để cô lập, không đụng default bridge của dự án khác
-#   - volume đặt tên cố định (phoco_data / mysql_data) — không prefix theo thư mục, deploy ở đâu cũng dùng lại đúng volume
+#   - dữ liệu app (phoco.db + uploads/) bind mount ./data cạnh file compose → dễ backup, không mất khi gỡ Docker
+#   - mysql_data là named volume cố định tên (không prefix theo thư mục)
 #   - ADMIN_PASSWORD / SESSION_SECRET bắt buộc khai trong .env (thiếu → compose dừng)
 #   - port published lấy từ biến (APP_PORT / MYSQL_PORT) để đổi dễ dàng trên server
 #   - restart: unless-stopped (tương thích docker compose up thường, không cần swarm)
@@ -41,7 +42,7 @@ services:
     environment:
       <<: *app-env
     volumes:
-      - phoco_data:/data
+      - ./data:/data
     healthcheck:
       test:
         - CMD
@@ -78,7 +79,5 @@ networks:
     driver: bridge
 
 volumes:
-  phoco_data:
-    name: phoco_data
   mysql_data:
     name: mysql_data
