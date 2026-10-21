@@ -3,7 +3,8 @@
 # Production-minded layout (tham khảo Plane):
 #   - YAML anchors (x-*-env) gom env chung, override qua .env khi deploy server
 #   - network đặt tên (phoco-internal) để cô lập, không đụng default bridge của dự án khác
-#   - volume đặt tên (phoco_data / mysql_data) — Docker tự prefix theo project, tránh xung đột tên
+#   - volume đặt tên cố định (phoco_data / mysql_data) — không prefix theo thư mục, deploy ở đâu cũng dùng lại đúng volume
+#   - ADMIN_PASSWORD / SESSION_SECRET bắt buộc khai trong .env (thiếu → compose dừng)
 #   - port published lấy từ biến (APP_PORT / MYSQL_PORT) để đổi dễ dàng trên server
 #   - restart: unless-stopped (tương thích docker compose up thường, không cần swarm)
 #
@@ -15,8 +16,8 @@ x-app-env: &app-env
   NODE_ENV: production
   DATABASE_URL: ${DATABASE_URL:-file:/data/phoco.db}
   UPLOADS_DIR: ${UPLOADS_DIR:-/data/uploads}
-  ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin123}
-  SESSION_SECRET: ${SESSION_SECRET:-doi-lai-it-nhat-32-ky-tu-ngau-nhien-khi-deploy}
+  ADMIN_PASSWORD: ${ADMIN_PASSWORD:?ADMIN_PASSWORD bat buoc - khai trong .env}
+  SESSION_SECRET: ${SESSION_SECRET:?SESSION_SECRET bat buoc (>=32 ky tu) - khai trong .env}
   NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-https://test.democloud.xyz}
 
 x-mysql-env: &mysql-env
@@ -60,8 +61,10 @@ services:
       - phoco-internal
     environment:
       <<: *mysql-env
+    # Chỉ mở cho localhost của server; app nối qua phoco-internal.
     ports:
       - target: 3306
+        host_ip: 127.0.0.1
         published: ${MYSQL_PORT:-3306}
         protocol: tcp
         mode: host
@@ -78,3 +81,4 @@ volumes:
   phoco_data:
     name: phoco_data
   mysql_data:
+    name: mysql_data
