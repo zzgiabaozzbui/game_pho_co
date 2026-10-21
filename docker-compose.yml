@@ -71,8 +71,10 @@ services:
 
 networks:
   phoco-internal:
+    name: phoco-internal
     driver: bridge
 
 volumes:
   phoco_data:
+    name: phoco_data
   mysql_data:
