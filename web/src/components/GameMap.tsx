@@ -109,10 +109,10 @@ export default function GameMap({
       >
         <MapResizer />
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-          subdomains={["a", "b", "c", "d"]}
-          maxZoom={20}
+          // ponytail: CARTO basemaps giờ đòi API key; OSM tile miễn phí cho lưu lượng nhỏ — tăng tải thì chuyển tile provider có key.
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maxZoom={19}
         />
         {visible.map((s) => {
           const color = COLOR[s.status];
