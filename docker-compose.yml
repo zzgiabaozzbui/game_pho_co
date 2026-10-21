@@ -27,7 +27,7 @@ x-mysql-env: &mysql-env
 
 services:
   app:
-    image: baodevone/h2q_solution:phoco-web.v.1.1
+    image: baodevone/h2q_solution:phoco-web.v.1.2
     build: ./web
     restart: unless-stopped
     networks:
